@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DIR=$1
+TYPE=$2
+
+gnuplot -persist -e "set xlabel 'Training Episodes'; set mxtics 5; \
+set ylabel 'Average Score'; set mytics 5; set key bottom right; plot \
+'$DIR/${TYPE}0/avg_curve' using 1:2 with lines title '${TYPE}0', \
+'$DIR/${TYPE}50/avg_curve' using 1:2 with lines title '${TYPE}50', \
+'$DIR/${TYPE}100/avg_curve' using 1:2 with lines title '${TYPE}100', \
+'$DIR/${TYPE}150/avg_curve' using 1:2 with lines title '${TYPE}150', \
+'$DIR/${TYPE}200/avg_curve' using 1:2 with lines title '${TYPE}200', \
+'$DIR/${TYPE}250/avg_curve' using 1:2 with lines title '${TYPE}250', \
+'$DIR/${TYPE}300/avg_curve' using 1:2 with lines title '${TYPE}300', \
+'$DIR/${TYPE}350/avg_curve' using 1:2 with lines title '${TYPE}350';"
+

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+DIR=$1
+TYPE=$2
+
+gnuplot -persist -e "set xlabel 'Training Episodes'; set ylabel 'Average Score'; set key bottom right; plot \
+'$DIR/$TYPE/curve0' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve1' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve2' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve3' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve4' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve5' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve6' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve7' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve8' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve9' using 1:2 with lines notitle;"
+

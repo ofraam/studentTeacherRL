@@ -1,0 +1,6 @@
+#!/bin/bash
+
+FILE=$1
+
+gnuplot -persist -e "plot '$FILE' using 1:2 with lines notitle;"
+

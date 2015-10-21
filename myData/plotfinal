@@ -1,0 +1,14 @@
+#!/bin/bash
+
+TEACHER=$1
+STUDENT=$2
+THRESHOLD=$3
+
+gnuplot -persist -e "set xlabel 'Training Episodes'; set mxtics 5; set xrange [0:1000]; \
+set ylabel 'Average Score'; set mytics 5; set key bottom right; plot \
+'$TEACHER/$STUDENT/correct$THRESHOLD/avg_curve' using 1:2 with lines title 'correct$THRESHOLD', \
+'$TEACHER/$STUDENT/predict$THRESHOLD/avg_curve' using 1:2 with lines title 'predict$THRESHOLD', \
+'$TEACHER/$STUDENT/advise$THRESHOLD/avg_curve' using 1:2 with lines title 'advise$THRESHOLD', \
+'$TEACHER/$STUDENT/baseline/avg_curve' using 1:2 with lines title 'baseline', \
+'$STUDENT/$STUDENT/independent/avg_curve' using 1:2 with lines title 'independent';"
+

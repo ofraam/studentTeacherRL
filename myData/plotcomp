@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DIR1=$1
+DIR2=$2
+
+gnuplot -persist -e "set xlabel 'Training Episodes'; set mxtics 5; \
+set ylabel 'Average Score'; set mytics 5; set key bottom right; plot \
+'$DIR1/avg_curve' using 1:2 with lines title '$DIR1', \
+'$DIR2/avg_curve' using 1:2 with lines title '$DIR2';"
+

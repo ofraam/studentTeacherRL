@@ -1,0 +1,9 @@
+#!/bin/bash
+
+DIR=$1
+
+awk '{advice += $3} END {print "Advice: ", advice}' $DIR/avg_curve
+awk '{right += $4; wrong += $5} END {print "Accuracy: ", right/(right+wrong)}' $DIR/avg_curve
+awk '{tp += $6; fp += $8} END {print "Precision: ", tp/(tp+fp)}' $DIR/avg_curve
+awk '{tp += $6; fn += $7} END {print "Recall: ", tp/(tp+fn)}' $DIR/avg_curve
+

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+DIR=$1
+TYPE=$2
+
+gnuplot -persist -e "set xlabel 'Training Episodes'; set ylabel 'Average Score'; set key bottom right; set mxtics 5; plot \
+'$DIR/$TYPE/curve0' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve1' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve2' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve3' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve4' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve5' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve6' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve7' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve8' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve9' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve10' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve11' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve12' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve13' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve14' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve15' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve16' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve17' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve18' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve19' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve20' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve21' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve22' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve23' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve24' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve25' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve26' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve27' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve28' using 1:2 with lines notitle, \
+'$DIR/$TYPE/curve29' using 1:2 with lines notitle;"
+
