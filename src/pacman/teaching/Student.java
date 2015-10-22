@@ -18,6 +18,8 @@ public class Student extends RLPacMan {
 	
 	private boolean testMode; // When set, will not explore or learn or take advice
 	private int adviceCount; // During the last episode
+	private int episodeLength; //how many states visited in episode
+	
 	
 	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
@@ -30,6 +32,7 @@ public class Student extends RLPacMan {
 	public void startEpisode(Game game, boolean testMode) {
 		this.testMode = testMode;
 		adviceCount = 0;
+		episodeLength = 0;
 		student.startEpisode(game, testMode);
 		
 		if (!testMode && strategy.inUse()) {
@@ -42,7 +45,7 @@ public class Student extends RLPacMan {
 	public MOVE getMove(Game game, long timeDue) {
 		
 		MOVE choice = student.getMove(game, timeDue);
-		
+		episodeLength++;
 		if (!testMode && strategy.inUse()) {
 			MOVE advice = teacher.getMove(game, timeDue);
 			
@@ -63,7 +66,7 @@ public class Student extends RLPacMan {
 				}				
 			}
 		}
-
+		
 		return choice;
 	}
 	
@@ -86,11 +89,12 @@ public class Student extends RLPacMan {
 		
 		double[] extraData = strategy.episodeData();
 		
-		double[] data = new double[extraData.length+1];
+		double[] data = new double[extraData.length+2];
 		data[0] = adviceCount;
+		data[1] = episodeLength;
 		
 		for (int d=0; d<extraData.length; d++)
-			data[d+1] = extraData[d];
+			data[d+2] = extraData[d];
 		
 		return data;
 	}

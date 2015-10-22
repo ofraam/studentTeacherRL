@@ -39,11 +39,11 @@ public class Experiments {
 	public static String DIR = "OfraData/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
-	public static int BUDGET = 1000; // Advice budget
-	public static int REPEATS = 30; // Curves to average
-	public static int LENGTH = 25; // Points per curve (100)
+	public static int BUDGET = 1000; // Advice budget (1000)
+	public static int REPEATS = 3; // Curves to average (30)
+	public static int LENGTH = 10; // Points per curve (100)
 	public static int TEST = 30; // Test episodes per point (30)
-	public static int TRAIN = 20; // Train episodes per point
+	public static int TRAIN = 50; // Train episodes per point
 
 	public static Random rng = new Random();
 	public static StandardGhosts ghosts = new StandardGhosts();
@@ -55,7 +55,11 @@ public class Experiments {
 
 
 //		watch(create("advise100"));
-		train("cstuunc1", 0, "student");
+//		rng = new Random(111);
+//		train("cstuunc2", 0, "student");
+//		rng = new Random(111);
+//		train("correct200", 0, "teacher");
+		plotGapsWatch();
 	}
 
 	/** Set up a learner. */
@@ -174,12 +178,14 @@ public class Experiments {
 				double[] data = new double[initialData.length];
 				
 				for (int y=0; y<TRAIN; y++) {
-					episode(pacman);
+					int epLength = episode(pacman);
 					
 					double[] episodeData = pacman.episodeData();
 					for (int d=0; d<data.length; d++)
 						data[d] += episodeData[d];
+//					data[data.length-1]+=epLength;
 				}
+				
 				
 				double score = evaluate(pacman, TEST);
 				curves[i].set(x, score, data);
@@ -198,15 +204,17 @@ public class Experiments {
 	}
 
 	/** Train a learner for one more episode. */
-	public static void episode(RLPacMan pacman) {
-
+	public static int episode(RLPacMan pacman) {
+		int length = 0;
 		Game game = new Game(rng.nextLong());
 		pacman.startEpisode(game, false);
 
 		while(!game.gameOver()) {
 			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 			pacman.processStep(game);
+			length++;
 		}
+		return length;
 	}
 
 	/** Estimate the current performance of a learner. */
@@ -266,6 +274,51 @@ public class Experiments {
 	}
 	
 	/** Make a plottable file of Q-value gaps over a few episodes. */
+	public static void plotGapsWatch() {
+
+		DataFile file = new DataFile("myData/"+TEACHER+"/teacher/gaps");
+		file.clear();
+
+		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher");
+		int x = 0;
+
+		for (int i=0; i<1; i++) {
+			Game game = new Game(rng.nextLong());
+			pacman.startEpisode(game, true);
+			GameView gv=new GameView(game).showGame();
+			while(!game.gameOver()) {
+
+				double[] qvalues = pacman.getQValues();
+				Arrays.sort(qvalues);
+				double gap = qvalues[qvalues.length-1] - qvalues[0];
+
+				file.append(x+"\t"+gap+"\n");
+				x++;
+
+				game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
+				pacman.processStep(game);
+				try{Thread.sleep(DELAY);}catch(Exception e){}
+				System.out.println(gap);
+				gv.repaint();
+				if (gap>200)
+				{
+					try{
+					System.in.read();
+					}
+					catch(Exception e)
+					{
+						System.out.println("ex");
+					}
+					
+				
+				}
+			}
+		}
+
+		file.close();
+	}
+	
+	/** Make a plottable file of Q-value gaps over a few episodes. */
 	public static void plotGaps() {
 
 		DataFile file = new DataFile("myData/"+TEACHER+"/teacher/gaps");
@@ -293,7 +346,7 @@ public class Experiments {
 		}
 
 		file.close();
-	}
+	}	
 	
 	/** Test SVM choice prediction. */
 	public static void testSVM() {
