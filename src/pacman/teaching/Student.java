@@ -14,13 +14,16 @@ public class Student extends RLPacMan {
 	private BasicRLPacMan student; // Takes advice
 	private TeachingStrategy strategy; // Determines when advice is given
 	
+	private String initiator; //who is initiating advising opportunities 
+	
 	private boolean testMode; // When set, will not explore or learn or take advice
 	private int adviceCount; // During the last episode
 	
-	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy) {
+	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
 		this.student = student;
 		this.strategy = strategy;
+		this.initiator = initiator;
 	}
 
 	/** Prepare for the first move. */
@@ -43,10 +46,21 @@ public class Student extends RLPacMan {
 		if (!testMode && strategy.inUse()) {
 			MOVE advice = teacher.getMove(game, timeDue);
 			
-			if (strategy.giveAdvice(teacher, choice, advice)) {
-				student.setMove(advice);
-				adviceCount++;
-				return advice;
+			if (initiator.equals("teacher"))
+			{
+				if (strategy.giveAdvice(teacher, choice, advice)) {
+					student.setMove(advice);
+					adviceCount++;
+					return advice;
+				}
+			}
+			if (initiator.equals("student"))
+			{
+				if (strategy.giveAdvice(student, choice, advice)) {
+					student.setMove(advice);
+					adviceCount++;
+					return advice;
+				}				
 			}
 		}
 

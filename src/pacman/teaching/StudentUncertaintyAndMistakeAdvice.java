@@ -8,12 +8,12 @@ import pacman.utils.Stats;
 /**
  * Asks for a fixed amount of advice in uncertain states.
  */
-public class StudentUncertaintyAdvice extends TeachingStrategy {
+public class StudentUncertaintyAndMistakeAdvice extends TeachingStrategy {
 	
 	private int left; // Advice to give
 	private int threshold; // Of action uncertainty
 	
-	public StudentUncertaintyAdvice(int t) {
+	public StudentUncertaintyAndMistakeAdvice(int t) {
 		left = Experiments.BUDGET;
 		threshold = t;
 	}
@@ -27,8 +27,14 @@ public class StudentUncertaintyAdvice extends TeachingStrategy {
 		boolean uncertain = (gap < threshold);
 		
 		if (uncertain) {
-			left--;
-			return true;
+			
+			boolean mistake = (_choice != _advice);
+
+			if (mistake) {
+				left--;
+				return true;
+			}			
+
 		}
 		
 		return false;
