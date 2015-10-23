@@ -14,19 +14,25 @@ public class Student extends RLPacMan {
 	private BasicRLPacMan student; // Takes advice
 	private TeachingStrategy strategy; // Determines when advice is given
 	
+	private String initiator; //who is initiating advising opportunities 
+	
 	private boolean testMode; // When set, will not explore or learn or take advice
 	private int adviceCount; // During the last episode
+	private int episodeLength; //how many states visited in episode
 	
-	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy) {
+	
+	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
 		this.student = student;
 		this.strategy = strategy;
+		this.initiator = initiator;
 	}
 
 	/** Prepare for the first move. */
 	public void startEpisode(Game game, boolean testMode) {
 		this.testMode = testMode;
 		adviceCount = 0;
+		episodeLength = 0;
 		student.startEpisode(game, testMode);
 		
 		if (!testMode && strategy.inUse()) {
@@ -39,17 +45,47 @@ public class Student extends RLPacMan {
 	public MOVE getMove(Game game, long timeDue) {
 		
 		MOVE choice = student.getMove(game, timeDue);
-		
+		episodeLength++;
 		if (!testMode && strategy.inUse()) {
 			MOVE advice = teacher.getMove(game, timeDue);
 			
-			if (strategy.giveAdvice(teacher, choice, advice)) {
-				student.setMove(advice);
-				adviceCount++;
-				return advice;
+			if (initiator.equals("teacher"))
+			{
+				if (strategy.giveAdvice(teacher, choice, advice)) {
+					student.setMove(advice);
+					adviceCount++;
+					
+//					try{
+//					System.in.read();
+//					}
+//					catch(Exception e)
+//					{
+//						System.out.println("ex");
+//					}
+					
+					return advice;
+				}
+			}
+			if (initiator.equals("student"))
+			{
+				if (strategy.giveAdvice(student, choice, advice)) {
+					student.setMove(advice);
+					adviceCount++;
+					
+//					try{
+//
+//						System.in.read();
+//					}
+//					catch(Exception e)
+//					{
+//						System.out.println("ex");
+//					}
+					
+					return advice;
+				}				
 			}
 		}
-
+		
 		return choice;
 	}
 	
@@ -72,11 +108,12 @@ public class Student extends RLPacMan {
 		
 		double[] extraData = strategy.episodeData();
 		
-		double[] data = new double[extraData.length+1];
+		double[] data = new double[extraData.length+2];
 		data[0] = adviceCount;
+		data[1] = episodeLength;
 		
 		for (int d=0; d<extraData.length; d++)
-			data[d+1] = extraData[d];
+			data[d+2] = extraData[d];
 		
 		return data;
 	}

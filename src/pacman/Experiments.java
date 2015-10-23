@@ -25,6 +25,9 @@ import pacman.teaching.CorrectImportantMistakes;
 import pacman.teaching.CorrectMistakesRandomly;
 import pacman.teaching.PredictImportantMistakes;
 import pacman.teaching.Student;
+import pacman.teaching.StudentImportanceAndMistakeAdvice;
+import pacman.teaching.StudentUncertaintyAdvice;
+import pacman.teaching.StudentUncertaintyAndMistakeAdvice;
 import pacman.teaching.TeachingStrategy;
 import pacman.utils.DataFile;
 import pacman.utils.LearningCurve;
@@ -36,11 +39,12 @@ public class Experiments {
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 	public static String DIR = "OfraData/"+TEACHER+"/"+STUDENT; // Where to store data
 	
-	public static int BUDGET = 1000; // Advice budget
-	public static int REPEATS = 30; // Curves to average
-	public static int LENGTH = 40; // Points per curve (100)
-	public static int TEST = 30; // Test episodes per point (30)
-	public static int TRAIN = 20; // Train episodes per point
+	
+	public static int BUDGET = 1000; // Advice budget (1000)
+	public static int REPEATS = 3; // Curves to average (30)
+	public static int LENGTH = 10; // Points per curve (100)
+	public static int TEST = 15; // Test episodes per point (30)
+	public static int TRAIN = 50; // Train episodes per point
 
 	public static Random rng = new Random();
 	public static StandardGhosts ghosts = new StandardGhosts();
@@ -50,12 +54,18 @@ public class Experiments {
 	 */
 	public static void main(String[] args) {
 
+
 //		watch(create("advise100"));
-		train("crandom12", 0);
+//		rng = new Random(111);
+//		train("cstuimp150", 0, "student");
+//		rng = new Random(111);
+//		train("correct200", 0, "teacher");
+		watch(create("independent", "teacher"));
+//		plotGapsWatch();
 	}
 
 	/** Set up a learner. */
-	public static RLPacMan create(String learner) {
+	public static RLPacMan create(String learner, String initiator) {
 		
 		FeatureSet teacherProto = TEACHER.startsWith("custom") ? new CustomFeatureSet() : new DepthFeatureSet();
 		FeatureSet studentProto = STUDENT.startsWith("custom") ? new CustomFeatureSet() : new DepthFeatureSet();
@@ -81,21 +91,21 @@ public class Experiments {
 			// Front-load the advice budget
 			if (learner.startsWith("baseline")) {
 				TeachingStrategy strategy = new AdviseAtFirst();
-				return new Student(teacher, student, strategy);
+				return new Student(teacher, student, strategy, initiator);
 			}
 			
 			// Advise in important states
 			if (learner.startsWith("advise")) {
 				int threshold = Integer.parseInt(learner.substring(6));
 				TeachingStrategy strategy = new AdviseImportantStates(threshold);
-				return new Student(teacher, student, strategy);
+				return new Student(teacher, student, strategy, initiator);
 			}
 			
 			// Correct important mistakes
 			if (learner.startsWith("correct")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new CorrectImportantMistakes(threshold);
-				return new Student(teacher, student, strategy);
+				return new Student(teacher, student, strategy, initiator);
 			}
 
 			
@@ -103,21 +113,42 @@ public class Experiments {
 			if (learner.startsWith("predict")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new PredictImportantMistakes(threshold);
-				return new Student(teacher, student, strategy);
+				return new Student(teacher, student, strategy, initiator);
 			}
 			
 			// Advise randomly
 			if (learner.startsWith("random")) {
 				int prob = Integer.parseInt(learner.substring(6));
 				TeachingStrategy strategy = new AdviseRandom(prob);
-				return new Student(teacher, student, strategy);
+				return new Student(teacher, student, strategy, initiator);
 			}
 			
 			// Correct mistakes randomly
 			if (learner.startsWith("crandom")) {
 				int prob = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new CorrectMistakesRandomly(prob);
-				return new Student(teacher, student, strategy);
+				return new Student(teacher, student, strategy, initiator);
+			}
+			
+			//Student initiated advice based on uncertainty (low q-value diff)
+			if (learner.startsWith("stuunc")) {
+				int threshold = Integer.parseInt(learner.substring(6));
+				TeachingStrategy strategy = new StudentUncertaintyAdvice(threshold);
+				return new Student(teacher, student, strategy, initiator);
+			}	
+			
+			//Student initiated advice based on uncertainty (low q-value diff), only use advice if student was wrong
+			if (learner.startsWith("cstuunc")) {
+				int threshold = Integer.parseInt(learner.substring(7));
+				TeachingStrategy strategy = new StudentUncertaintyAndMistakeAdvice(threshold);
+				return new Student(teacher, student, strategy, initiator);
+			}	
+			
+			//Student initiated advice based on importance (high q-value diff), only use advice if student was wrong
+			if (learner.startsWith("cstuimp")) {
+				int threshold = Integer.parseInt(learner.substring(7));
+				TeachingStrategy strategy = new StudentImportanceAndMistakeAdvice(threshold);
+				return new Student(teacher, student, strategy, initiator);
 			}
 		}
 		
@@ -125,7 +156,7 @@ public class Experiments {
 	}
 	
 	/** Generate learning curves. */
-	public static void train(String learner, int start) {
+	public static void train(String learner, int start, String initiator) {
 		
 		// Make sure directory exists
 		File file = new File(DIR+"/"+learner);
@@ -144,7 +175,7 @@ public class Experiments {
 			curves[i] = new LearningCurve(LENGTH+1, TRAIN);
 			
 			System.out.println("Training "+DIR+"/"+learner+" "+i+"...");
-			RLPacMan pacman = create(learner);
+			RLPacMan pacman = create(learner,initiator);
 			
 			// First point
 			double[] initialData = pacman.episodeData();
@@ -156,12 +187,15 @@ public class Experiments {
 				double[] data = new double[initialData.length];
 				
 				for (int y=0; y<TRAIN; y++) {
-					episode(pacman);
+					//int epLength = episode(pacman);
+					int epLength = episode(pacman);
 					
 					double[] episodeData = pacman.episodeData();
 					for (int d=0; d<data.length; d++)
 						data[d] += episodeData[d];
+//					data[data.length-1]+=epLength;
 				}
+				
 				
 				double score = evaluate(pacman, TEST);
 				curves[i].set(x, score, data);
@@ -180,15 +214,35 @@ public class Experiments {
 	}
 
 	/** Train a learner for one more episode. */
-	public static void episode(RLPacMan pacman) {
-
+	public static int episode(RLPacMan pacman) {
+		int length = 0;
 		Game game = new Game(rng.nextLong());
 		pacman.startEpisode(game, false);
 
 		while(!game.gameOver()) {
 			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 			pacman.processStep(game);
+			length++;
 		}
+		return length;
+	}
+	
+	/** Train a learner for one more episode. */
+	public static int episodeWatch(RLPacMan pacman) {
+		int length = 0;
+		Game game = new Game(rng.nextLong());
+		pacman.startEpisode(game, false);
+		GameView gv=new GameView(game).showGame();
+
+		while(!game.gameOver()) {
+			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
+			pacman.processStep(game);
+			
+			gv.repaint();
+			
+			length++;
+		}
+		return length;
 	}
 
 	/** Estimate the current performance of a learner. */
@@ -233,7 +287,7 @@ public class Experiments {
 		double[] scores = new double[REPEATS];
 		
 		for (int i=0; i<REPEATS; i++) {
-			BasicRLPacMan pacman = (BasicRLPacMan)create("independent");
+			BasicRLPacMan pacman = (BasicRLPacMan)create("independent", "teacher");
 			pacman.loadPolicy(DIR+"/independent/policy"+i);
 			scores[i] = evaluate(pacman, 500);
 			System.out.println(DIR+"/independent/policy"+i+": "+scores[i]);
@@ -248,12 +302,57 @@ public class Experiments {
 	}
 	
 	/** Make a plottable file of Q-value gaps over a few episodes. */
+	public static void plotGapsWatch() {
+
+		DataFile file = new DataFile("myData/"+TEACHER+"/teacher/gaps");
+		file.clear();
+
+		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher");
+		int x = 0;
+
+		for (int i=0; i<1; i++) {
+			Game game = new Game(rng.nextLong());
+			pacman.startEpisode(game, true);
+			GameView gv=new GameView(game).showGame();
+			while(!game.gameOver()) {
+
+				double[] qvalues = pacman.getQValues();
+				Arrays.sort(qvalues);
+				double gap = qvalues[qvalues.length-1] - qvalues[0];
+
+				file.append(x+"\t"+gap+"\n");
+				x++;
+
+				game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
+				pacman.processStep(game);
+				try{Thread.sleep(DELAY);}catch(Exception e){}
+				System.out.println(gap);
+				gv.repaint();
+				if (gap>200)
+				{
+					try{
+					System.in.read();
+					}
+					catch(Exception e)
+					{
+						System.out.println("ex");
+					}
+					
+				
+				}
+			}
+		}
+
+		file.close();
+	}
+	
+	/** Make a plottable file of Q-value gaps over a few episodes. */
 	public static void plotGaps() {
 
 		DataFile file = new DataFile("myData/"+TEACHER+"/teacher/gaps");
 		file.clear();
 
-		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher");
+		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher");
 		int x = 0;
 
 		for (int i=0; i<1; i++) {
@@ -275,13 +374,13 @@ public class Experiments {
 		}
 
 		file.close();
-	}
+	}	
 	
 	/** Test SVM choice prediction. */
 	public static void testSVM() {
 			
-		BasicRLPacMan student = (BasicRLPacMan)create("independent");
-		BasicRLPacMan teacher = (BasicRLPacMan)create("teacher");
+		BasicRLPacMan student = (BasicRLPacMan)create("independent", "teacher");
+		BasicRLPacMan teacher = (BasicRLPacMan)create("teacher", "teacher");
 		PredictImportantMistakes strategy = new PredictImportantMistakes(0);
 		
 		for (int i=0; i<300; i++) {

@@ -6,12 +6,12 @@ import pacman.game.Constants.MOVE;
 import pacman.utils.Stats;
 
 /**
- * Gives a fixed amount of advice in important states.
+ * Asks for a fixed amount of advice in uncertain states.
  */
 public class StudentUncertaintyAdvice extends TeachingStrategy {
 	
 	private int left; // Advice to give
-	private int threshold; // Of action importance
+	private int threshold; // Of action uncertainty
 	
 	public StudentUncertaintyAdvice(int t) {
 		left = Experiments.BUDGET;
@@ -19,13 +19,14 @@ public class StudentUncertaintyAdvice extends TeachingStrategy {
 	}
 
 	/** When the state has widely varying Q-values. */
-	public boolean giveAdvice(BasicRLPacMan teacher, MOVE _choice, MOVE _advice) {
+	public boolean giveAdvice(BasicRLPacMan student, MOVE _choice, MOVE _advice) {
 		
-		double[] qvalues = teacher.getQValues();
+		double[] qvalues = student.getQValues();
 		double gap = Stats.max(qvalues) - Stats.min(qvalues);
-		boolean important = (gap > threshold);
+//		System.out.println(gap);
+		boolean uncertain = (gap < threshold);
 		
-		if (important) {
+		if (uncertain) {
 			left--;
 			return true;
 		}
