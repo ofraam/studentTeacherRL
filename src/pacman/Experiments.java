@@ -25,6 +25,7 @@ import pacman.teaching.CorrectImportantMistakes;
 import pacman.teaching.CorrectMistakesRandomly;
 import pacman.teaching.PredictImportantMistakes;
 import pacman.teaching.Student;
+import pacman.teaching.StudentImportanceAndMistakeAdvice;
 import pacman.teaching.StudentUncertaintyAdvice;
 import pacman.teaching.StudentUncertaintyAndMistakeAdvice;
 import pacman.teaching.TeachingStrategy;
@@ -42,7 +43,7 @@ public class Experiments {
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int REPEATS = 3; // Curves to average (30)
 	public static int LENGTH = 10; // Points per curve (100)
-	public static int TEST = 30; // Test episodes per point (30)
+	public static int TEST = 15; // Test episodes per point (30)
 	public static int TRAIN = 50; // Train episodes per point
 
 	public static Random rng = new Random();
@@ -56,10 +57,11 @@ public class Experiments {
 
 //		watch(create("advise100"));
 //		rng = new Random(111);
-//		train("cstuunc2", 0, "student");
+//		train("cstuimp150", 0, "student");
 //		rng = new Random(111);
 //		train("correct200", 0, "teacher");
-		plotGapsWatch();
+		watch(create("independent", "teacher"));
+//		plotGapsWatch();
 	}
 
 	/** Set up a learner. */
@@ -140,7 +142,14 @@ public class Experiments {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new StudentUncertaintyAndMistakeAdvice(threshold);
 				return new Student(teacher, student, strategy, initiator);
-			}				
+			}	
+			
+			//Student initiated advice based on importance (high q-value diff), only use advice if student was wrong
+			if (learner.startsWith("cstuimp")) {
+				int threshold = Integer.parseInt(learner.substring(7));
+				TeachingStrategy strategy = new StudentImportanceAndMistakeAdvice(threshold);
+				return new Student(teacher, student, strategy, initiator);
+			}
 		}
 		
 		return null;
@@ -178,6 +187,7 @@ public class Experiments {
 				double[] data = new double[initialData.length];
 				
 				for (int y=0; y<TRAIN; y++) {
+					//int epLength = episode(pacman);
 					int epLength = episode(pacman);
 					
 					double[] episodeData = pacman.episodeData();
@@ -212,6 +222,24 @@ public class Experiments {
 		while(!game.gameOver()) {
 			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 			pacman.processStep(game);
+			length++;
+		}
+		return length;
+	}
+	
+	/** Train a learner for one more episode. */
+	public static int episodeWatch(RLPacMan pacman) {
+		int length = 0;
+		Game game = new Game(rng.nextLong());
+		pacman.startEpisode(game, false);
+		GameView gv=new GameView(game).showGame();
+
+		while(!game.gameOver()) {
+			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
+			pacman.processStep(game);
+			
+			gv.repaint();
+			
 			length++;
 		}
 		return length;

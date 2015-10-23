@@ -54,6 +54,15 @@ public class Student extends RLPacMan {
 				if (strategy.giveAdvice(teacher, choice, advice)) {
 					student.setMove(advice);
 					adviceCount++;
+					
+//					try{
+//					System.in.read();
+//					}
+//					catch(Exception e)
+//					{
+//						System.out.println("ex");
+//					}
+					
 					return advice;
 				}
 			}
@@ -62,6 +71,16 @@ public class Student extends RLPacMan {
 				if (strategy.giveAdvice(student, choice, advice)) {
 					student.setMove(advice);
 					adviceCount++;
+					
+//					try{
+//
+//						System.in.read();
+//					}
+//					catch(Exception e)
+//					{
+//						System.out.println("ex");
+//					}
+					
 					return advice;
 				}				
 			}
