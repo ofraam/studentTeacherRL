@@ -21,6 +21,8 @@ import pacman.game.Constants.MOVE;
 import pacman.teaching.AdviseAtFirst;
 import pacman.teaching.AdviseImportantStates;
 import pacman.teaching.AdviseRandom;
+import pacman.teaching.AskAttentionBasedOnCertainty;
+import pacman.teaching.AttentionStrategy;
 import pacman.teaching.CorrectImportantMistakes;
 import pacman.teaching.CorrectMistakesRandomly;
 import pacman.teaching.PredictImportantMistakes;
@@ -41,6 +43,7 @@ public class Experiments {
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
+	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 3; // Curves to average (30)
 	public static int LENGTH = 10; // Points per curve (100)
 	public static int TEST = 15; // Test episodes per point (30)
@@ -59,8 +62,8 @@ public class Experiments {
 //		rng = new Random(111);
 //		train("cstuimp150", 0, "student");
 //		rng = new Random(111);
-//		train("correct200", 0, "teacher");
-		watch(create("independent", "teacher"));
+		train("askcstuunc2", 0, "teacher");
+//		watch(create("independent", "teacher"));
 //		plotGapsWatch();
 	}
 
@@ -150,6 +153,14 @@ public class Experiments {
 				TeachingStrategy strategy = new StudentImportanceAndMistakeAdvice(threshold);
 				return new Student(teacher, student, strategy, initiator);
 			}
+			
+			//Student initiated asking, but teacher decides whether to advise
+			if (learner.startsWith("askcstuunc")) {
+				int threshold = Integer.parseInt(learner.substring(10));
+				TeachingStrategy strategy = new CorrectImportantMistakes(200);
+				AttentionStrategy attent = new AskAttentionBasedOnCertainty(threshold);
+				return new Student(teacher, student, strategy, initiator, attent);
+			}	
 		}
 		
 		return null;

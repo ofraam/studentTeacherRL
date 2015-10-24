@@ -15,17 +15,27 @@ public class Student extends RLPacMan {
 	private TeachingStrategy strategy; // Determines when advice is given
 	
 	private String initiator; //who is initiating advising opportunities 
+	private AttentionStrategy attention = null; //whether the student first needs to get teacher's attention
 	
 	private boolean testMode; // When set, will not explore or learn or take advice
 	private int adviceCount; // During the last episode
 	private int episodeLength; //how many states visited in episode
 	
+	private boolean initiated = false;
 	
 	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
 		this.student = student;
 		this.strategy = strategy;
 		this.initiator = initiator;
+	}
+	
+	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, AttentionStrategy attention) {
+		this.teacher = teacher;
+		this.student = student;
+		this.strategy = strategy;
+		this.initiator = initiator;
+		this.attention = attention;
 	}
 
 	/** Prepare for the first move. */
@@ -39,6 +49,10 @@ public class Student extends RLPacMan {
 			strategy.startEpisode();
 			teacher.startEpisode(game, true);
 		}
+		if (this.attention!=null)
+		{
+			this.attention.startEpisode();
+		}
 	}
 	
 	/** Choose a move, possibly with advice. */
@@ -46,12 +60,21 @@ public class Student extends RLPacMan {
 		
 		MOVE choice = student.getMove(game, timeDue);
 		episodeLength++;
-		if (!testMode && strategy.inUse()) {
+		boolean ask = true;
+		if (this.attention!=null)
+		{
+			if (initiated)
+				ask = true;
+			else
+				ask = this.attention.askForAdvice(student);
+		}
+		if (!testMode && strategy.inUse() & ask) {
 			MOVE advice = teacher.getMove(game, timeDue);
 			
 			if (initiator.equals("teacher"))
 			{
 				if (strategy.giveAdvice(teacher, choice, advice)) {
+					this.initiated = true;
 					student.setMove(advice);
 					adviceCount++;
 					
@@ -65,6 +88,8 @@ public class Student extends RLPacMan {
 					
 					return advice;
 				}
+				else
+					this.initiated = false;
 			}
 			if (initiator.equals("student"))
 			{
