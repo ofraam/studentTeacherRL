@@ -1,5 +1,7 @@
 package pacman.entries.pacman;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import pacman.game.Game;
@@ -16,6 +18,7 @@ public class QPacMan extends BasicRLPacMan {
 
 	private MOVE[] actions; // Actions possible in the current state
 	private double[] qvalues; // Q-values for actions in the current state
+	private Map<MOVE, Double> qvaluesMap; // mapping from actions to q-values
 	private FeatureSet[] features; // Features for actions in the current state
 	
 	private int lastScore; // Last known game score
@@ -91,8 +94,15 @@ public class QPacMan extends BasicRLPacMan {
 			features[i] = prototype.extract(game, actions[i]);
 		
 		qvalues = new double[actions.length];
+		
+		qvaluesMap = new HashMap<MOVE, Double>() ;
+		
 		for (int i=0; i<actions.length; i++)
-			qvalues[i] = Qfunction.evaluate(features[i]);
+		{
+			double value = Qfunction.evaluate(features[i]);
+			qvalues[i] = value;
+			qvaluesMap.put(actions[i],value);
+		}
 
 		bestActionIndex = 0;
 		for (int i=0; i<actions.length; i++)
@@ -114,6 +124,11 @@ public class QPacMan extends BasicRLPacMan {
 	/** Get the current Q-value array. */
 	public double[] getQValues() {
 		return qvalues;
+	}
+	
+	/** Get the current Q-value map. */
+	public Map<MOVE,Double> getQValuesDict() {
+		return qvaluesMap;
 	}
 	
 	/** Get the current features for an action. */

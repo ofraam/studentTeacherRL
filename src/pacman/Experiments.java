@@ -24,6 +24,7 @@ import pacman.teaching.AdviseRandom;
 import pacman.teaching.AskAttentionBasedOnCertainty;
 import pacman.teaching.AttentionStrategy;
 import pacman.teaching.CorrectImportantMistakes;
+import pacman.teaching.CorrectImportantMistakesDiffStudent;
 import pacman.teaching.CorrectMistakesRandomly;
 import pacman.teaching.PredictImportantMistakes;
 import pacman.teaching.Student;
@@ -44,10 +45,10 @@ public class Experiments {
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
-	public static int REPEATS = 3; // Curves to average (30)
-	public static int LENGTH = 10; // Points per curve (100)
-	public static int TEST = 15; // Test episodes per point (30)
-	public static int TRAIN = 50; // Train episodes per point
+	public static int REPEATS = 30; // Curves to average (30)
+	public static int LENGTH = 100; // Points per curve (100)
+	public static int TEST = 30; // Test episodes per point (30)
+	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
 	public static StandardGhosts ghosts = new StandardGhosts();
@@ -57,12 +58,13 @@ public class Experiments {
 	 */
 	public static void main(String[] args) {
 
-
+		System.out.println("starting");
 //		watch(create("advise100"));
 //		rng = new Random(111);
 //		train("cstuimp150", 0, "student");
 //		rng = new Random(111);
-		train("askcstuunc2", 0, "teacher");
+//		train("askcstuunc2", 0, "teacher");
+		train("dcorrect200",0,"teacher");
 //		watch(create("independent", "teacher"));
 //		plotGapsWatch();
 	}
@@ -108,6 +110,13 @@ public class Experiments {
 			if (learner.startsWith("correct")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new CorrectImportantMistakes(threshold);
+				return new Student(teacher, student, strategy, initiator);
+			}
+			
+			// Correct important mistakes, based on diff between teacher and student action q-values
+			if (learner.startsWith("dcorrect")) {
+				int threshold = Integer.parseInt(learner.substring(8));
+				TeachingStrategy strategy = new CorrectImportantMistakesDiffStudent(threshold);
 				return new Student(teacher, student, strategy, initiator);
 			}
 
