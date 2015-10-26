@@ -11,7 +11,7 @@ import pacman.utils.Stats;
 public class StudentImportanceAndMistakeAdvice extends TeachingStrategy {
 	
 	private int left; // Advice to give
-	private int threshold; // Of action uncertainty
+	private int threshold; // Of state importantce
 	
 	public StudentImportanceAndMistakeAdvice(int t) {
 		left = Experiments.BUDGET;
