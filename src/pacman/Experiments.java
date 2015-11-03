@@ -29,6 +29,7 @@ import pacman.teaching.CorrectImportantMistakesDiffStudent;
 import pacman.teaching.CorrectMistakesRandomly;
 import pacman.teaching.PredictImportantMistakes;
 import pacman.teaching.Student;
+import pacman.teaching.StudentAvgUncertaintyAndMistakeAdvice;
 import pacman.teaching.StudentImportanceAndMistakeAdvice;
 import pacman.teaching.StudentUncertaintyAdvice;
 import pacman.teaching.StudentUncertaintyAndMistakeAdvice;
@@ -65,7 +66,7 @@ public class Experiments {
 //		train("cstuimp150", 0, "student");
 //		rng = new Random(111);
 //		train("askcstuunc2", 0, "teacher");
-		train("attcorrect80",0,"teacher");
+		train("avgcstuunc",0,"student");
 //		watch(create("independent", "teacher"));
 //		plotGapsWatch();
 	}
@@ -163,6 +164,12 @@ public class Experiments {
 				TeachingStrategy strategy = new StudentUncertaintyAndMistakeAdvice(threshold);
 				return new Student(teacher, student, strategy, initiator);
 			}	
+			
+			//Student initiated advice based on uncertainty (lower q-value diff than average), only use advice if student was wrong
+			if (learner.startsWith("avgcstuunc")) {
+				TeachingStrategy strategy = new StudentAvgUncertaintyAndMistakeAdvice();
+				return new Student(teacher, student, strategy, initiator);
+			}
 			
 			//Student initiated advice based on importance (high q-value diff), only use advice if student was wrong
 			if (learner.startsWith("cstuimp")) {

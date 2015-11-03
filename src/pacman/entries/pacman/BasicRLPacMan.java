@@ -15,4 +15,5 @@ public abstract class BasicRLPacMan extends RLPacMan {
 	public abstract Map<MOVE,Double> getQValuesDict();
 	public abstract FeatureSet getFeatures(MOVE move);
 	public abstract void loadPolicy(String filename);
+	public abstract double getAvgQdiff();
 }

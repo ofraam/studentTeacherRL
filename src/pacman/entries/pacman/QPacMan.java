@@ -1,5 +1,7 @@
 package pacman.entries.pacman;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -30,11 +32,15 @@ public class QPacMan extends BasicRLPacMan {
 	private double ALPHA = 0.001; // Learning rate
 	private double GAMMA = 0.999; // Discount rate
 	private double LAMBDA = 0.7; // Backup weighting
+	
+	private double[] qdiffs; 
+	private int qdiffsIndex = 0;
 
 	/** Initialize the policy. */
 	public QPacMan(FeatureSet proto) {
 		prototype = proto;
 		Qfunction = new QFunction(prototype);
+		qdiffs= new double[100];
 	}
 
 	/** Prepare for the first move. */
@@ -103,17 +109,41 @@ public class QPacMan extends BasicRLPacMan {
 			qvalues[i] = value;
 			qvaluesMap.put(actions[i],value);
 		}
-
+		
+		int worstActionIndex = 0;
 		bestActionIndex = 0;
 		for (int i=0; i<actions.length; i++)
+		{
 			if (qvalues[i] > qvalues[bestActionIndex])
 				bestActionIndex = i;
+			if (qvalues[i]<qvalues[worstActionIndex])
+				worstActionIndex=i;
+		}
+		this.updateQdiffs(qvalues[bestActionIndex]-qvalues[worstActionIndex]);
 		
 		// Explore or exploit
 		if (!testMode && rng.nextDouble() < EPSILON)
 			lastActionIndex = rng.nextInt(actions.length);
 		else
 			lastActionIndex = bestActionIndex;
+	}
+	
+	private void updateQdiffs(double diff)
+	{
+		qdiffs[qdiffsIndex]=diff;
+		qdiffsIndex++;
+		if (qdiffsIndex>qdiffs.length-1)
+			qdiffsIndex = 0;
+	}
+	
+	public double getAvgQdiff()
+	{
+		double sum = 0;
+		for (int i =0;i<qdiffs.length;i++)
+		{
+			sum = sum+qdiffs[i];
+		}
+		return sum/qdiffs.length;
 	}
 	
 	/** Get the current possible moves. */

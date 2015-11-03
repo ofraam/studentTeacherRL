@@ -33,6 +33,9 @@ public class SarsaPacMan extends BasicRLPacMan {
 	private double ALPHA = 0.001; // Learning rate
 	private double GAMMA = 0.999; // Discount rate
 	private double LAMBDA = 0.9; // Backup weighting
+	
+	private double[] qdiffs; 
+	private int qdiffsIndex = 0;
 
 	/** Initialize the policy. */
 	public SarsaPacMan(FeatureSet proto) {
@@ -118,10 +121,16 @@ public class SarsaPacMan extends BasicRLPacMan {
 			qvaluesMap.put(actions[i],value);
 		}
 
+		int worstActionIndex = 0;
 		bestActionIndex = 0;
 		for (int i=0; i<actions.length; i++)
+		{
 			if (qvalues[i] > qvalues[bestActionIndex])
 				bestActionIndex = i;
+			if (qvalues[i]<qvalues[worstActionIndex])
+				worstActionIndex=i;
+		}
+		this.updateQdiffs(qvalues[bestActionIndex]-qvalues[worstActionIndex]);
 
 		// Explore or exploit
 		if (!testMode && rng.nextDouble() < EPSILON)
@@ -130,7 +139,23 @@ public class SarsaPacMan extends BasicRLPacMan {
 			lastActionIndex = bestActionIndex;
 	}
 	
+	private void updateQdiffs(double diff)
+	{
+		qdiffs[qdiffsIndex]=diff;
+		qdiffsIndex++;
+		if (qdiffsIndex>qdiffs.length-1)
+			qdiffsIndex = 0;
+	}
 	
+	public double getAvgQdiff()
+	{
+		double sum = 0;
+		for (int i =0;i<qdiffs.length;i++)
+		{
+			sum = sum+qdiffs[i];
+		}
+		return sum/qdiffs.length;
+	}	
 	
 	/** Get the current possible moves. */
 	public MOVE[] getMoves() {
