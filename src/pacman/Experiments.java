@@ -60,13 +60,16 @@ public class Experiments {
 	 */
 	public static void main(String[] args) {
 
+		String student = args[0];
+		String mode = args[1];
 		System.out.println("starting");
+		train(student,0,mode);
 //		watch(create("advise100"));
 //		rng = new Random(111);
 //		train("cstuimp150", 0, "student");
 //		rng = new Random(111);
 //		train("askcstuunc2", 0, "teacher");
-		train("avgcstuunc",0,"student");
+//		train("avgcstuunc",0,"student");
 //		watch(create("independent", "teacher"));
 //		plotGapsWatch();
 	}

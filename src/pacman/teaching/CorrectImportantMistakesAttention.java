@@ -12,6 +12,7 @@ public class CorrectImportantMistakesAttention extends TeachingStrategy {
 	
 	private int left; // Advice to give
 	private double attention; // Of mistake importance
+	private int threshold = 200;
 		
 	public CorrectImportantMistakesAttention(int t) {
 		left = Experiments.BUDGET;
@@ -26,7 +27,7 @@ public class CorrectImportantMistakesAttention extends TeachingStrategy {
 		
 		double[] qvalues = teacher.getQValues();
 		double gap = Stats.max(qvalues) - Stats.min(qvalues);
-		boolean important = (gap > attention);
+		boolean important = (gap > threshold);
 
 		if (important) {
 		
