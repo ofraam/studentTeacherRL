@@ -120,8 +120,9 @@ public class Experiments {
 			
 			// Correct important mistakes, but only if paying attention
 			if (learner.startsWith("attcorrect")) {
-				int att = Integer.parseInt(learner.substring(10));
-				TeachingStrategy strategy = new CorrectImportantMistakesAttention(att);
+				int att = Integer.parseInt(learner.substring(10,learner.length() - 3));
+				int threshold = Integer.parseInt(learner.substring(learner.length() - 3));
+				TeachingStrategy strategy = new CorrectImportantMistakesAttention(att,threshold);
 				return new Student(teacher, student, strategy, initiator);
 			}
 			

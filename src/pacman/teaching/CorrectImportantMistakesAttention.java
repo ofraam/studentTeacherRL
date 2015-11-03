@@ -14,9 +14,10 @@ public class CorrectImportantMistakesAttention extends TeachingStrategy {
 	private double attention; // Of mistake importance
 	private int threshold = 200;
 		
-	public CorrectImportantMistakesAttention(int t) {
+	public CorrectImportantMistakesAttention(int att, int t) {
 		left = Experiments.BUDGET;
-		attention = t/100.0;
+		attention = att/100.0;
+		threshold = t;
 	}
 
 	/** When the state has widely varying Q-values, and the student doesn't take the advice action. */
