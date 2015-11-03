@@ -1,0 +1,48 @@
+package pacman.teaching;
+
+import pacman.Experiments;
+import pacman.entries.pacman.BasicRLPacMan;
+import pacman.game.Constants.MOVE;
+import pacman.utils.Stats;
+
+/**
+ * Gives a fixed amount of advice in important states where the student makes a mistake.
+ */
+public class CorrectImportantMistakesAttention extends TeachingStrategy {
+	
+	private int left; // Advice to give
+	private double attention; // Of mistake importance
+		
+	public CorrectImportantMistakesAttention(int t) {
+		left = Experiments.BUDGET;
+		attention = t/100.0;
+	}
+
+	/** When the state has widely varying Q-values, and the student doesn't take the advice action. */
+	public boolean giveAdvice(BasicRLPacMan teacher, MOVE choice, MOVE advice) {
+		
+		if (attention<Math.random())
+			return false;
+		
+		double[] qvalues = teacher.getQValues();
+		double gap = Stats.max(qvalues) - Stats.min(qvalues);
+		boolean important = (gap > attention);
+
+		if (important) {
+		
+			boolean mistake = (choice != advice);
+
+			if (mistake) {
+				left--;
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/** Until none left. */
+	public boolean inUse() {
+		return (left > 0);
+	}
+}

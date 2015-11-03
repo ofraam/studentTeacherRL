@@ -24,6 +24,7 @@ import pacman.teaching.AdviseRandom;
 import pacman.teaching.AskAttentionBasedOnCertainty;
 import pacman.teaching.AttentionStrategy;
 import pacman.teaching.CorrectImportantMistakes;
+import pacman.teaching.CorrectImportantMistakesAttention;
 import pacman.teaching.CorrectImportantMistakesDiffStudent;
 import pacman.teaching.CorrectMistakesRandomly;
 import pacman.teaching.PredictImportantMistakes;
@@ -38,8 +39,8 @@ import pacman.utils.Stats;
 
 public class Experiments {
 	
-	public static String TEACHER = "customS"; // Teacher feature set and algorithm
-	public static String STUDENT = "customS"; // Student feature set and algorithm
+	public static String TEACHER = "customQ"; // Teacher feature set and algorithm
+	public static String STUDENT = "customQ"; // Student feature set and algorithm
 	public static String DIR = "OfraData/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
@@ -64,7 +65,7 @@ public class Experiments {
 //		train("cstuimp150", 0, "student");
 //		rng = new Random(111);
 //		train("askcstuunc2", 0, "teacher");
-		train("dcorrect200",0,"teacher");
+		train("attcorrect80",0,"teacher");
 //		watch(create("independent", "teacher"));
 //		plotGapsWatch();
 	}
@@ -110,6 +111,13 @@ public class Experiments {
 			if (learner.startsWith("correct")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new CorrectImportantMistakes(threshold);
+				return new Student(teacher, student, strategy, initiator);
+			}
+			
+			// Correct important mistakes, but only if paying attention
+			if (learner.startsWith("attcorrect")) {
+				int att = Integer.parseInt(learner.substring(10));
+				TeachingStrategy strategy = new CorrectImportantMistakesAttention(att);
 				return new Student(teacher, student, strategy, initiator);
 			}
 			
