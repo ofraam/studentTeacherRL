@@ -1,5 +1,6 @@
 package pacman.entries.pacman;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -144,6 +145,12 @@ public class QPacMan extends BasicRLPacMan {
 			sum = sum+qdiffs[i];
 		}
 		return sum/qdiffs.length;
+	}
+	
+	public double getNthQvalue(int n)
+	{
+		Arrays.sort(qdiffs);
+		return qdiffs[n];
 	}
 	
 	/** Get the current possible moves. */

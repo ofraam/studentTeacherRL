@@ -1,5 +1,6 @@
 package pacman.entries.pacman;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -156,6 +157,12 @@ public class SarsaPacMan extends BasicRLPacMan {
 		}
 		return sum/qdiffs.length;
 	}	
+	
+	public double getNthQvalue(int n)
+	{
+		Arrays.sort(qdiffs);
+		return qdiffs[n];
+	}
 	
 	/** Get the current possible moves. */
 	public MOVE[] getMoves() {
