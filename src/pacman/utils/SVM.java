@@ -24,6 +24,17 @@ public class SVM {
 		return example;
 	}
 	
+	/** An SVM training example showing the preference ranking of actions. */
+	public static String exampleImportance(FeatureSet features, String important) {
+		String example = "";
+		example+=important;
+		for (int i=0; i<features.size(); i++) {
+				example += " "+(i+1)+":"+features.get(i);
+			example += "\n";
+		}
+		return example;
+	}
+	
 	/** Build a predictor using this training data. */
 	public static void train(LinkedList<String> trainData, String trainFile, String modelFile) {
 		
@@ -37,8 +48,15 @@ public class SVM {
 		}
 		
 		file.close();
-		
 		int exitValue = execute("myData/svm/svm_rank_learn -v 0 -c 1000 "+trainFile+" "+modelFile);
+		if (exitValue != 0)
+			System.out.println("Training failed!");
+	}
+	
+	/** Build a predictor using this training data. */
+	public static void trainImportance(LinkedList<String> trainData, String trainFile, String modelFile) {
+		
+		int exitValue = execute("myData/svm/svm_learn -v 0 -c 1000 "+trainFile+" "+modelFile);
 		if (exitValue != 0)
 			System.out.println("Training failed!");
 	}
@@ -62,6 +80,26 @@ public class SVM {
 		file.close();
 		
 		return ranks;
+	}
+	
+	/** Make predictions for this test data. */
+	public static double predictImportance(String query, String testFile, String modelFile, String classifyFile) {
+		
+		DataFile file = new DataFile(testFile);
+		file.clear();
+		file.append(query);
+		file.close();
+		
+		int exitValue = execute("myData/svm/svm_classify -v 0 "+testFile+" "+modelFile+" "+classifyFile);
+		if (exitValue != 0)
+			System.out.println("Classification failed!");
+		
+		double importance;
+		file = new DataFile(classifyFile);
+		importance = Double.parseDouble(file.nextLine());
+		file.close();
+		
+		return importance;
 	}
 	
 	/** Do a system call with no stdin/stdout/stderr for up to 30 seconds. */
