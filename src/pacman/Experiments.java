@@ -42,10 +42,10 @@ public class Experiments {
 	
 	public static String TEACHER = "customQ"; // Teacher feature set and algorithm
 	public static String STUDENT = "customQ"; // Student feature set and algorithm
-	public static String DIR = "OfraData/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "NotDead_budget1000/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
-	public static int BUDGET = 1000; // Advice budget (1000)
+	public static int BUDGET = 10000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 30; // Curves to average (30)
 	public static int LENGTH = 100; // Points per curve (100)
@@ -258,11 +258,13 @@ public class Experiments {
 		Game game = new Game(rng.nextLong());
 		pacman.startEpisode(game, false);
 
-		while(!game.gameOver()) {
+		while(!game.gameOver() & length<15000) { //TODO: note length limitation
 			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 			pacman.processStep(game);
 			length++;
+			
 		}
+		System.out.println(length);
 		return length;
 	}
 	
