@@ -12,21 +12,24 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 	
 	private int left; // Advice to give
 	private int threshold; // Of mistake importance
+	private boolean stateImportant;
 		
 	public CorrectImportantMistakes(int t) {
 		left = Experiments.BUDGET;
 		threshold = t;
+		stateImportant = false;
 	}
 
 	/** When the state has widely varying Q-values, and the student doesn't take the advice action. */
 	public boolean giveAdvice(BasicRLPacMan teacher, MOVE choice, MOVE advice) {
 		
+		stateImportant = false; //reset importance
 		double[] qvalues = teacher.getQValues();
 		double gap = Stats.max(qvalues) - Stats.min(qvalues);
 		boolean important = (gap > threshold);
 
 		if (important) {
-		
+			stateImportant = true;
 			boolean mistake = (choice != advice);
 
 			if (mistake) {
@@ -36,6 +39,11 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 		}
 		
 		return false;
+	}
+	
+	public boolean wasLastQueriedStateImportant()
+	{
+		return stateImportant;
 	}
 	
 	/** Until none left. */

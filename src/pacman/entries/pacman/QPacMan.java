@@ -43,6 +43,11 @@ public class QPacMan extends BasicRLPacMan {
 		Qfunction = new QFunction(prototype);
 		qdiffs= new double[100];
 	}
+	
+	public FeatureSet getPrototype()
+	{
+		return prototype;
+	}
 
 	/** Prepare for the first move. */
 	public void startEpisode(Game game, boolean testMode) {

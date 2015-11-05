@@ -43,6 +43,11 @@ public class SarsaPacMan extends BasicRLPacMan {
 		prototype = proto;
 		Qfunction = new QFunction(prototype);
 	}
+	
+	public FeatureSet getPrototype()
+	{
+		return prototype;
+	}
 
 	/** Prepare for the first move. */
 	public void startEpisode(Game game, boolean testMode) {

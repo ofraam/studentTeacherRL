@@ -17,4 +17,6 @@ public abstract class BasicRLPacMan extends RLPacMan {
 	public abstract void loadPolicy(String filename);
 	public abstract double getAvgQdiff();
 	public abstract double getNthQvalue(int n);
+	public abstract FeatureSet getPrototype();
+	
 }
