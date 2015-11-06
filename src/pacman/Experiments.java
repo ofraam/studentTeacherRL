@@ -17,6 +17,7 @@ import pacman.entries.pacman.RLPacMan;
 import pacman.entries.pacman.SarsaPacMan;
 import pacman.game.Game;
 import pacman.game.GameView;
+import pacman.game.Constants;
 import pacman.game.Constants.MOVE;
 import pacman.teaching.AdviseAtFirst;
 import pacman.teaching.AdviseImportantStates;
@@ -40,12 +41,12 @@ import pacman.utils.Stats;
 
 public class Experiments {
 	
-	public static String TEACHER = "customQ"; // Teacher feature set and algorithm
-	public static String STUDENT = "customQ"; // Student feature set and algorithm
-	public static String DIR = "NotDead_budget1000/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String TEACHER = "customS"; // Teacher feature set and algorithm
+	public static String STUDENT = "customS"; // Student feature set and algorithm
+	public static String DIR = "OfraData/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
-	public static int BUDGET = 10000; // Advice budget (1000)
+	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 30; // Curves to average (30)
 	public static int LENGTH = 100; // Points per curve (100)
@@ -60,10 +61,11 @@ public class Experiments {
 	 */
 	public static void main(String[] args) {
 
-		String student = args[0];
+		String teachingStrategy = args[0];
 		String mode = args[1];
+		
 		System.out.println("starting");
-		train(student,0,mode);
+		train(teachingStrategy,0,mode);
 //		watch(create("advise100"));
 //		rng = new Random(111);
 //		train("cstuimp150", 0, "student");
@@ -72,6 +74,18 @@ public class Experiments {
 //		train("avgcstuunc",0,"student");
 //		watch(create("independent", "teacher"));
 //		plotGapsWatch();
+	}
+	
+	public static void writeConfig(String filename, String initiator)
+	{
+		DataFile file = new DataFile(filename);
+		file.clear();
+		
+		file.append("budget = "+BUDGET+"\n");
+		file.append("pacmanLives = "+ Constants.NUM_LIVES+"\n");
+		file.append("initiator = "+initiator+"\n");
+		
+		file.close();
 	}
 
 	/** Set up a learner. */
@@ -204,6 +218,8 @@ public class Experiments {
 			created = file.mkdir();
 			System.out.println(created);
 		
+		writeConfig(DIR+"/"+learner+"/config.txt", initiator);	
+			
 		// Load old curves
 		LearningCurve[] curves = new LearningCurve[REPEATS];
 		for (int i=0; i<start; i++)
@@ -264,7 +280,7 @@ public class Experiments {
 			length++;
 			
 		}
-		System.out.println(length);
+		
 		return length;
 	}
 	

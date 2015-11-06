@@ -42,6 +42,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	public SarsaPacMan(FeatureSet proto) {
 		prototype = proto;
 		Qfunction = new QFunction(prototype);
+		qdiffs= new double[100];
 	}
 	
 	public FeatureSet getPrototype()
