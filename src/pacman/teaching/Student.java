@@ -1,6 +1,11 @@
 package pacman.teaching;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import pacman.entries.pacman.BasicRLPacMan;
+import pacman.entries.pacman.FeatureSet;
 import pacman.entries.pacman.RLPacMan;
 import pacman.game.Game;
 import pacman.game.Constants.MOVE;
@@ -23,11 +28,15 @@ public class Student extends RLPacMan {
 	
 	private boolean initiated = false;
 	
+	
+	
+	
 	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
 		this.student = student;
 		this.strategy = strategy;
 		this.initiator = initiator;
+		
 	}
 	
 	public Student(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, AttentionStrategy attention) {
@@ -59,6 +68,8 @@ public class Student extends RLPacMan {
 	public MOVE getMove(Game game, long timeDue) {
 		
 		MOVE choice = student.getMove(game, timeDue);
+		Map<MOVE,Double> qvalues = student.getQValuesDict();
+		
 		episodeLength++;
 		boolean ask = true;
 		if (this.attention!=null)
@@ -77,6 +88,7 @@ public class Student extends RLPacMan {
 					this.initiated = true;
 					student.setMove(advice);
 					adviceCount++;
+					student.recordAdvisedState(game,advice);
 					
 //					try{
 //					System.in.read();
@@ -96,6 +108,7 @@ public class Student extends RLPacMan {
 				if (strategy.giveAdvice(student, choice, advice)) {
 					student.setMove(advice);
 					adviceCount++;
+					student.recordAdvisedState(game,advice);
 					
 //					try{
 //
@@ -113,6 +126,8 @@ public class Student extends RLPacMan {
 		
 		return choice;
 	}
+	
+
 	
 	/** Prepare for the next move. */
 	public void processStep(Game game) {

@@ -1,5 +1,6 @@
 package pacman.entries.pacman;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,12 +37,15 @@ public class QPacMan extends BasicRLPacMan {
 	
 	private double[] qdiffs; 
 	private int qdiffsIndex = 0;
+	
+	private HashMap<FeatureSet,ArrayList<FeatureSet>> advisedStates;
 
 	/** Initialize the policy. */
 	public QPacMan(FeatureSet proto) {
 		prototype = proto;
 		Qfunction = new QFunction(prototype);
 		qdiffs= new double[100];
+		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
 	}
 	
 	public FeatureSet getPrototype()
@@ -166,6 +170,26 @@ public class QPacMan extends BasicRLPacMan {
 	/** Get the current Q-value array. */
 	public double[] getQValues() {
 		return qvalues;
+	}
+	
+	public void recordAdvisedState(Game game, MOVE advisedMove)
+	{
+		ArrayList<FeatureSet> otherActions = new ArrayList<FeatureSet>();
+				
+		FeatureSet advisedFeatures = this.getFeatures(advisedMove);
+		
+		if (this.advisedStates.containsKey(advisedFeatures)) //already in history
+			return;
+		
+		for (int i = 0;i<actions.length;i++)
+		{
+			if (actions[i]!=advisedMove)
+			{
+				FeatureSet stateActFeatures = this.getFeatures(actions[i]);
+				otherActions.add(stateActFeatures);
+			}
+		}
+		this.advisedStates.put(advisedFeatures, otherActions);
 	}
 	
 	/** Get the current Q-value map. */

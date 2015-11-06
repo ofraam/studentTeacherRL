@@ -1,5 +1,6 @@
 package pacman.entries.pacman;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,12 +38,17 @@ public class SarsaPacMan extends BasicRLPacMan {
 	
 	private double[] qdiffs; 
 	private int qdiffsIndex = 0;
+	
+	private HashMap<FeatureSet,ArrayList<FeatureSet>> advisedStates;
+	
+	
 
 	/** Initialize the policy. */
 	public SarsaPacMan(FeatureSet proto) {
 		prototype = proto;
 		Qfunction = new QFunction(prototype);
 		qdiffs= new double[100];
+		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
 	}
 	
 	public FeatureSet getPrototype()
@@ -154,6 +160,26 @@ public class SarsaPacMan extends BasicRLPacMan {
 			qdiffsIndex = 0;
 	}
 	
+	public void recordAdvisedState(Game game, MOVE advisedMove)
+	{
+		ArrayList<FeatureSet> otherActions = new ArrayList<FeatureSet>();
+				
+		FeatureSet advisedFeatures = this.getFeatures(advisedMove);
+		
+		if (this.advisedStates.containsKey(advisedFeatures)) //already in history
+			return;
+		
+		for (int i = 0;i<actions.length;i++)
+		{
+			if (actions[i]!=advisedMove)
+			{
+				FeatureSet stateActFeatures = this.getFeatures(actions[i]);
+				otherActions.add(stateActFeatures);
+			}
+		}
+		this.advisedStates.put(advisedFeatures, otherActions);
+	}
+	
 	public double getAvgQdiff()
 	{
 		double sum = 0;
@@ -185,6 +211,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 		return qvaluesMap;
 	}
 	
+		
 	/** Get the current features for an action. */
 	public FeatureSet getFeatures(MOVE move) {
 		int actionIndex = -1;

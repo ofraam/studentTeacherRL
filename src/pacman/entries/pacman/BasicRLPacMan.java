@@ -2,6 +2,7 @@ package pacman.entries.pacman;
 
 import java.util.Map;
 
+import pacman.game.Game;
 import pacman.game.Constants.MOVE;
 
 /**
@@ -18,5 +19,6 @@ public abstract class BasicRLPacMan extends RLPacMan {
 	public abstract double getAvgQdiff();
 	public abstract double getNthQvalue(int n);
 	public abstract FeatureSet getPrototype();
+	public abstract void recordAdvisedState(Game game, MOVE advisedMove);
 	
 }
