@@ -1,5 +1,7 @@
 package pacman.entries.pacman;
 
+import java.awt.AlphaComposite;
+
 import pacman.utils.DataFile;
 
 /**
@@ -43,13 +45,16 @@ public class QFunction {
 		for (int i=0; i<weights.length; i++)
 			weights[i] += (update * features.get(i));
 		bias += update;
+		
 	}
 	
 	/** Gradient-descent weight update - with eligibility traces. */
 	public void updateWeights(double update) {
 		for (int i=0; i<weights.length; i++)
+		{
 			weights[i] += (update * eligibility[i]);
-		bias += (update * ebias);
+		}
+		bias += (update * ebias);		
 	}
 	
 	/** Zero out the eligibility traces. */
@@ -71,6 +76,26 @@ public class QFunction {
 		for (int i=0; i<eligibility.length; i++)
 			eligibility[i] += features.get(i);
 		ebias++;
+	}
+	
+	public void maxUpdate(FeatureSet advisedAction, FeatureSet maxAction, double alpha)
+	{
+		double[] newWeights = new double[weights.length];
+		for (int i =0;i<weights.length;i++)
+		{
+			for (int j=0;j<weights.length;j++)
+			{
+				if (j!=i)
+				{
+					newWeights[i] += alpha * ((maxAction.get(j)-advisedAction.get(j))*(maxAction.get(i)-advisedAction.get(i)));
+				}
+			}
+		}
+		weights = newWeights; 
+//		for (int k = 0;k<weights.length;k++)
+//		{
+//			weights[k]=newWeights[k];
+//		}
 	}
 	
 	/** Save to a file. */

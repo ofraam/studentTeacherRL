@@ -2,9 +2,13 @@ package pacman.entries.pacman;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 
 import pacman.game.Game;
 import pacman.game.Constants.MOVE;
@@ -112,6 +116,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 			else
 				doUpdate = true;
 		}
+		this.maxUpdate();
 	}
 
 	/** Compute predictions for moves in this state. */
@@ -158,6 +163,31 @@ public class SarsaPacMan extends BasicRLPacMan {
 		qdiffsIndex++;
 		if (qdiffsIndex>qdiffs.length-1)
 			qdiffsIndex = 0;
+	}
+	
+	private void maxUpdate()
+	{
+		List<FeatureSet> keys = new ArrayList(this.advisedStates.keySet());
+		Collections.shuffle(keys);
+		for (FeatureSet advisedFeature:keys){
+			ArrayList<FeatureSet> others = this.advisedStates.get(advisedFeature);
+			int maxQindex = 0;
+			double maxQvalue = -Integer.MAX_VALUE;
+			for (int i = 0;i<others.size();i++)
+			{
+				double currQ = Qfunction.evaluate(others.get(i));
+				if (currQ>maxQvalue)
+				{
+					maxQindex=i;
+					maxQvalue = currQ;
+				}
+			}
+			double advisedActQ = Qfunction.evaluate(advisedFeature);
+			if (advisedActQ<maxQindex)//do gradient descent update
+			{
+				Qfunction.maxUpdate(advisedFeature, others.get(maxQindex), ALPHA);
+			}
+		}
 	}
 	
 	public void recordAdvisedState(Game game, MOVE advisedMove)
