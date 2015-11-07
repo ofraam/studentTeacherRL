@@ -41,8 +41,8 @@ import pacman.utils.Stats;
 
 public class Experiments {
 	
-	public static String TEACHER = "customQ"; // Teacher feature set and algorithm
-	public static String STUDENT = "customQ"; // Student feature set and algorithm
+	public static String TEACHER = "customS"; // Teacher feature set and algorithm
+	public static String STUDENT = "customS"; // Student feature set and algorithm
 	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	

@@ -183,7 +183,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 				}
 			}
 			double advisedActQ = Qfunction.evaluate(advisedFeature);
-			if (advisedActQ<maxQindex)//do gradient descent update
+			if (advisedActQ<maxQvalue)//do gradient descent update
 			{
 				Qfunction.maxUpdate(advisedFeature, others.get(maxQindex), ALPHA);
 			}

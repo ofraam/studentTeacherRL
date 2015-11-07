@@ -80,6 +80,11 @@ public class QFunction {
 	
 	public void maxUpdate(FeatureSet advisedAction, FeatureSet maxAction, double alpha)
 	{
+//		System.out.println("---before---");
+//		System.out.println("max action q-value = "+this.evaluate(maxAction));
+//		System.out.println("advised action q-value = "+this.evaluate(advisedAction));
+//		double diff = this.evaluate(maxAction)-this.evaluate(advisedAction);
+//		System.out.println("diff = "+diff);
 		double[] newWeights = new double[weights.length];
 		for (int i =0;i<weights.length;i++)
 		{
@@ -87,11 +92,19 @@ public class QFunction {
 			{
 				if (j!=i)
 				{
-					newWeights[i] += alpha * ((maxAction.get(j)-advisedAction.get(j))*(maxAction.get(i)-advisedAction.get(i)));
+					newWeights[i] += alpha * (weights[j]*((maxAction.get(j)-advisedAction.get(j))*(maxAction.get(i)-advisedAction.get(i))));
 				}
 			}
 		}
 		weights = newWeights; 
+		
+//		System.out.println("---after---");
+//		System.out.println("max action q-value = "+this.evaluate(maxAction));
+//		System.out.println("advised action q-value = "+this.evaluate(advisedAction));
+//		double diffAfter = this.evaluate(maxAction)-this.evaluate(advisedAction);
+//		System.out.println("diffAfter = "+diffAfter);
+//		if (diffAfter>diff)
+//			System.out.println("not good!");
 //		for (int k = 0;k<weights.length;k++)
 //		{
 //			weights[k]=newWeights[k];
