@@ -45,7 +45,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	
 	private HashMap<FeatureSet,ArrayList<FeatureSet>> advisedStates;
 	
-	
+	private String maxUpdateTiming = "atState"; //epidsodeEnd = at end of episode, never = never, atState = when state is encountered
 
 	/** Initialize the policy. */
 	public SarsaPacMan(FeatureSet proto) {
@@ -75,7 +75,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 		doUpdate = false;
 		delta1 = 0;
 		delta2 = 0;
-		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
+//		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
 		evaluateMoves(game);
 	}
 
@@ -92,6 +92,36 @@ public class SarsaPacMan extends BasicRLPacMan {
 				lastActionIndex = i;
 	}
 
+	private void checkMaxUpdateState(Game game)
+	{
+		for (int i = 0;i<actions.length;i++)
+		{
+			FeatureSet currFeatures = prototype.extract(game, actions[i]);
+			if (this.advisedStates.containsKey(currFeatures))
+			{
+				FeatureSet maxFeatures = this.getMaxQfeatures();
+				Qfunction.maxUpdate(currFeatures, maxFeatures, ALPHA);
+			}
+		}
+	}
+	
+	private FeatureSet getMaxQfeatures()
+	{
+		double maxQ = -Integer.MAX_VALUE;
+		FeatureSet maxQfeatures = null;
+		for (int i = 0;i<actions.length;i++)
+		{
+			FeatureSet stateActFeatures = this.getFeatures(actions[i]);
+			double currQ = Qfunction.evaluate(stateActFeatures);
+			if (currQ>maxQ)
+			{
+				maxQ = currQ;
+				maxQfeatures = stateActFeatures;
+			}
+		}
+		return maxQfeatures;
+	}
+	
 	/** Learn if appropriate, and prepare for the next move. */
 	public void processStep(Game game) {
 		
@@ -100,19 +130,30 @@ public class SarsaPacMan extends BasicRLPacMan {
 			delta2 = (GAMMA * qvalues[lastActionIndex]);
 			Qfunction.updateWeights(ALPHA*(delta1+delta2));
 //			this.maxUpdate();
+	
 		}
 		
 		// Eligibility traces
 		Qfunction.decayTraces(GAMMA*LAMBDA);
 		Qfunction.addTraces(features[lastActionIndex]);
+		
 
+		
 		// Q-value correction
 		double reward = game.getScore() - lastScore;	
 		lastScore = game.getScore();
 		delta1 = reward - qvalues[lastActionIndex];
 		
 		if (!game.gameOver())
+		{
 			evaluateMoves(game);
+			if (this.maxUpdateTiming=="atState" & !testMode)
+			{
+				this.checkMaxUpdateState(game);
+			}
+		}
+		
+
 		
 		// Gradient descent update
 		if (!testMode) {
@@ -121,29 +162,18 @@ public class SarsaPacMan extends BasicRLPacMan {
 			if (game.gameOver())
 			{
 				Qfunction.updateWeights(ALPHA*delta1);
-				this.maxUpdate();
-//				this.maxUpdate();
+//				if (this.maxUpdateTiming=="atState")
+//				{
+//					this.checkMaxUpdateState(game);
+//				}
+				if (this.maxUpdateTiming=="epidsodeEnd")
+					this.maxUpdate();
 			}
 			
 			// Otherwise delayed (for potential advice)
 			else
 				doUpdate = true;
-			if (this.advisedStates.size()>0)
-			{
-//				System.out.println("------weights before max update--------");
-//				System.out.println("bias = "+Qfunction.getBias());
-//				double[] currWeights = Qfunction.getWeights();
-//				for (int i = 0;i<currWeights.length;i++)
-//					System.out.println("weights["+currWeights[i]+"]");
-//				System.out.println("------end weights before max update--------");
-//				this.maxUpdate();
-//				System.out.println("------weights after max update--------");
-//				System.out.println("bias = "+Qfunction.getBias());
-//				currWeights = Qfunction.getWeights();
-//				for (int i = 0;i<currWeights.length;i++)
-//					System.out.println("weights["+currWeights[i]+"]");
-//				System.out.println("------end weights after max update--------");
-			}
+
 		}
 		
 	}
@@ -234,18 +264,28 @@ public class SarsaPacMan extends BasicRLPacMan {
 		if (this.advisedStates.containsKey(advisedFeatures)) //already in history
 			return;
 		
+		double maxQ = -Integer.MAX_VALUE;
+		FeatureSet maxQfeatures = null;
 		for (int i = 0;i<actions.length;i++)
 		{
 			if (actions[i]!=advisedMove)
 			{
 				FeatureSet stateActFeatures = this.getFeatures(actions[i]);
 				otherActions.add(stateActFeatures);
+				double currQ = Qfunction.evaluate(stateActFeatures);
+				if (currQ>maxQ)
+				{
+					maxQ = currQ;
+					maxQfeatures = stateActFeatures;
+				}
 			}
 		}
-		if (this.advisedStates.containsKey(advisedFeatures))
-			System.out.println("already there");
-		else
+		if (!this.advisedStates.containsKey(advisedFeatures))
 			this.advisedStates.put(advisedFeatures, otherActions);
+		if (this.maxUpdateTiming=="atState")
+		{
+			Qfunction.maxUpdate(advisedFeatures, maxQfeatures, ALPHA);
+		}
 	}
 	
 	public double getAvgQdiff()
