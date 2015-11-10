@@ -65,9 +65,17 @@ public class SarsaPacMan extends BasicRLPacMan {
 		this.testMode = testMode;
 		lastScore = 0;
 		Qfunction.clearTraces();
+//		if (testMode)
+//		{
+//			System.out.println("bias = "+Qfunction.getBias());
+//			double[] currWeights = Qfunction.getWeights();
+//			for (int i = 0;i<currWeights.length;i++)
+//				System.out.println("weights["+currWeights[i]+"]");
+//		}
 		doUpdate = false;
 		delta1 = 0;
 		delta2 = 0;
+		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
 		evaluateMoves(game);
 	}
 
@@ -91,6 +99,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 		if (doUpdate) {
 			delta2 = (GAMMA * qvalues[lastActionIndex]);
 			Qfunction.updateWeights(ALPHA*(delta1+delta2));
+//			this.maxUpdate();
 		}
 		
 		// Eligibility traces
@@ -110,13 +119,33 @@ public class SarsaPacMan extends BasicRLPacMan {
 			
 			// Right away if game is over
 			if (game.gameOver())
+			{
 				Qfunction.updateWeights(ALPHA*delta1);
+				this.maxUpdate();
+//				this.maxUpdate();
+			}
 			
 			// Otherwise delayed (for potential advice)
 			else
 				doUpdate = true;
+			if (this.advisedStates.size()>0)
+			{
+//				System.out.println("------weights before max update--------");
+//				System.out.println("bias = "+Qfunction.getBias());
+//				double[] currWeights = Qfunction.getWeights();
+//				for (int i = 0;i<currWeights.length;i++)
+//					System.out.println("weights["+currWeights[i]+"]");
+//				System.out.println("------end weights before max update--------");
+//				this.maxUpdate();
+//				System.out.println("------weights after max update--------");
+//				System.out.println("bias = "+Qfunction.getBias());
+//				currWeights = Qfunction.getWeights();
+//				for (int i = 0;i<currWeights.length;i++)
+//					System.out.println("weights["+currWeights[i]+"]");
+//				System.out.println("------end weights after max update--------");
+			}
 		}
-		this.maxUpdate();
+		
 	}
 
 	/** Compute predictions for moves in this state. */
@@ -187,8 +216,14 @@ public class SarsaPacMan extends BasicRLPacMan {
 			{
 				Qfunction.maxUpdate(advisedFeature, others.get(maxQindex), ALPHA);
 			}
+			else
+			{
+				this.advisedStates.remove(advisedFeature);
+			}
 		}
 	}
+	
+	
 	
 	public void recordAdvisedState(Game game, MOVE advisedMove)
 	{
@@ -207,7 +242,10 @@ public class SarsaPacMan extends BasicRLPacMan {
 				otherActions.add(stateActFeatures);
 			}
 		}
-		this.advisedStates.put(advisedFeatures, otherActions);
+		if (this.advisedStates.containsKey(advisedFeatures))
+			System.out.println("already there");
+		else
+			this.advisedStates.put(advisedFeatures, otherActions);
 	}
 	
 	public double getAvgQdiff()

@@ -1,6 +1,8 @@
 package pacman.entries.pacman;
 
 import java.awt.AlphaComposite;
+import java.util.Collection;
+import java.util.Collections;
 
 import pacman.utils.DataFile;
 
@@ -21,6 +23,15 @@ public class QFunction {
 		eligibility = new double[prototype.size()];
 	}
 
+	public double[] getWeights()
+	{
+		return weights;
+	}
+	
+	public double getBias()
+	{
+		return bias;
+	}
 	/** Load initial settings from a file. */
 	public QFunction(FeatureSet prototype, String filename) {
 		this(prototype);
@@ -77,22 +88,32 @@ public class QFunction {
 			eligibility[i] += features.get(i);
 		ebias++;
 	}
+	private double sumArray(double[] toSum)
+	{
+		double sum = 0;
+		for (int i = 0;i<toSum.length;i++)
+			sum+=toSum[i];
+		return sum;
+	}
 	
 	public void maxUpdate(FeatureSet advisedAction, FeatureSet maxAction, double alpha)
 	{
 //		System.out.println("---before---");
 //		System.out.println("max action q-value = "+this.evaluate(maxAction));
 //		System.out.println("advised action q-value = "+this.evaluate(advisedAction));
-//		double diff = this.evaluate(maxAction)-this.evaluate(advisedAction);
+		double diff = this.evaluate(maxAction)-this.evaluate(advisedAction);
+
 //		System.out.println("diff = "+diff);
 		double[] newWeights = new double[weights.length];
 		for (int i =0;i<weights.length;i++)
 		{
+			newWeights[i] = weights[i];
 			for (int j=0;j<weights.length;j++)
 			{
 				if (j!=i)
 				{
 					newWeights[i] += alpha * (weights[j]*((maxAction.get(j)-advisedAction.get(j))*(maxAction.get(i)-advisedAction.get(i))));
+					
 				}
 			}
 		}
@@ -101,15 +122,57 @@ public class QFunction {
 //		System.out.println("---after---");
 //		System.out.println("max action q-value = "+this.evaluate(maxAction));
 //		System.out.println("advised action q-value = "+this.evaluate(advisedAction));
-//		double diffAfter = this.evaluate(maxAction)-this.evaluate(advisedAction);
+		double diffAfter = this.evaluate(maxAction)-this.evaluate(advisedAction);
 //		System.out.println("diffAfter = "+diffAfter);
 //		if (diffAfter>diff)
 //			System.out.println("not good!");
+//		else
+//			System.out.println("good");
 //		for (int k = 0;k<weights.length;k++)
 //		{
 //			weights[k]=newWeights[k];
 //		}
 	}
+	
+	public void maxUpdateWrong(FeatureSet advisedAction, FeatureSet maxAction, double alpha)
+	{
+//		System.out.println("---before---");
+//		System.out.println("max action q-value = "+this.evaluate(maxAction));
+//		System.out.println("advised action q-value = "+this.evaluate(advisedAction));
+		double diff = this.evaluate(maxAction)-this.evaluate(advisedAction);
+		this.updateWeights(alpha*diff);
+//		System.out.println("diff = "+diff);
+//		double[] newWeights = new double[weights.length];
+//		for (int i =0;i<weights.length;i++)
+//		{
+//			newWeights[i] = weights[i];
+//			for (int j=0;j<weights.length;j++)
+//			{
+//				if (j!=i)
+//				{
+//					newWeights[i] += alpha * (weights[j]*((maxAction.get(j)-advisedAction.get(j))*(maxAction.get(i)-advisedAction.get(i))));
+//					
+//				}
+//			}
+//		}
+//		weights = newWeights; 
+		
+//		System.out.println("---after---");
+//		System.out.println("max action q-value = "+this.evaluate(maxAction));
+//		System.out.println("advised action q-value = "+this.evaluate(advisedAction));
+		double diffAfter = this.evaluate(maxAction)-this.evaluate(advisedAction);
+//		System.out.println("diffAfter = "+diffAfter);
+		if (diffAfter>diff)
+			System.out.println("not good!");
+		else
+			System.out.println("good");
+//		for (int k = 0;k<weights.length;k++)
+//		{
+//			weights[k]=newWeights[k];
+//		}
+	}
+	
+
 	
 	/** Save to a file. */
 	public void save(String filename) {
