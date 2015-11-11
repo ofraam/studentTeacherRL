@@ -14,10 +14,12 @@ public class CorrectImportantMistakesDiffStudent extends TeachingStrategy {
 	
 	private int left; // Advice to give
 	private int threshold; // Of mistake importance
+	private boolean  lastStudentActionCorrect;
 		
 	public CorrectImportantMistakesDiffStudent(int t) {
 		left = Experiments.BUDGET;
 		threshold = t;
+		lastStudentActionCorrect = false;
 	}
 
 	/** When the state has widely varying Q-values, and the student doesn't take the advice action. */
@@ -34,8 +36,11 @@ public class CorrectImportantMistakesDiffStudent extends TeachingStrategy {
 
 			if (mistake) {
 				left--;
+				lastStudentActionCorrect = false;
 				return true;
 			}
+			else
+				lastStudentActionCorrect = true;
 		}
 		
 		return false;
@@ -44,5 +49,10 @@ public class CorrectImportantMistakesDiffStudent extends TeachingStrategy {
 	/** Until none left. */
 	public boolean inUse() {
 		return (left > 0);
+	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		return lastStudentActionCorrect;
 	}
 }

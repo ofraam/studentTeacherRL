@@ -56,7 +56,8 @@ public class LearningCurve {
 	public void set(int x, double score, double[] data) {
 		this.score[x] = score;
 		this.data[x] = data;
-//		System.out.println("score = "+this.score[x]+"\t data = "+this.data[x]);
+//		System.out.println(data.length);
+		System.out.println("score = "+this.score[x]+"\t data0 = "+this.data[x][0]+"\t data1 = "+this.data[x][1]+"\t data2 = "+this.data[x][2]);
 	}
 
 	/** Compute area under the score curve. */

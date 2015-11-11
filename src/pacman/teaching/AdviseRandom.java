@@ -37,4 +37,10 @@ public class AdviseRandom extends TeachingStrategy {
 	public boolean inUse() {
 		return (left > 0);
 	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

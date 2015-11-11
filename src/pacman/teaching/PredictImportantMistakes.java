@@ -134,4 +134,10 @@ public class PredictImportantMistakes extends TeachingStrategy {
 		
 		return moves[maxIndex];
 	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

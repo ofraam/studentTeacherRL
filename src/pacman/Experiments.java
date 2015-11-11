@@ -64,11 +64,11 @@ public class Experiments {
 
 		String teachingStrategy = args[0];
 		String mode = args[1];
-		
+		String attentionMode = args[2];
 		
 		
 		System.out.println("starting");
-		train(teachingStrategy,0,mode);
+		train(teachingStrategy,0,mode, attentionMode);
 //		watch(create("advise100"));
 //		rng = new Random(111);
 //		train("cstuimp150", 0, "student");
@@ -92,7 +92,7 @@ public class Experiments {
 	}
 
 	/** Set up a learner. */
-	public static RLPacMan create(String learner, String initiator) {
+	public static RLPacMan create(String learner, String initiator, String attentionMode) {
 		
 		FeatureSet teacherProto = TEACHER.startsWith("custom") ? new CustomFeatureSet() : new DepthFeatureSet();
 		FeatureSet studentProto = STUDENT.startsWith("custom") ? new CustomFeatureSet() : new DepthFeatureSet();
@@ -118,21 +118,24 @@ public class Experiments {
 			// Front-load the advice budget
 			if (learner.startsWith("baseline")) {
 				TeachingStrategy strategy = new AdviseAtFirst();
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			// Advise in important states
 			if (learner.startsWith("advise")) {
 				int threshold = Integer.parseInt(learner.substring(6));
 				TeachingStrategy strategy = new AdviseImportantStates(threshold);
-				return new IntelligentStudent(teacher, student, strategy, initiator);
+//				return new IntelligentStudent(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			// Correct important mistakes
 			if (learner.startsWith("correct")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new CorrectImportantMistakes(threshold);
-				return new IntelligentStudent(teacher, student, strategy, initiator);
+//				return new IntelligentStudent(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			// Correct important mistakes, but only if paying attention
@@ -140,14 +143,16 @@ public class Experiments {
 				int att = Integer.parseInt(learner.substring(10,learner.length() - 3));
 				int threshold = Integer.parseInt(learner.substring(learner.length() - 3));
 				TeachingStrategy strategy = new CorrectImportantMistakesAttention(att,threshold);
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			// Correct important mistakes, based on diff between teacher and student action q-values
 			if (learner.startsWith("dcorrect")) {
 				int threshold = Integer.parseInt(learner.substring(8));
 				TeachingStrategy strategy = new CorrectImportantMistakesDiffStudent(threshold);
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 
 			
@@ -155,48 +160,55 @@ public class Experiments {
 			if (learner.startsWith("predict")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new PredictImportantMistakes(threshold);
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			// Advise randomly
 			if (learner.startsWith("random")) {
 				int prob = Integer.parseInt(learner.substring(6));
 				TeachingStrategy strategy = new AdviseRandom(prob);
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			// Correct mistakes randomly
 			if (learner.startsWith("crandom")) {
 				int prob = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new CorrectMistakesRandomly(prob);
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			//Student initiated advice based on uncertainty (low q-value diff)
 			if (learner.startsWith("stuunc")) {
 				int threshold = Integer.parseInt(learner.substring(6));
 				TeachingStrategy strategy = new StudentUncertaintyAdvice(threshold);
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}	
 			
 			//Student initiated advice based on uncertainty (low q-value diff), only use advice if student was wrong
 			if (learner.startsWith("cstuunc")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new StudentUncertaintyAndMistakeAdvice(threshold);
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}	
 			
 			//Student initiated advice based on uncertainty (lower q-value diff than average), only use advice if student was wrong
 			if (learner.startsWith("avgcstuunc")) {
 				TeachingStrategy strategy = new StudentAvgUncertaintyAndMistakeAdvice();
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			//Student initiated advice based on importance (high q-value diff), only use advice if student was wrong
 			if (learner.startsWith("cstuimp")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new StudentImportanceAndMistakeAdvice(threshold);
-				return new Student(teacher, student, strategy, initiator);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
 			//Student initiated asking, but teacher decides whether to advise
@@ -204,7 +216,8 @@ public class Experiments {
 				int threshold = Integer.parseInt(learner.substring(10));
 				TeachingStrategy strategy = new CorrectImportantMistakes(200);
 				AttentionStrategy attent = new AskAttentionBasedOnCertainty(threshold);
-				return new Student(teacher, student, strategy, initiator, attent);
+//				return new Student(teacher, student, strategy, initiator, attent);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}	
 		}
 		
@@ -212,7 +225,7 @@ public class Experiments {
 	}
 	
 	/** Generate learning curves. */
-	public static void train(String learner, int start, String initiator) {
+	public static void train(String learner, int start, String initiator, String attentionMode) {
 		
 		// Make sure directory exists
 		File file = new File(DIR+"/"+learner);
@@ -233,7 +246,7 @@ public class Experiments {
 			curves[i] = new LearningCurve(LENGTH+1, TRAIN);
 			
 			System.out.println("Training "+DIR+"/"+learner+" "+i+"...");
-			RLPacMan pacman = create(learner,initiator);
+			RLPacMan pacman = create(learner,initiator,attentionMode);
 			
 			// First point
 			double[] initialData = pacman.episodeData();
@@ -347,7 +360,7 @@ public class Experiments {
 		double[] scores = new double[REPEATS];
 		
 		for (int i=0; i<REPEATS; i++) {
-			BasicRLPacMan pacman = (BasicRLPacMan)create("independent", "teacher");
+			BasicRLPacMan pacman = (BasicRLPacMan)create("independent", "teacher", "always");
 			pacman.loadPolicy(DIR+"/independent/policy"+i);
 			scores[i] = evaluate(pacman, 500);
 			System.out.println(DIR+"/independent/policy"+i+": "+scores[i]);
@@ -367,7 +380,7 @@ public class Experiments {
 		DataFile file = new DataFile("myData/"+TEACHER+"/teacher/gaps");
 		file.clear();
 
-		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher");
+		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher","always");
 		int x = 0;
 
 		for (int i=0; i<1; i++) {
@@ -412,7 +425,7 @@ public class Experiments {
 		DataFile file = new DataFile("myData/"+TEACHER+"/teacher/gaps");
 		file.clear();
 
-		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher");
+		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher", "always");
 		int x = 0;
 
 		for (int i=0; i<1; i++) {
@@ -439,8 +452,8 @@ public class Experiments {
 	/** Test SVM choice prediction. */
 	public static void testSVM() {
 			
-		BasicRLPacMan student = (BasicRLPacMan)create("independent", "teacher");
-		BasicRLPacMan teacher = (BasicRLPacMan)create("teacher", "teacher");
+		BasicRLPacMan student = (BasicRLPacMan)create("independent", "teacher", "always");
+		BasicRLPacMan teacher = (BasicRLPacMan)create("teacher", "teacher", "always");
 		PredictImportantMistakes strategy = new PredictImportantMistakes(0);
 		
 		for (int i=0; i<300; i++) {

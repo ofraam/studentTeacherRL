@@ -12,10 +12,12 @@ public class StudentImportanceAndMistakeAdvice extends TeachingStrategy {
 	
 	private int left; // Advice to give
 	private int threshold; // Of state importantce
+	private boolean lastStudentActionCorrect;
 	
 	public StudentImportanceAndMistakeAdvice(int t) {
 		left = Experiments.BUDGET;
 		threshold = t;
+		lastStudentActionCorrect=false;
 	}
 
 	/** When the state has widely varying Q-values. */
@@ -32,8 +34,11 @@ public class StudentImportanceAndMistakeAdvice extends TeachingStrategy {
 
 			if (mistake) {
 				left--;
+				lastStudentActionCorrect=false;
 				return true;
-			}			
+			}	
+			else
+				lastStudentActionCorrect = true;
 
 		}
 		
@@ -43,5 +48,10 @@ public class StudentImportanceAndMistakeAdvice extends TeachingStrategy {
 	/** Until none left. */
 	public boolean inUse() {
 		return (left > 0);
+	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		return lastStudentActionCorrect;
 	}
 }

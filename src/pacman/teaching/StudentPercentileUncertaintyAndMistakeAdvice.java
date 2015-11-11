@@ -12,10 +12,12 @@ public class StudentPercentileUncertaintyAndMistakeAdvice extends TeachingStrate
 	
 	private int left; // Advice to give
 	private int cutoff;
+	private boolean lastStudentActionCorrect;
 	
 	public StudentPercentileUncertaintyAndMistakeAdvice(int c) {
 		left = Experiments.BUDGET;
 		cutoff = c;
+		lastStudentActionCorrect=false;
 	}
 
 	/** When the state has widely varying Q-values. */
@@ -32,8 +34,11 @@ public class StudentPercentileUncertaintyAndMistakeAdvice extends TeachingStrate
 
 			if (mistake) {
 				left--;
+				lastStudentActionCorrect=false;
 				return true;
-			}			
+			}	
+			else
+				lastStudentActionCorrect=true;
 
 		}
 		
@@ -43,5 +48,10 @@ public class StudentPercentileUncertaintyAndMistakeAdvice extends TeachingStrate
 	/** Until none left. */
 	public boolean inUse() {
 		return (left > 0);
+	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		return lastStudentActionCorrect;
 	}
 }

@@ -10,6 +10,7 @@ public abstract class TeachingStrategy {
 	
 	public abstract boolean giveAdvice(BasicRLPacMan teacher, MOVE choice, MOVE advice);
 	public abstract boolean inUse();
+	public abstract boolean lastActionCorrect();
 	
 	public void startEpisode() {} // Override to do start-of-episode stuff
 		

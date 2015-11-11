@@ -14,10 +14,12 @@ public class CorrectMistakesRandomly extends TeachingStrategy {
 	
 	private int left; // Advice to give
 	private double correctProb; // Of mistake importance
-		
+	private boolean  lastStudentActionCorrect;
+	
 	public CorrectMistakesRandomly(int t) {
 		left = Experiments.BUDGET;
 		correctProb = t/100.0;
+		lastStudentActionCorrect= false;
 	}
 
 	/** When the state has widely varying Q-values, and the student doesn't take the advice action. */
@@ -31,8 +33,11 @@ public class CorrectMistakesRandomly extends TeachingStrategy {
 
 			if (mistake) {
 				left--;
+				lastStudentActionCorrect = false;
 				return true;
 			}
+			else
+				lastStudentActionCorrect = true;
 		}
 		
 		return false;
@@ -41,5 +46,10 @@ public class CorrectMistakesRandomly extends TeachingStrategy {
 	/** Until none left. */
 	public boolean inUse() {
 		return (left > 0);
+	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		return lastStudentActionCorrect;
 	}
 }

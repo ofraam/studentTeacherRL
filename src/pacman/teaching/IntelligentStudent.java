@@ -25,6 +25,7 @@ public class IntelligentStudent extends RLPacMan {
 	
 	private boolean testMode; // When set, will not explore or learn or take advice
 	private int adviceCount; // During the last episode
+	private int totalAdvice;
 	private int attentionCount;
 	private int episodeLength; //how many states visited in episode
 	
@@ -38,6 +39,7 @@ public class IntelligentStudent extends RLPacMan {
 	private boolean trained = false;	
 	private String askAttention;
 	private double uncertaintyThreshold;
+	private int startPredictions;
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
@@ -59,6 +61,9 @@ public class IntelligentStudent extends RLPacMan {
 		this.initiator = initiator;
 		this.prototype = student.getPrototype();
 		this.askAttention = askForAttentionStrategy;
+		
+		if (this.askAttention.startsWith("importancePrediction"))
+			startPredictions = Integer.parseInt(this.askAttention.substring(20));
 		
 		trainFile = Experiments.DIR+"/importanceClassifier/train";
 		modelFile = Experiments.DIR+"/importanceClassifier/model";
@@ -110,13 +115,13 @@ public class IntelligentStudent extends RLPacMan {
 	
 	private boolean askForAttention(Game game, MOVE choice)
 	{
-		if (this.askAttention=="always")
+		if (this.askAttention.equals("always"))
 			return true;
-		if (this.askAttention=="avgCertainty")
+		if (this.askAttention.equals("avgCertainty"))
 			return isUncertainAvg();
-		if (this.askAttention=="uncertaintyThreshold")
+		if (this.askAttention.equals("uncertaintyThreshold"))
 			return isUncertainThreshold(uncertaintyThreshold);
-		if (this.askAttention=="importancePrediction")
+		if (this.askAttention.startsWith("importancePrediction"))
 			return predictedImportanceAsk(game, choice);
 		return false;
 	}
@@ -144,6 +149,8 @@ public class IntelligentStudent extends RLPacMan {
 	
 	private boolean predictedImportanceAsk(Game game, MOVE choice)
 	{
+		if (totalAdvice<startPredictions)
+			return true;
 		if (this.episode>1 & !testMode & this.trained)
 		{
 			boolean imp = this.predictImportance(game, choice);
@@ -183,6 +190,7 @@ public class IntelligentStudent extends RLPacMan {
 						this.initiated = true;
 						student.setMove(advice);
 						adviceCount++;
+						totalAdvice++;
 						this.AddImportanceExampleToClassifier(game, choice, true);
 						
 	//					try{
@@ -204,6 +212,7 @@ public class IntelligentStudent extends RLPacMan {
 					if (strategy.giveAdvice(student, choice, advice)) {
 						student.setMove(advice);
 						adviceCount++;
+						totalAdvice++;
 						
 	//					try{
 	//
@@ -266,7 +275,7 @@ public class IntelligentStudent extends RLPacMan {
 		
 		double[] extraData = strategy.episodeData();
 		
-		double[] data = new double[extraData.length+2];
+		double[] data = new double[extraData.length+3];
 		data[0] = adviceCount;
 		data[1] = attentionCount;
 		data[2] = episodeLength;

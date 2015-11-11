@@ -11,9 +11,11 @@ import pacman.utils.Stats;
 public class StudentAvgUncertaintyAndMistakeAdvice extends TeachingStrategy {
 	
 	private int left; // Advice to give
+	private boolean lastStudentActionCorrect;
 	
 	public StudentAvgUncertaintyAndMistakeAdvice() {
 		left = Experiments.BUDGET;
+		lastStudentActionCorrect = false;
 	}
 
 	/** When the state has widely varying Q-values. */
@@ -30,8 +32,11 @@ public class StudentAvgUncertaintyAndMistakeAdvice extends TeachingStrategy {
 
 			if (mistake) {
 				left--;
+				lastStudentActionCorrect =false;
 				return true;
-			}			
+			}		
+			else
+				lastStudentActionCorrect = true;
 
 		}
 		
@@ -41,5 +46,10 @@ public class StudentAvgUncertaintyAndMistakeAdvice extends TeachingStrategy {
 	/** Until none left. */
 	public boolean inUse() {
 		return (left > 0);
+	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		return lastStudentActionCorrect;
 	}
 }

@@ -13,11 +13,13 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 	private int left; // Advice to give
 	private int threshold; // Of mistake importance
 	private boolean stateImportant;
+	private boolean  lastStudentActionCorrect;
 		
 	public CorrectImportantMistakes(int t) {
 		left = Experiments.BUDGET;
 		threshold = t;
 		stateImportant = false;
+		lastStudentActionCorrect = false;
 	}
 
 	/** When the state has widely varying Q-values, and the student doesn't take the advice action. */
@@ -29,16 +31,20 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 		boolean important = (gap > threshold);
 		
 		if (important) {
-			System.out.println("teacher important = true");
+//			System.out.println("teacher important = true");
 			stateImportant = true;
 			boolean mistake = (choice != advice);
 
 			if (mistake) {
 				left--;
+				lastStudentActionCorrect = false;
 				return true;
 			}
+			else
+				lastStudentActionCorrect = true;
+				
 		}
-		System.out.println("teacher important = false");
+//		System.out.println("teacher important = false");
 		return false;
 	}
 	
@@ -50,5 +56,10 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 	/** Until none left. */
 	public boolean inUse() {
 		return (left > 0);
+	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		return lastStudentActionCorrect;
 	}
 }

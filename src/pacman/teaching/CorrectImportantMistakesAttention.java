@@ -13,11 +13,13 @@ public class CorrectImportantMistakesAttention extends TeachingStrategy {
 	private int left; // Advice to give
 	private double attention; // Of mistake importance
 	private int threshold = 200;
+	private boolean  lastStudentActionCorrect;
 		
 	public CorrectImportantMistakesAttention(int att, int t) {
 		left = Experiments.BUDGET;
 		attention = att/100.0;
 		threshold = t;
+		lastStudentActionCorrect = false;
 	}
 
 	/** When the state has widely varying Q-values, and the student doesn't take the advice action. */
@@ -36,8 +38,11 @@ public class CorrectImportantMistakesAttention extends TeachingStrategy {
 
 			if (mistake) {
 				left--;
+				lastStudentActionCorrect = false;
 				return true;
 			}
+			else
+				lastStudentActionCorrect = true;
 		}
 		
 		return false;
@@ -46,5 +51,10 @@ public class CorrectImportantMistakesAttention extends TeachingStrategy {
 	/** Until none left. */
 	public boolean inUse() {
 		return (left > 0);
+	}
+
+	@Override
+	public boolean lastActionCorrect() {
+		return lastStudentActionCorrect;
 	}
 }
