@@ -16,15 +16,17 @@ public class AskAttentionBasedOnCertainty extends AttentionStrategy{
 	}
 	
 	@Override
-	public boolean askForAdvice(BasicRLPacMan student) {
-		double[] qvalues = student.getQValues();
-		double gap = Stats.max(qvalues) - Stats.min(qvalues);
-//		System.out.println(gap);
-		boolean uncertain = (gap < threshold);
-		
-		if (uncertain) {
-				return true;
-		}
+	public boolean askForAdvice(IntelligentStudent student) { //TODO: not implemented
+//		double[] qvalues = student.
+//		double gap = Stats.max(qvalues) - Stats.min(qvalues);
+////		System.out.println(gap);
+//		boolean uncertain = (gap < threshold);
+//		
+//		if (uncertain) {
+//			left--;
+//			return true;
+//				
+//		}
 		
 		return false;
 	}

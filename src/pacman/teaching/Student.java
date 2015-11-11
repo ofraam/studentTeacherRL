@@ -72,13 +72,13 @@ public class Student extends RLPacMan {
 		
 		episodeLength++;
 		boolean ask = true;
-		if (this.attention!=null)
-		{
-			if (initiated)
-				ask = true;
-			else
-				ask = this.attention.askForAdvice(student);
-		}
+//		if (this.attention!=null)
+//		{
+//			if (initiated)
+//				ask = true;
+//			else
+//				ask = this.attention.askForAdvice(student);
+//		}
 		if (!testMode && strategy.inUse() & ask) {
 			MOVE advice = teacher.getMove(game, timeDue);
 			
@@ -123,7 +123,8 @@ public class Student extends RLPacMan {
 				}				
 			}
 		}
-		
+//		if (testMode)
+//			System.out.println(choice);
 		return choice;
 	}
 	

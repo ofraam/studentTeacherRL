@@ -29,9 +29,10 @@ public class SVM {
 		String example = "";
 		example+=important;
 		for (int i=0; i<features.size(); i++) {
-				example += " "+(i+1)+":"+features.get(i);
-			example += "\n";
+			example += " "+(i+1)+":"+features.get(i);
+			
 		}
+		example += "\n";
 		return example;
 	}
 	
@@ -55,7 +56,15 @@ public class SVM {
 	
 	/** Build a predictor using this training data. */
 	public static void trainImportance(LinkedList<String> trainData, String trainFile, String modelFile) {
+		DataFile file = new DataFile(trainFile);
+		file.clear();
 		
+		
+		for (String example : trainData) {
+			file.append(example);
+		}
+		
+		file.close();
 		int exitValue = execute("myData/svm/svm_learn -v 0 -c 1000 "+trainFile+" "+modelFile);
 		if (exitValue != 0)
 			System.out.println("Training failed!");

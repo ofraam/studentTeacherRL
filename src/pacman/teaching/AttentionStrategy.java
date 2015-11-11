@@ -8,7 +8,7 @@ import pacman.game.Constants.MOVE;
  */
 public abstract class AttentionStrategy {
 	
-	public abstract boolean askForAdvice(BasicRLPacMan student);
+	public abstract boolean askForAdvice(IntelligentStudent student);
 	public abstract boolean inUse();
 	
 	public void startEpisode() {} // Override to do start-of-episode stuff

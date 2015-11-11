@@ -112,11 +112,11 @@ public class QFunction {
 			{
 				if (j!=i)
 				{
-					newWeights[i] += alpha * (weights[j]*((maxAction.get(j)-advisedAction.get(j))*(maxAction.get(i)-advisedAction.get(i))));
-					
+					newWeights[i] = newWeights[i] + alpha * (weights[j]*((maxAction.get(j)-advisedAction.get(j))*(maxAction.get(i)-advisedAction.get(i))));
 				}
 			}
 		}
+		double[] weightsBefore = weights;
 		weights = newWeights; 
 		
 //		System.out.println("---after---");
@@ -124,7 +124,7 @@ public class QFunction {
 //		System.out.println("advised action q-value = "+this.evaluate(advisedAction));
 		double diffAfter = this.evaluate(maxAction)-this.evaluate(advisedAction);
 //		System.out.println("diffAfter = "+diffAfter);
-//		if (diffAfter>diff)
+//		if (Math.abs(diffAfter)>Math.abs(diff))
 //			System.out.println("not good!");
 //		else
 //			System.out.println("good");

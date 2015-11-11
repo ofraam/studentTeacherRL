@@ -28,6 +28,7 @@ import pacman.teaching.CorrectImportantMistakes;
 import pacman.teaching.CorrectImportantMistakesAttention;
 import pacman.teaching.CorrectImportantMistakesDiffStudent;
 import pacman.teaching.CorrectMistakesRandomly;
+import pacman.teaching.IntelligentStudent;
 import pacman.teaching.PredictImportantMistakes;
 import pacman.teaching.Student;
 import pacman.teaching.StudentAvgUncertaintyAndMistakeAdvice;
@@ -48,9 +49,9 @@ public class Experiments {
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
-	public static int REPEATS = 30; // Curves to average (30)
-	public static int LENGTH = 100; // Points per curve (100)
-	public static int TEST = 30; // Test episodes per point (30)
+	public static int REPEATS = 5; // Curves to average (30)
+	public static int LENGTH = 50; // Points per curve (100)
+	public static int TEST = 5; // Test episodes per point (30)
 	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
@@ -63,6 +64,8 @@ public class Experiments {
 
 		String teachingStrategy = args[0];
 		String mode = args[1];
+		
+		
 		
 		System.out.println("starting");
 		train(teachingStrategy,0,mode);
@@ -122,14 +125,14 @@ public class Experiments {
 			if (learner.startsWith("advise")) {
 				int threshold = Integer.parseInt(learner.substring(6));
 				TeachingStrategy strategy = new AdviseImportantStates(threshold);
-				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator);
 			}
 			
 			// Correct important mistakes
 			if (learner.startsWith("correct")) {
 				int threshold = Integer.parseInt(learner.substring(7));
 				TeachingStrategy strategy = new CorrectImportantMistakes(threshold);
-				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator);
 			}
 			
 			// Correct important mistakes, but only if paying attention

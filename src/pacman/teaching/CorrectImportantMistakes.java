@@ -27,8 +27,9 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 		double[] qvalues = teacher.getQValues();
 		double gap = Stats.max(qvalues) - Stats.min(qvalues);
 		boolean important = (gap > threshold);
-
+		
 		if (important) {
+			System.out.println("teacher important = true");
 			stateImportant = true;
 			boolean mistake = (choice != advice);
 
@@ -37,7 +38,7 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 				return true;
 			}
 		}
-		
+		System.out.println("teacher important = false");
 		return false;
 	}
 	
