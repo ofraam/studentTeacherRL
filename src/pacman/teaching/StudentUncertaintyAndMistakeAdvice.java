@@ -54,4 +54,10 @@ public class StudentUncertaintyAndMistakeAdvice extends TeachingStrategy {
 	public boolean lastActionCorrect() {
 		return lastStudentActionCorrect;
 	}
+
+	@Override
+	public boolean lastStateImporant() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -89,9 +89,9 @@ public class IntelligentStudent extends RLPacMan {
 	public void startEpisode(Game game, boolean testMode) {
 		this.testMode = testMode;
 		
-		if (episode > 1 & adviceCount>0) {
+		if (episode > 1 & totalAdvice>0) {
 			SVM.trainImportance(trainData, trainFile, modelFile);
-			trainData.clear();
+//			trainData.clear();
 			trained = true;
 			}
 		adviceCount = 0;
@@ -204,7 +204,10 @@ public class IntelligentStudent extends RLPacMan {
 						return advice;
 					}
 					else
+					{
 						this.initiated = false;
+						this.AddImportanceExampleToClassifier(game, choice, strategy.lastStateImporant());
+					}
 					
 				}
 				if (initiator.equals("student"))
@@ -224,7 +227,12 @@ public class IntelligentStudent extends RLPacMan {
 	//					}
 						
 						return advice;
-					}				
+					}	
+					else
+					{
+						this.initiated = false;
+						this.AddImportanceExampleToClassifier(game, choice, strategy.lastActionCorrect());
+					}
 				}
 			}
 		}
@@ -250,7 +258,8 @@ public class IntelligentStudent extends RLPacMan {
 		FeatureSet currentState = prototype.extract(game, move);
 		String query = SVM.exampleImportance(currentState, "-1");
 		double importance = SVM.predictImportance(query, testFile, modelFile, classifyFile);
-		if (importance>0)
+//		System.out.println(importance);
+		if (importance>-1)
 			return true;
 		else
 			return false;

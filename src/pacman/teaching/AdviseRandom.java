@@ -43,4 +43,10 @@ public class AdviseRandom extends TeachingStrategy {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean lastStateImporant() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

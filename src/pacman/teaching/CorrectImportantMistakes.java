@@ -29,11 +29,12 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 		double[] qvalues = teacher.getQValues();
 		double gap = Stats.max(qvalues) - Stats.min(qvalues);
 		boolean important = (gap > threshold);
+		boolean mistake = (choice != advice);
 		
 		if (important) {
 //			System.out.println("teacher important = true");
 			stateImportant = true;
-			boolean mistake = (choice != advice);
+			
 
 			if (mistake) {
 				left--;
@@ -44,11 +45,13 @@ public class CorrectImportantMistakes extends TeachingStrategy {
 				lastStudentActionCorrect = true;
 				
 		}
+		else
+			lastStudentActionCorrect = !mistake;
 //		System.out.println("teacher important = false");
 		return false;
 	}
 	
-	public boolean wasLastQueriedStateImportant()
+	public boolean lastStateImporant()
 	{
 		return stateImportant;
 	}

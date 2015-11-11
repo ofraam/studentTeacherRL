@@ -67,6 +67,7 @@ public class PredictImportantMistakes extends TeachingStrategy {
 					return true;
 				}
 			}
+
 		}
 
 		// If not advising, create a training example
@@ -137,6 +138,12 @@ public class PredictImportantMistakes extends TeachingStrategy {
 
 	@Override
 	public boolean lastActionCorrect() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean lastStateImporant() {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -82,4 +82,10 @@ public class CorrectImportantMistakesDiffTop2 extends TeachingStrategy {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean lastStateImporant() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

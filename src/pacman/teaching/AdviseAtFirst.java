@@ -31,4 +31,10 @@ public class AdviseAtFirst extends TeachingStrategy {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean lastStateImporant() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
