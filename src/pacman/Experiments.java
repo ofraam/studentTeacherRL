@@ -68,7 +68,7 @@ public class Experiments {
 		
 		
 		System.out.println("starting");
-		train(teachingStrategy,0,mode, attentionMode);
+ 		train(teachingStrategy,0,mode, attentionMode);
 //		watch(create("advise100"));
 //		rng = new Random(111);
 //		train("cstuimp150", 0, "student");

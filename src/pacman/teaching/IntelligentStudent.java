@@ -40,6 +40,7 @@ public class IntelligentStudent extends RLPacMan {
 	private String askAttention;
 	private double uncertaintyThreshold;
 	private int startPredictions;
+	private int priorTrainDataSize;
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
@@ -69,6 +70,8 @@ public class IntelligentStudent extends RLPacMan {
 		modelFile = Experiments.DIR+"/importanceClassifier/model";
 		testFile = Experiments.DIR+"/importanceClassifier/test";
 		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
+		
+		priorTrainDataSize = 0;
 	}
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, AttentionStrategy attention) {
@@ -88,8 +91,9 @@ public class IntelligentStudent extends RLPacMan {
 	/** Prepare for the first move. */
 	public void startEpisode(Game game, boolean testMode) {
 		this.testMode = testMode;
-		
-		if (episode > 1 & totalAdvice>0) {
+		int newTrainingExamples = trainData.size()-priorTrainDataSize;
+		priorTrainDataSize = trainData.size();
+		if (totalAdvice>0 & newTrainingExamples>10) {
 			SVM.trainImportance(trainData, trainFile, modelFile);
 //			trainData.clear();
 			trained = true;
@@ -206,7 +210,8 @@ public class IntelligentStudent extends RLPacMan {
 					else
 					{
 						this.initiated = false;
-						this.AddImportanceExampleToClassifier(game, choice, strategy.lastStateImporant());
+						if (trainData.size()<1000)
+							this.AddImportanceExampleToClassifier(game, choice, strategy.lastStateImporant());
 					}
 					
 				}
@@ -236,7 +241,7 @@ public class IntelligentStudent extends RLPacMan {
 				}
 			}
 		}
-		if (!testMode)
+		if (!testMode & trainData.size()<10000)
 			this.AddImportanceExampleToClassifier(game,choice, false);
 		
 		return choice;
