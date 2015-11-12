@@ -93,7 +93,7 @@ public class IntelligentStudent extends RLPacMan {
 		this.testMode = testMode;
 		int newTrainingExamples = trainData.size()-priorTrainDataSize;
 		priorTrainDataSize = trainData.size();
-		if (totalAdvice>0 & newTrainingExamples>10) {
+		if (totalAdvice>0 & newTrainingExamples>10 & this.askAttention.startsWith("importancePrediction")) {
 			SVM.trainImportance(trainData, trainFile, modelFile);
 //			trainData.clear();
 			trained = true;
@@ -193,6 +193,7 @@ public class IntelligentStudent extends RLPacMan {
 					if (strategy.giveAdvice(teacher, choice, advice)) {
 						this.initiated = true;
 						student.setMove(advice);
+						student.recordAdvisedState(game,advice);
 						adviceCount++;
 						totalAdvice++;
 						this.AddImportanceExampleToClassifier(game, choice, true);
@@ -219,6 +220,7 @@ public class IntelligentStudent extends RLPacMan {
 				{
 					if (strategy.giveAdvice(student, choice, advice)) {
 						student.setMove(advice);
+						student.recordAdvisedState(game,advice);
 						adviceCount++;
 						totalAdvice++;
 						

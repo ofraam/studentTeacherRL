@@ -134,6 +134,26 @@ public class QFunction {
 //		}
 	}
 	
+	public void maxUpdate(double[] advisedAction, double[] maxAction, double alpha)
+	{
+
+		double[] newWeights = new double[weights.length];
+		for (int i =0;i<weights.length;i++)
+		{
+			newWeights[i] = weights[i];
+			for (int j=0;j<weights.length;j++)
+			{
+				if (j!=i)
+				{
+					newWeights[i] = newWeights[i] + alpha * (weights[j]*((maxAction[j]-advisedAction[j])*(maxAction[i]-advisedAction[i])));
+				}
+			}
+		}
+		double[] weightsBefore = weights;
+		weights = newWeights; 
+		
+	}
+	
 	public void maxUpdateWrong(FeatureSet advisedAction, FeatureSet maxAction, double alpha)
 	{
 //		System.out.println("---before---");

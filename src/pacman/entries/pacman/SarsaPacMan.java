@@ -45,7 +45,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	
 	private HashMap<FeatureSet,ArrayList<FeatureSet>> advisedStates;
 	
-	private String maxUpdateTiming = "never"; //epidsodeEnd = at end of episode, never = never, atState = when state is encountered
+	private String maxUpdateTiming = "batch"; //epidsodeEnd = at end of episode, batch = end of episode, but batch update,never = never, atState = when state is encountered
 
 	/** Initialize the policy. */
 	public SarsaPacMan(FeatureSet proto) {
@@ -168,6 +168,8 @@ public class SarsaPacMan extends BasicRLPacMan {
 //				}
 				if (this.maxUpdateTiming=="epidsodeEnd")
 					this.maxUpdate();
+				if (this.maxUpdateTiming=="batch" & this.advisedStates.size()>0)
+					this.maxUpdateBatch();
 			}
 			
 			// Otherwise delayed (for potential advice)
@@ -251,6 +253,50 @@ public class SarsaPacMan extends BasicRLPacMan {
 				this.advisedStates.remove(advisedFeature);
 			}
 		}
+	}
+	
+	private void maxUpdateBatch()
+	{
+		List<FeatureSet> keys = new ArrayList(this.advisedStates.keySet());
+		double[] advisedAvg =  new double [prototype.size()];
+		double[] maxAvg =  new double [prototype.size()];
+		double counter = 0;
+		for (FeatureSet advisedFeature:keys){
+			ArrayList<FeatureSet> others = this.advisedStates.get(advisedFeature);
+			int maxQindex = 0;
+			double maxQvalue = -Integer.MAX_VALUE;
+			for (int i = 0;i<others.size();i++)
+			{
+				double currQ = Qfunction.evaluate(others.get(i));
+				if (currQ>maxQvalue)
+				{
+					maxQindex=i;
+					maxQvalue = currQ;
+				}
+			}
+			double advisedActQ = Qfunction.evaluate(advisedFeature);
+			if (advisedActQ<maxQvalue)//do gradient descent update
+			{
+				FeatureSet other = others.get(maxQindex);
+				counter++;
+				for (int f=0;f<advisedAvg.length;f++)
+				{
+					advisedAvg[f]+=advisedFeature.get(f);
+					maxAvg[f]+=other.get(f);
+				}
+				
+			}
+			else
+			{
+				this.advisedStates.remove(advisedFeature);
+			}
+		}
+		for (int f=0;f<advisedAvg.length;f++)
+		{
+			advisedAvg[f]=advisedAvg[f]/counter;
+			maxAvg[f]=maxAvg[f]/counter;
+		}
+		Qfunction.maxUpdate(advisedAvg,maxAvg, ALPHA);
 	}
 	
 	
