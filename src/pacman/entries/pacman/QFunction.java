@@ -150,8 +150,26 @@ public class QFunction {
 			}
 		}
 		double[] weightsBefore = weights;
-		weights = newWeights; 
 		
+		double sumWeightsOld = 0;
+		for (int k=0;k<weights.length;k++)
+			sumWeightsOld+=weights[k];
+		
+		double sumWeightsNew = 0;
+		for (int k=0;k<weights.length;k++)
+			sumWeightsNew+=newWeights[k];
+		
+		for (int i=0;i<weights.length;i++)
+		{
+			weights[i]=(newWeights[i])*sumWeightsOld/sumWeightsNew;
+		}
+		
+		double sumWeightsAfter = 0;
+		for (int k=0;k<weights.length;k++)
+			sumWeightsAfter+=weights[k];
+//		weights = newWeights; 
+		System.out.println(sumWeightsOld==sumWeightsAfter);
+		System.out.println(sumWeightsOld-sumWeightsAfter);
 	}
 	
 	public void maxUpdateWrong(FeatureSet advisedAction, FeatureSet maxAction, double alpha)

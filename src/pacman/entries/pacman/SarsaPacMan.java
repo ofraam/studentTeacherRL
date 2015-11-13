@@ -45,7 +45,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	
 	private HashMap<FeatureSet,ArrayList<FeatureSet>> advisedStates;
 	
-	private String maxUpdateTiming = "batch"; //epidsodeEnd = at end of episode, batch = end of episode, but batch update,never = never, atState = when state is encountered
+	private String maxUpdateTiming = "never"; //epidsodeEnd = at end of episode, batch = end of episode, but batch update,never = never, atState = when state is encountered
 
 	/** Initialize the policy. */
 	public SarsaPacMan(FeatureSet proto) {
@@ -75,7 +75,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 		doUpdate = false;
 		delta1 = 0;
 		delta2 = 0;
-//		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
+		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
 		evaluateMoves(game);
 	}
 
