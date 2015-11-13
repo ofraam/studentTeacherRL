@@ -44,13 +44,13 @@ public class Experiments {
 	
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
-	public static String DIR = "okPolicy/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "okPolicy2100/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 30; // Curves to average (30)
-	public static int LENGTH = 50; // Points per curve (100)
+	public static int LENGTH = 70; // Points per curve (100)
 	public static int TEST = 30; // Test episodes per point (30)
 	public static int TRAIN = 10; // Train episodes per point (10)
 
@@ -116,7 +116,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/student/policy");
+			student.loadPolicy("myData/"+TEACHER+"/student/policy2100");
 			
 			// Front-load the advice budget
 			if (learner.startsWith("baseline")) {
