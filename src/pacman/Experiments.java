@@ -35,6 +35,7 @@ import pacman.teaching.StudentAvgUncertaintyAndMistakeAdvice;
 import pacman.teaching.StudentImportanceAndMistakeAdvice;
 import pacman.teaching.StudentUncertaintyAdvice;
 import pacman.teaching.StudentUncertaintyAndMistakeAdvice;
+import pacman.teaching.StudentUncertaintyAndMistakeAdviceTop2;
 import pacman.teaching.TeachingStrategy;
 import pacman.utils.DataFile;
 import pacman.utils.LearningCurve;
@@ -42,16 +43,16 @@ import pacman.utils.Stats;
 
 public class Experiments {
 	
-	public static String TEACHER = "customS"; // Teacher feature set and algorithm
-	public static String STUDENT = "customS"; // Student feature set and algorithm
-	public static String DIR = "okPolicy2100/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String TEACHER = "depthS"; // Teacher feature set and algorithm
+	public static String STUDENT = "depthS"; // Student feature set and algorithm
+	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 30; // Curves to average (30)
-	public static int LENGTH = 70; // Points per curve (100)
-	public static int TEST = 30; // Test episodes per point (30)
+	public static int LENGTH = 35; // Points per curve (100)
+	public static int TEST = 2; // Test episodes per point (30)
 	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
@@ -62,20 +63,24 @@ public class Experiments {
 	 */
 	public static void main(String[] args) {
 
-		String teachingStrategy = args[0];
-		String mode = args[1];
-		String attentionMode = args[2];
-		
-		
-		System.out.println("starting");
- 		train(teachingStrategy,0,mode, attentionMode);
+		watch(create("independent", "teacher","something"));
+//		
+//		String teachingStrategy = args[0];
+//		String mode = args[1];
+//		String attentionMode = args[2];
+//		
+//		
+//		System.out.println("starting");
+// 		train(teachingStrategy,0,mode, attentionMode);
+ 		
+ 		
 //		watch(create("advise100"));
 //		rng = new Random(111);
 //		train("cstuimp150", 0, "student");
 //		rng = new Random(111);
 //		train("askcstuunc2", 0, "teacher");
 //		train("avgcstuunc",0,"student");
-//		watch(create("independent", "teacher"));
+//		watch(create("independent", "teacher","something"));
 //		plotGapsWatch();
 	}
 	
@@ -106,7 +111,10 @@ public class Experiments {
 			
 		// Lone student
 		else if (learner.startsWith("independent")) {
-			return STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
+			BasicRLPacMan student = STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
+			student.loadPolicy("myData/"+TEACHER+"/teacher/policy");
+			return student;
+//			return STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
 		}
 		
 		// Student-teacher pair
@@ -116,7 +124,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/student/policy2100");
+//			student.loadPolicy("myData/"+TEACHER+"/student/policy2100");
 			
 			// Front-load the advice budget
 			if (learner.startsWith("baseline")) {
@@ -198,6 +206,14 @@ public class Experiments {
 //				return new Student(teacher, student, strategy, initiator);
 				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}	
+			
+			//Student initiated advice based on uncertainty (low q-value diff), only use advice if student was wrong
+			if (learner.startsWith("ctstuunc")) {
+				int threshold = Integer.parseInt(learner.substring(8));
+				TeachingStrategy strategy = new StudentUncertaintyAndMistakeAdviceTop2(threshold);
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
+			}
 			
 			//Student initiated advice based on uncertainty (lower q-value diff than average), only use advice if student was wrong
 			if (learner.startsWith("avgcstuunc")) {

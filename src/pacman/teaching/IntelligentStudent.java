@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import pacman.Experiments;
 import pacman.entries.pacman.BasicRLPacMan;
 import pacman.entries.pacman.FeatureSet;
+import pacman.entries.pacman.QFunction;
 import pacman.entries.pacman.RLPacMan;
 import pacman.game.Game;
 import pacman.game.Constants.MOVE;
@@ -41,6 +42,12 @@ public class IntelligentStudent extends RLPacMan {
 	private double uncertaintyThreshold;
 	private int startPredictions;
 	private int priorTrainDataSize;
+	
+	private int numPredictedPos = 0;
+	private int numPredictedNeg = 0;
+	
+	private double sumQpos = 0;
+	private double sumQneg = 0;
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
@@ -114,6 +121,9 @@ public class IntelligentStudent extends RLPacMan {
 		
 		//re-train SVM if needed
 		episode++;
+		
+		if (sumQpos>0 & sumQneg>0)
+			printAvgQsPosNeg();
 
 	}
 	
@@ -198,13 +208,13 @@ public class IntelligentStudent extends RLPacMan {
 						totalAdvice++;
 						this.AddImportanceExampleToClassifier(game, choice, true);
 						
-	//					try{
-	//					System.in.read();
-	//					}
-	//					catch(Exception e)
-	//					{
-	//						System.out.println("ex");
-	//					}
+//						try{
+//						System.in.read();
+//						}
+//						catch(Exception e)
+//						{
+//							System.out.println("ex");
+//						}
 						
 						return advice;
 					}
@@ -267,9 +277,29 @@ public class IntelligentStudent extends RLPacMan {
 		double importance = SVM.predictImportance(query, testFile, modelFile, classifyFile);
 //		System.out.println(importance);
 		if (importance>-1)
+		{
+			this.numPredictedPos++;
+			double[]teacherQvals = teacher.getQValues();
+			double impTrue = Stats.max(teacherQvals)-Stats.min(teacherQvals);
+			sumQpos+= impTrue;
 			return true;
+		}
 		else
+		{
+			this.numPredictedNeg++;
+			double[]teacherQvals = teacher.getQValues();
+			double impTrue = Stats.max(teacherQvals)-Stats.min(teacherQvals);
+			sumQneg+=impTrue;
 			return false;
+		}
+	}
+	
+	private void printAvgQsPosNeg()
+	{
+		double avgPos = sumQpos/numPredictedPos;
+		double avgNeg = sumQneg/numPredictedNeg;
+		System.out.println("avg pos = "+avgPos);
+		System.out.println("avg neg = "+avgNeg);
 	}
 	
 	/** Prepare for the next move. */

@@ -76,4 +76,33 @@ public class Stats {
 		}
 		return max;
 	}
+	
+	/** Find the maximum in an array of doubles. */
+	public static double second(double[] array) {
+		double maxQ = -Integer.MAX_VALUE;
+		double secQ = -Integer.MAX_VALUE;
+		int maxQInd = 0;
+		int secQInd = 0;
+		for (int i =0;i<array.length;i++)
+		{
+			if (array[i]>maxQ)
+			{
+				maxQ = array[i];
+				maxQInd = i;
+				
+			}
+		}
+		for (int j = 0;j<array.length;j++)
+		{
+			if (j!=maxQInd)
+			{
+				if (array[j]>secQ)
+				{
+					secQ = array[j];
+					secQInd = j;	
+				}
+			}
+		}
+		return secQ;
+	}
 }
