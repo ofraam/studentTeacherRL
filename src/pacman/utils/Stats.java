@@ -1,5 +1,8 @@
 package pacman.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Statistical utilities.
  */
@@ -117,4 +120,49 @@ public class Stats {
 		return dist;
 			
 	}
+	
+	public static double nearestNeighborDist(ArrayList<double[]> dataset, double[] vec)
+	{
+		double minDist = Integer.MAX_VALUE;
+		double currDist;
+		for (double[] currVec:dataset)
+		{
+			currDist = Stats.euclideanDistance(currVec, vec);
+			if (currDist<minDist)
+			{
+				minDist = currDist;
+			}
+		}
+		return minDist;
+	}
+	
+	public static double avgNearestNeighborDist(ArrayList<double[]> dataset)
+	{
+		double avgNNdist = 0;
+		double sumNNdist = 0;
+		for (double[] vec:dataset)
+		{
+			sumNNdist+=Stats.nearestNeighborDist(dataset, vec);
+		}
+		avgNNdist=sumNNdist/dataset.size();
+		return avgNNdist;
+	}
+	
+	public static double avgPairwiseDist(ArrayList<double[]> dataset)
+	{
+		double avgDist = 0;
+		double sumDist = 0;
+		double comps = 0;
+		for (int i =0;i<dataset.size();i++)
+		{
+			for (int j =i+1;j<dataset.size();j++)
+			{
+				sumDist+=Stats.euclideanDistance(dataset.get(i), dataset.get(j));
+				comps++;
+			}
+		}
+		avgDist=sumDist/comps;
+		return avgDist;
+	}
+	
 }
