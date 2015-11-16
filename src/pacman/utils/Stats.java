@@ -105,4 +105,16 @@ public class Stats {
 		}
 		return secQ;
 	}
+	
+	public static double euclideanDistance(double[] x, double[] y){
+		double dist = 0;
+		double sumSquares = 0;
+		for (int i =0;i<x.length;i++)
+		{
+			sumSquares+=Math.pow((x[i]-y[i]), 2);
+		}
+		dist = Math.sqrt(sumSquares);
+		return dist;
+			
+	}
 }
