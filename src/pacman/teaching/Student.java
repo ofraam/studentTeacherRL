@@ -158,4 +158,10 @@ public class Student extends RLPacMan {
 		
 		return data;
 	}
+
+	@Override
+	public void saveStates(String filename) {
+		// TODO Auto-generated method stub
+		
+	}
 }

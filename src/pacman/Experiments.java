@@ -45,14 +45,14 @@ public class Experiments {
 	
 	public static String TEACHER = "depthS"; // Teacher feature set and algorithm
 	public static String STUDENT = "depthS"; // Student feature set and algorithm
-	public static String DIR = "okPolicy/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 30; // Curves to average (30)
-	public static int LENGTH = 100; // Points per curve (100)
-	public static int TEST = 30; // Test episodes per point (30)
+	public static int LENGTH = 30; // Points per curve (100)
+	public static int TEST = 2; // Test episodes per point (30)
 	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
@@ -68,8 +68,8 @@ public class Experiments {
 		String teachingStrategy = args[0];
 		String mode = args[1];
 		String attentionMode = args[2];
-		
-		
+//		
+//		
 		System.out.println("starting");
  		train(teachingStrategy,0,mode, attentionMode);
  		
@@ -124,7 +124,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/student150/policy");
+//			student.loadPolicy("myData/"+TEACHER+"/student150/policy");
 			
 			// Front-load the advice budget
 			if (learner.startsWith("baseline")) {
@@ -293,6 +293,7 @@ public class Experiments {
 			
 			// Save new curve and policy
 			pacman.savePolicy(DIR+"/"+learner+"/policy"+i);
+			pacman.saveStates(DIR+"/"+learner+"/visited"+i);
 			curves[i].save(DIR+"/"+learner+"/curve"+i);
 			
 			// Average all curves

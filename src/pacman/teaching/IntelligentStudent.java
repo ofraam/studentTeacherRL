@@ -1,5 +1,7 @@
 package pacman.teaching;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import pacman.Experiments;
@@ -9,6 +11,8 @@ import pacman.entries.pacman.QFunction;
 import pacman.entries.pacman.RLPacMan;
 import pacman.game.Game;
 import pacman.game.Constants.MOVE;
+import pacman.utils.DataFile;
+import pacman.utils.FeatureVectorComparator;
 import pacman.utils.SVM;
 import pacman.utils.Stats;
 
@@ -49,6 +53,10 @@ public class IntelligentStudent extends RLPacMan {
 	private double sumQpos = 0;
 	private double sumQneg = 0;
 	
+	private ArrayList<double[]> visitedStates;
+	private double avgNearestNeighbor;
+	private double avgAllDists;
+	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
 		this.student = student;
@@ -60,6 +68,8 @@ public class IntelligentStudent extends RLPacMan {
 		modelFile = Experiments.DIR+"/importanceClassifier/model";
 		testFile = Experiments.DIR+"/importanceClassifier/test";
 		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
+		
+		visitedStates = new ArrayList<double[]>();
 	}
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, String askForAttentionStrategy) {
@@ -79,6 +89,8 @@ public class IntelligentStudent extends RLPacMan {
 		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
 		
 		priorTrainDataSize = 0;
+		
+		visitedStates = new ArrayList<double[]>();
 	}
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, AttentionStrategy attention) {
@@ -93,6 +105,8 @@ public class IntelligentStudent extends RLPacMan {
 		modelFile = Experiments.DIR+"/importanceClassifier/model";
 		testFile = Experiments.DIR+"/importanceClassifier/test";
 		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
+		
+		visitedStates = new ArrayList<double[]>();
 	}
 
 	/** Prepare for the first move. */
@@ -105,6 +119,13 @@ public class IntelligentStudent extends RLPacMan {
 //			trainData.clear();
 			trained = true;
 			}
+		
+		if (!testMode)
+		{
+//			this.updateAllDists();
+//			this.updateAvgNearestNeighbor();
+		}
+		
 		adviceCount = 0;
 		attentionCount = 0;
 		episodeLength = 0;
@@ -137,6 +158,16 @@ public class IntelligentStudent extends RLPacMan {
 			return isUncertainThreshold(uncertaintyThreshold);
 		if (this.askAttention.startsWith("importancePrediction"))
 			return predictedImportanceAsk(game, choice);
+		if (this.askAttention.startsWith("unfamiliarNN"))
+		{
+			double coef = Double.parseDouble(this.askAttention.substring(12));
+			return isUnfamiliarNN(game,choice, coef);
+		}
+		if (this.askAttention.startsWith("unfamiliarPW"))
+		{
+			double coef = Double.parseDouble(this.askAttention.substring(12));
+			return isUnfamiliarPW(game,choice,coef);
+		}
 		return false;
 	}
 	
@@ -159,6 +190,36 @@ public class IntelligentStudent extends RLPacMan {
 			return true;
 		else
 			return false;
+	}
+	
+	private boolean isUnfamiliarNN(Game game, MOVE choice, double coef)
+	{
+		double[] state = prototype.extract(game, choice).getVAlues();
+		FeatureVectorComparator fvc = new FeatureVectorComparator(state);
+		if (visitedStates.size()==0)
+			return true;
+		Collections.sort(this.visitedStates,fvc);
+		double dist = Stats.euclideanDistance(state, this.visitedStates.get(0));
+		if (dist>avgNearestNeighbor*coef)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isUnfamiliarPW(Game game, MOVE choice, double coef)
+	{
+		double[] state = prototype.extract(game, choice).getVAlues();
+		FeatureVectorComparator fvc = new FeatureVectorComparator(state);
+		if (visitedStates.size()==0)
+			return true;
+		Collections.sort(this.visitedStates,fvc);
+		double dist = Stats.euclideanDistance(state, this.visitedStates.get(0));
+		if (dist>avgAllDists*coef)
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	private boolean predictedImportanceAsk(Game game, MOVE choice)
@@ -215,7 +276,7 @@ public class IntelligentStudent extends RLPacMan {
 //						{
 //							System.out.println("ex");
 //						}
-						
+						this.visitedStates.add(this.prototype.extract(game, advice).getVAlues());
 						return advice;
 					}
 					else
@@ -242,7 +303,7 @@ public class IntelligentStudent extends RLPacMan {
 	//					{
 	//						System.out.println("ex");
 	//					}
-						
+						this.visitedStates.add(this.prototype.extract(game, advice).getVAlues());
 						return advice;
 					}	
 					else
@@ -255,7 +316,7 @@ public class IntelligentStudent extends RLPacMan {
 		}
 		if (!testMode & trainData.size()<10000)
 			this.AddImportanceExampleToClassifier(game,choice, false);
-		
+		this.visitedStates.add(this.prototype.extract(game, choice).getVAlues());
 		return choice;
 	}
 	
@@ -267,6 +328,16 @@ public class IntelligentStudent extends RLPacMan {
 		if (important)
 			targetClass = "+1";
 		trainData.addLast(SVM.exampleImportance(currentState, targetClass)); 
+	}
+	
+	private void updateAvgNearestNeighbor()
+	{
+		avgNearestNeighbor = Stats.avgNearestNeighborDist(visitedStates);
+	}
+	
+	private void updateAllDists()
+	{
+		avgAllDists = Stats.avgPairwiseDist(visitedStates);
 	}
 	
 
@@ -315,6 +386,26 @@ public class IntelligentStudent extends RLPacMan {
 		student.savePolicy(filename);
 	}
 
+
+	
+	public void loadVisitedState(String filename)
+	{
+		DataFile file = new DataFile(filename);
+		String line = file.nextLine();
+		while (line!=null)
+		{
+			String[] values = line.split(",");
+			double[]vec = new double[values.length];
+			for (int i=0;i<values.length;i++)
+			{
+				vec[i]=Double.parseDouble(values[i]);
+			}
+			line = file.nextLine();
+		}
+
+		file.close();
+	}
+	
 	/** Report amount of advice given in the last episode,
 	 *  along with any other data the strategy wants to record. */
 	public double[] episodeData() {
@@ -331,4 +422,23 @@ public class IntelligentStudent extends RLPacMan {
 		
 		return data;
 	}
+
+	@Override
+	public void saveStates(String filename) {
+		DataFile file = new DataFile(filename);
+		file.clear();
+		for (double[] vec:this.visitedStates)
+		{
+			for (int i=0;i<vec.length;i++)
+			{
+				file.append(Double.toString(vec[i]));
+				if (i<vec.length-1)
+					file.append(",");
+			}
+			file.append("\n");
+		}
+		file.close();
+	}
+	
+	
 }

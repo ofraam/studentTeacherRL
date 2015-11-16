@@ -137,4 +137,10 @@ public class DepthFeatureSet extends FeatureSet {
 			}
 		}
 	}
+	
+	@Override
+	public double[] getVAlues() {
+		
+		return this.values;
+	}
 }

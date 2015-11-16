@@ -325,4 +325,10 @@ public class CustomFeatureSetOnlyState extends FeatureSet {
 
 		return distances;
 	}
+	
+	@Override
+	public double[] getVAlues() {
+		
+		return this.values;
+	}
 }

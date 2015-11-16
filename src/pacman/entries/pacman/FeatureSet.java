@@ -11,7 +11,7 @@ public abstract class FeatureSet {
 	public abstract int size();
 	public abstract double get(int i);
 	public abstract FeatureSet extract(Game game, MOVE move);
-	
+	public abstract double[] getVAlues();
 	// Same if all values are the same
 	public boolean equals(FeatureSet other) {
 		if (this.size() != other.size())

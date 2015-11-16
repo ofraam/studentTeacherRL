@@ -1,6 +1,8 @@
 package pacman.controllers.examples;
 
+import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Random;
 import pacman.controllers.Controller;
 import pacman.game.Game;
@@ -42,4 +44,6 @@ public class Legacy extends Controller<EnumMap<GHOST,MOVE>>
 		
 		return myMoves;
 	}
+	
+
 }

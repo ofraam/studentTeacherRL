@@ -215,4 +215,10 @@ public class QPacMan extends BasicRLPacMan {
 	public void loadPolicy(String filename) {
 		Qfunction = new QFunction(prototype, filename);
 	}
+
+	@Override
+	public void saveStates(String filename) {
+		// TODO Auto-generated method stub
+		
+	}
 }
