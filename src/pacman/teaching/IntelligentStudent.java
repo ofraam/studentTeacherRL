@@ -161,6 +161,8 @@ public class IntelligentStudent extends RLPacMan {
 	{
 		if (!this.strategy.inUse())
 			return false;
+		if (this.askAttention.equals("never"))
+			return false;
 		if (this.askAttention.equals("always"))
 			return true;
 		if (this.askAttention.equals("avgCertainty"))
@@ -299,12 +301,12 @@ public class IntelligentStudent extends RLPacMan {
 //						{
 //							System.out.println("ex");
 //						}
-//						FeatureSet state = this.prototype.extract(game, advice);
-//						if (!visitedKeys.containsKey(state))
-//						{
-//							this.visitedStates.add(state.getVAlues());
-//							this.visitedKeys.put(state, 0.0);
-//						}
+						FeatureSet state = this.prototype.extract(game, advice);
+						if (!visitedKeys.containsKey(state))
+						{
+							this.visitedStates.add(state.getVAlues());
+							this.visitedKeys.put(state, 0.0);
+						}
 						return advice;
 					}
 					else
@@ -331,12 +333,12 @@ public class IntelligentStudent extends RLPacMan {
 	//					{
 	//						System.out.println("ex");
 	//					}
-//						FeatureSet state = this.prototype.extract(game, advice);
-//						if (!visitedKeys.containsKey(state))
-//						{
-//							this.visitedStates.add(state.getVAlues());
-//							this.visitedKeys.put(state, 0);
-//						}
+						FeatureSet state = this.prototype.extract(game, advice);
+						if (!visitedKeys.containsKey(state))
+						{
+							this.visitedStates.add(state.getVAlues());
+							this.visitedKeys.put(state, 0.0);
+						}
 						return advice;
 					}	
 					else
@@ -349,12 +351,12 @@ public class IntelligentStudent extends RLPacMan {
 		}
 		if (!testMode & trainData.size()<10000)
 			this.AddImportanceExampleToClassifier(game,choice, false);
-//		FeatureSet state = this.prototype.extract(game, choice);
-//		if (!visitedKeys.containsKey(state))
-//		{
-//			this.visitedStates.add(state.getVAlues());
-//			this.visitedKeys.put(state, 0);
-//		}
+		FeatureSet state = this.prototype.extract(game, choice);
+		if (!visitedKeys.containsKey(state))
+		{
+			this.visitedStates.add(state.getVAlues());
+			this.visitedKeys.put(state, 0.0);
+		}
 
 		return choice;
 	}
