@@ -128,7 +128,7 @@ public class Stats {
 		for (double[] currVec:dataset)
 		{
 			currDist = Stats.euclideanDistance(currVec, vec);
-			if (currDist<minDist)
+			if (currDist<minDist & currDist>0)
 			{
 				minDist = currDist;
 			}

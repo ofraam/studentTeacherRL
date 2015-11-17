@@ -344,9 +344,20 @@ public class IntelligentStudent extends RLPacMan {
 		avgNearestNeighbor = Stats.avgNearestNeighborDist(visitedStates);
 	}
 	
+	private void updateAvgNearestNeighbor(ArrayList<double[]> chosen)
+	{
+
+		avgNearestNeighbor = Stats.avgNearestNeighborDist(chosen);
+	}
+	
 	private void updateAllDists()
 	{
 		avgAllDists = Stats.avgPairwiseDist(visitedStates);
+	}
+	
+	private void updateAllDists(ArrayList<double[]> chosen)
+	{
+		avgAllDists = Stats.avgPairwiseDist(chosen);
 	}
 	
 
@@ -445,7 +456,7 @@ public class IntelligentStudent extends RLPacMan {
 		DataFile file = new DataFile(filename);
 		file.clear();
 		double choose = size/visitedStates.size();
-
+		ArrayList<double[]> chosen= new ArrayList<double[]>();
 		for (double[] vec:this.visitedStates)
 		{
 			if (Math.random()<choose)
@@ -457,6 +468,7 @@ public class IntelligentStudent extends RLPacMan {
 						file.append(",");
 				}
 				file.append("\n");
+				chosen.add(vec);
 			}
 		}
 		
@@ -465,10 +477,10 @@ public class IntelligentStudent extends RLPacMan {
 		DataFile file2 = new DataFile(filename+"AvgDist");
 		file2.clear();
 		System.out.println("start update all pairwise");
-		this.updateAllDists();
+		this.updateAllDists(chosen);
 		System.out.println("done updating all pairwise");
 		System.out.println("start update nearest neighbor");
-		this.updateAvgNearestNeighbor();
+		this.updateAvgNearestNeighbor(chosen);
 		System.out.println("done updating nearest neighbor");
 		file2.append(Double.toString(avgNearestNeighbor)+"\n");
 		file2.append(Double.toString(avgAllDists)+"\n");
