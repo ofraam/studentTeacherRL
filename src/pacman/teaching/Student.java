@@ -159,8 +159,16 @@ public class Student extends RLPacMan {
 		return data;
 	}
 
+
+
 	@Override
-	public void saveStates(String filename) {
+	public void loadVisitedState(String filename) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveStates(String filename, double sampleSize) {
 		// TODO Auto-generated method stub
 		
 	}

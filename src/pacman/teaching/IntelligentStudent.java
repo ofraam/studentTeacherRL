@@ -2,6 +2,7 @@ package pacman.teaching;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import pacman.Experiments;
@@ -54,6 +55,7 @@ public class IntelligentStudent extends RLPacMan {
 	private double sumQneg = 0;
 	
 	private ArrayList<double[]> visitedStates;
+	private HashMap<double[],Double> visitedKeys;
 	private double avgNearestNeighbor;
 	private double avgAllDists;
 	
@@ -70,6 +72,7 @@ public class IntelligentStudent extends RLPacMan {
 		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
 		
 		visitedStates = new ArrayList<double[]>();
+		visitedKeys = new HashMap<double[], Double>();
 	}
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, String askForAttentionStrategy) {
@@ -91,6 +94,8 @@ public class IntelligentStudent extends RLPacMan {
 		priorTrainDataSize = 0;
 		
 		visitedStates = new ArrayList<double[]>();
+		visitedKeys = new HashMap<double[], Double>();
+
 	}
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, AttentionStrategy attention) {
@@ -107,6 +112,8 @@ public class IntelligentStudent extends RLPacMan {
 		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
 		
 		visitedStates = new ArrayList<double[]>();
+		visitedKeys = new HashMap<double[], Double>();
+
 	}
 
 	/** Prepare for the first move. */
@@ -276,6 +283,7 @@ public class IntelligentStudent extends RLPacMan {
 //						{
 //							System.out.println("ex");
 //						}
+
 						this.visitedStates.add(this.prototype.extract(game, advice).getVAlues());
 						return advice;
 					}
@@ -332,6 +340,7 @@ public class IntelligentStudent extends RLPacMan {
 	
 	private void updateAvgNearestNeighbor()
 	{
+
 		avgNearestNeighbor = Stats.avgNearestNeighborDist(visitedStates);
 	}
 	
@@ -391,19 +400,27 @@ public class IntelligentStudent extends RLPacMan {
 	public void loadVisitedState(String filename)
 	{
 		DataFile file = new DataFile(filename);
-		String line = file.nextLine();
-		while (line!=null)
+		
+		while (file.hasNextLine())
 		{
+			String line = file.nextLine();
 			String[] values = line.split(",");
 			double[]vec = new double[values.length];
 			for (int i=0;i<values.length;i++)
 			{
 				vec[i]=Double.parseDouble(values[i]);
+				
 			}
-			line = file.nextLine();
+			this.visitedStates.add(vec);
+
+				
+//			System.out.println(vec);
 		}
 
 		file.close();
+		System.out.println("start update");
+		this.updateAvgNearestNeighbor();
+		System.out.println("done updating");
 	}
 	
 	/** Report amount of advice given in the last episode,
@@ -424,20 +441,39 @@ public class IntelligentStudent extends RLPacMan {
 	}
 
 	@Override
-	public void saveStates(String filename) {
+	public void saveStates(String filename, double size) {
 		DataFile file = new DataFile(filename);
 		file.clear();
+		double choose = size/visitedStates.size();
+
 		for (double[] vec:this.visitedStates)
 		{
-			for (int i=0;i<vec.length;i++)
+			if (Math.random()<choose)
 			{
-				file.append(Double.toString(vec[i]));
-				if (i<vec.length-1)
-					file.append(",");
+				for (int i=0;i<vec.length;i++)
+				{
+					file.append(Double.toString(vec[i]));
+					if (i<vec.length-1)
+						file.append(",");
+				}
+				file.append("\n");
 			}
-			file.append("\n");
 		}
+		
 		file.close();
+		
+		DataFile file2 = new DataFile(filename+"AvgDist");
+		file2.clear();
+		System.out.println("start update all pairwise");
+		this.updateAllDists();
+		System.out.println("done updating all pairwise");
+		System.out.println("start update nearest neighbor");
+		this.updateAvgNearestNeighbor();
+		System.out.println("done updating nearest neighbor");
+		file2.append(Double.toString(avgNearestNeighbor)+"\n");
+		file2.append(Double.toString(avgAllDists)+"\n");
+		file2.close();
+		
 	}
 	
 	

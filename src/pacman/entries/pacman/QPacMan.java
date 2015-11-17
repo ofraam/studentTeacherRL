@@ -217,7 +217,13 @@ public class QPacMan extends BasicRLPacMan {
 	}
 
 	@Override
-	public void saveStates(String filename) {
+	public void saveStates(String filename, double size) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loadVisitedState(String filename) {
 		// TODO Auto-generated method stub
 		
 	}
