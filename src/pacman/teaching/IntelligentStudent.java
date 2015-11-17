@@ -55,7 +55,7 @@ public class IntelligentStudent extends RLPacMan {
 	private double sumQneg = 0;
 	
 	private ArrayList<double[]> visitedStates;
-	private HashMap<double[],Double> visitedKeys;
+	private HashMap<FeatureSet,Double> visitedKeys;
 	private double avgNearestNeighbor;
 	private double avgAllDists;
 	private double coef; //for methods with coefficient
@@ -74,7 +74,7 @@ public class IntelligentStudent extends RLPacMan {
 		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
 		
 		visitedStates = new ArrayList<double[]>();
-		visitedKeys = new HashMap<double[], Double>();
+		visitedKeys = new HashMap<FeatureSet, Double>();
 	}
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, String askForAttentionStrategy) {
@@ -96,7 +96,7 @@ public class IntelligentStudent extends RLPacMan {
 		priorTrainDataSize = 0;
 		
 		visitedStates = new ArrayList<double[]>();
-		visitedKeys = new HashMap<double[], Double>();
+		visitedKeys = new HashMap<FeatureSet, Double>();
 
 	}
 	
@@ -114,7 +114,7 @@ public class IntelligentStudent extends RLPacMan {
 		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
 		
 		visitedStates = new ArrayList<double[]>();
-		visitedKeys = new HashMap<double[], Double>();
+		visitedKeys = new HashMap<FeatureSet, Double>();
 
 	}
 
@@ -159,6 +159,8 @@ public class IntelligentStudent extends RLPacMan {
 	
 	private boolean askForAttention(Game game, MOVE choice)
 	{
+		if (!this.strategy.inUse())
+			return false;
 		if (this.askAttention.equals("always"))
 			return true;
 		if (this.askAttention.equals("avgCertainty"))
@@ -203,14 +205,23 @@ public class IntelligentStudent extends RLPacMan {
 	
 	private boolean isUnfamiliarNN(Game game, MOVE choice, double coef)
 	{
-		double[] state = prototype.extract(game, choice).getVAlues();
+		FeatureSet stateFeatures = prototype.extract(game, choice);
+		double[] state = stateFeatures.getVAlues();
 //		FeatureVectorComparator fvc = new FeatureVectorComparator(state);
 		if (visitedStates.size()==0)
 			return true;
-		double dist = Stats.nearestNeighborDist(this.visitedStates, state);
-//		Collections.sort(this.visitedStates,fvc);
-//		double dist = Stats.euclideanDistance(state, this.visitedStates.get(0));
-
+		double dist;
+		if (visitedKeys.containsKey(stateFeatures))
+		{
+			dist = visitedKeys.get(stateFeatures);
+//			System.out.println("key there");
+		}
+		else
+		{
+			dist = Stats.nearestNeighborDist(this.visitedStates, state);
+			visitedKeys.put(stateFeatures, dist);
+		}
+		
 		if (dist>avgNearestNeighbor*coef)
 		{
 //			System.out.println("asked");
@@ -288,8 +299,12 @@ public class IntelligentStudent extends RLPacMan {
 //						{
 //							System.out.println("ex");
 //						}
-
-						this.visitedStates.add(this.prototype.extract(game, advice).getVAlues());
+//						FeatureSet state = this.prototype.extract(game, advice);
+//						if (!visitedKeys.containsKey(state))
+//						{
+//							this.visitedStates.add(state.getVAlues());
+//							this.visitedKeys.put(state, 0.0);
+//						}
 						return advice;
 					}
 					else
@@ -316,7 +331,12 @@ public class IntelligentStudent extends RLPacMan {
 	//					{
 	//						System.out.println("ex");
 	//					}
-						this.visitedStates.add(this.prototype.extract(game, advice).getVAlues());
+//						FeatureSet state = this.prototype.extract(game, advice);
+//						if (!visitedKeys.containsKey(state))
+//						{
+//							this.visitedStates.add(state.getVAlues());
+//							this.visitedKeys.put(state, 0);
+//						}
 						return advice;
 					}	
 					else
@@ -329,7 +349,13 @@ public class IntelligentStudent extends RLPacMan {
 		}
 		if (!testMode & trainData.size()<10000)
 			this.AddImportanceExampleToClassifier(game,choice, false);
-		this.visitedStates.add(this.prototype.extract(game, choice).getVAlues());
+//		FeatureSet state = this.prototype.extract(game, choice);
+//		if (!visitedKeys.containsKey(state))
+//		{
+//			this.visitedStates.add(state.getVAlues());
+//			this.visitedKeys.put(state, 0);
+//		}
+
 		return choice;
 	}
 	

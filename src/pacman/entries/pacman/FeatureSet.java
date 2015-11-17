@@ -13,7 +13,7 @@ public abstract class FeatureSet {
 	public abstract FeatureSet extract(Game game, MOVE move);
 	public abstract double[] getVAlues();
 	// Same if all values are the same
-	public boolean equals(FeatureSet other) {
+	public  boolean equals(FeatureSet other) {
 		if (this.size() != other.size())
 			return false;
 		
@@ -22,5 +22,28 @@ public abstract class FeatureSet {
 				return false;
 		
 		return true;
+	}
+	
+	public  boolean equals(Object other) {
+		FeatureSet otherFeatures = (FeatureSet)other;
+		if (this.size() != otherFeatures.size())
+			return false;
+		
+		for (int i=0; i<this.size(); i++)
+			if (this.get(i) != otherFeatures.get(i))
+				return false;
+		
+		return true;
+	}
+	
+	public int hashCode()
+	{
+		int result=0;
+		for (int i=0;i<this.size();i++)
+		{
+			result+=37*(Double.doubleToLongBits(this.get(i)));
+		}
+//		System.out.println(result);
+		return result;
 	}
 }
