@@ -246,26 +246,26 @@ public class Experiments {
 	
 	/** Generate learning curves. */
 	public static void train(String learner, int start, String initiator, String attentionMode) {
-		
+		String learnerCombined = learner+"_"+attentionMode;
 		// Make sure directory exists
-		File file = new File(DIR+"/"+learner);
+		File file = new File(DIR+"/"+learnerCombined);
 		Boolean created = false;
 		if (!file.exists())
 			created = file.mkdir();
 			System.out.println(created);
 		
-		writeConfig(DIR+"/"+learner+"/config.txt", initiator);	
+		writeConfig(DIR+"/"+learnerCombined+"/config.txt", initiator);	
 			
 		// Load old curves
 		LearningCurve[] curves = new LearningCurve[REPEATS];
 		for (int i=0; i<start; i++)
-			curves[i] = new LearningCurve(LENGTH+1, TRAIN, DIR+"/"+learner+"/curve"+i);
+			curves[i] = new LearningCurve(LENGTH+1, TRAIN, DIR+"/"+learnerCombined+"/curve"+i);
 		
 		// Begin new curves
 		for (int i=start; i<REPEATS; i++) {
 			curves[i] = new LearningCurve(LENGTH+1, TRAIN);
 			
-			System.out.println("Training "+DIR+"/"+learner+" "+i+"...");
+			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode);
 			pacman.loadVisitedState("myData/"+TEACHER+"/student350/visited");
 			// First point
@@ -293,13 +293,13 @@ public class Experiments {
 			}
 			
 			// Save new curve and policy
-			pacman.savePolicy(DIR+"/"+learner+"/policy"+i);
-			pacman.saveStates(DIR+"/"+learner+"/visited"+i,10000);
-			curves[i].save(DIR+"/"+learner+"/curve"+i);
+			pacman.savePolicy(DIR+"/"+learnerCombined+"/policy"+i);
+//			pacman.saveStates(DIR+"/"+learnerCombined+"/visited"+i,10000);
+			curves[i].save(DIR+"/"+learnerCombined+"/curve"+i);
 			
 			// Average all curves
 			LearningCurve avgCurve = new LearningCurve(Arrays.copyOf(curves, i+1));
-			avgCurve.save(DIR+"/"+learner+"/avg_curve");
+			avgCurve.save(DIR+"/"+learnerCombined+"/avg_curve");
 		}
 		
 		System.out.println("Done.");

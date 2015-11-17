@@ -207,6 +207,8 @@ public class IntelligentStudent extends RLPacMan {
 			return true;
 		Collections.sort(this.visitedStates,fvc);
 		double dist = Stats.euclideanDistance(state, this.visitedStates.get(0));
+		if (dist!=0)
+			System.out.println("new state");
 		if (dist>avgNearestNeighbor*coef)
 		{
 			return true;
@@ -410,26 +412,31 @@ public class IntelligentStudent extends RLPacMan {
 	
 	public void loadVisitedState(String filename)
 	{
-		DataFile file = new DataFile(filename);
+		DataFile file = new DataFile(filename+"Avg");
 		avgNearestNeighbor=Double.parseDouble(file.nextLine());
 		avgAllDists=Double.parseDouble(file.nextLine());
-//		while (file.hasNextLine())
-//		{
-//			String line = file.nextLine();
-//			String[] values = line.split(",");
-//			double[]vec = new double[values.length];
-//			for (int i=0;i<values.length;i++)
-//			{
-//				vec[i]=Double.parseDouble(values[i]);
-//				
-//			}
-//			this.visitedStates.add(vec);
-//
-//				
-////			System.out.println(vec);
-//		}
+
 
 		file.close();
+		
+		DataFile file2 = new DataFile(filename);
+		
+		while (file2.hasNextLine())
+		{
+			String line = file2.nextLine();
+			String[] values = line.split(",");
+			double[]vec = new double[values.length];
+			for (int i=0;i<values.length;i++)
+			{
+				vec[i]=Double.parseDouble(values[i]);
+				
+			}
+			this.visitedStates.add(vec);
+
+				
+//			System.out.println(vec);
+		}
+		file2.close();
 //		System.out.println("start update");
 //		this.updateAvgNearestNeighbor();
 //		System.out.println("done updating");
