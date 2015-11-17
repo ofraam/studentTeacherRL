@@ -58,6 +58,8 @@ public class IntelligentStudent extends RLPacMan {
 	private HashMap<double[],Double> visitedKeys;
 	private double avgNearestNeighbor;
 	private double avgAllDists;
+	private double coef; //for methods with coefficient
+	
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
@@ -167,12 +169,12 @@ public class IntelligentStudent extends RLPacMan {
 			return predictedImportanceAsk(game, choice);
 		if (this.askAttention.startsWith("unfamiliarNN"))
 		{
-			double coef = Double.parseDouble(this.askAttention.substring(12));
+			coef = Double.parseDouble(this.askAttention.substring(12));
 			return isUnfamiliarNN(game,choice, coef);
 		}
 		if (this.askAttention.startsWith("unfamiliarPW"))
 		{
-			double coef = Double.parseDouble(this.askAttention.substring(12));
+			coef = Double.parseDouble(this.askAttention.substring(12));
 			return isUnfamiliarPW(game,choice,coef);
 		}
 		return false;
@@ -202,15 +204,16 @@ public class IntelligentStudent extends RLPacMan {
 	private boolean isUnfamiliarNN(Game game, MOVE choice, double coef)
 	{
 		double[] state = prototype.extract(game, choice).getVAlues();
-		FeatureVectorComparator fvc = new FeatureVectorComparator(state);
+//		FeatureVectorComparator fvc = new FeatureVectorComparator(state);
 		if (visitedStates.size()==0)
 			return true;
-		Collections.sort(this.visitedStates,fvc);
-		double dist = Stats.euclideanDistance(state, this.visitedStates.get(0));
-		if (dist!=0)
-			System.out.println("new state");
+		double dist = Stats.nearestNeighborDist(this.visitedStates, state);
+//		Collections.sort(this.visitedStates,fvc);
+//		double dist = Stats.euclideanDistance(state, this.visitedStates.get(0));
+
 		if (dist>avgNearestNeighbor*coef)
 		{
+//			System.out.println("asked");
 			return true;
 		}
 		return false;

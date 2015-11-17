@@ -121,6 +121,7 @@ public class Stats {
 			
 	}
 	
+	
 	public static double nearestNeighborDist(ArrayList<double[]> dataset, double[] vec)
 	{
 		double minDist = Integer.MAX_VALUE;
