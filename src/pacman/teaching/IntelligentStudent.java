@@ -127,11 +127,11 @@ public class IntelligentStudent extends RLPacMan {
 			trained = true;
 			}
 		
-		if (!testMode)
-		{
+//		if (!testMode)
+//		{
 //			this.updateAllDists();
 //			this.updateAvgNearestNeighbor();
-		}
+//		}
 		
 		adviceCount = 0;
 		attentionCount = 0;
@@ -411,27 +411,28 @@ public class IntelligentStudent extends RLPacMan {
 	public void loadVisitedState(String filename)
 	{
 		DataFile file = new DataFile(filename);
-		
-		while (file.hasNextLine())
-		{
-			String line = file.nextLine();
-			String[] values = line.split(",");
-			double[]vec = new double[values.length];
-			for (int i=0;i<values.length;i++)
-			{
-				vec[i]=Double.parseDouble(values[i]);
-				
-			}
-			this.visitedStates.add(vec);
-
-				
-//			System.out.println(vec);
-		}
+		avgNearestNeighbor=Double.parseDouble(file.nextLine());
+		avgAllDists=Double.parseDouble(file.nextLine());
+//		while (file.hasNextLine())
+//		{
+//			String line = file.nextLine();
+//			String[] values = line.split(",");
+//			double[]vec = new double[values.length];
+//			for (int i=0;i<values.length;i++)
+//			{
+//				vec[i]=Double.parseDouble(values[i]);
+//				
+//			}
+//			this.visitedStates.add(vec);
+//
+//				
+////			System.out.println(vec);
+//		}
 
 		file.close();
-		System.out.println("start update");
-		this.updateAvgNearestNeighbor();
-		System.out.println("done updating");
+//		System.out.println("start update");
+//		this.updateAvgNearestNeighbor();
+//		System.out.println("done updating");
 	}
 	
 	/** Report amount of advice given in the last episode,

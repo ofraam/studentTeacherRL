@@ -124,7 +124,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-//			student.loadPolicy("myData/"+TEACHER+"/student350/policy");
+			student.loadPolicy("myData/"+TEACHER+"/student350/policy");
 			
 			
 			// Front-load the advice budget
@@ -267,7 +267,7 @@ public class Experiments {
 			
 			System.out.println("Training "+DIR+"/"+learner+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode);
-//			pacman.loadVisitedState("myData/"+TEACHER+"/student350/visited");
+			pacman.loadVisitedState("myData/"+TEACHER+"/student350/visited");
 			// First point
 			double[] initialData = pacman.episodeData();
 			double initialScore = evaluate(pacman, TEST);
