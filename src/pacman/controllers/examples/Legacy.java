@@ -31,10 +31,10 @@ public class Legacy extends Controller<EnumMap<GHOST,MOVE>>
 			myMoves.put(GHOST.BLINKY,
 					game.getApproximateNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(GHOST.BLINKY),targetNode,game.getGhostLastMoveMade(GHOST.BLINKY),DM.PATH));
 		
-		if(game.doesGhostRequireAction(GHOST.INKY))
-			myMoves.put(GHOST.INKY,
-					game.getApproximateNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(GHOST.INKY),targetNode,game.getGhostLastMoveMade(GHOST.INKY),DM.MANHATTAN));
-		
+//		if(game.doesGhostRequireAction(GHOST.INKY))
+//			myMoves.put(GHOST.INKY,
+//					game.getApproximateNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(GHOST.INKY),targetNode,game.getGhostLastMoveMade(GHOST.INKY),DM.MANHATTAN));
+//		
 		if(game.doesGhostRequireAction(GHOST.PINKY))
 			myMoves.put(GHOST.PINKY,
 					game.getApproximateNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(GHOST.PINKY),targetNode,game.getGhostLastMoveMade(GHOST.PINKY),DM.EUCLID));
