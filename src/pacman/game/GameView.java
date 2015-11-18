@@ -393,11 +393,11 @@ public final class GameView extends JComponent
     		ghosts.get(GHOST.PINKY).put(MOVE.DOWN,new BufferedImage[]{_loadImage("pinky-down-1.png"), _loadImage("pinky-down-2.png")});
     		ghosts.get(GHOST.PINKY).put(MOVE.LEFT,new BufferedImage[]{_loadImage("pinky-left-1.png"), _loadImage("pinky-left-2.png")});
             
-//    		ghosts.put(GHOST.INKY,new EnumMap<MOVE,BufferedImage[]>(MOVE.class));
-//    		ghosts.get(GHOST.INKY).put(MOVE.UP,new BufferedImage[]{_loadImage("inky-up-1.png"), _loadImage("inky-up-2.png")});
-//    		ghosts.get(GHOST.INKY).put(MOVE.RIGHT,new BufferedImage[]{_loadImage("inky-right-1.png"), _loadImage("inky-right-2.png")});
-//    		ghosts.get(GHOST.INKY).put(MOVE.DOWN,new BufferedImage[]{_loadImage("inky-down-1.png"), _loadImage("inky-down-2.png")});
-//    		ghosts.get(GHOST.INKY).put(MOVE.LEFT,new BufferedImage[]{_loadImage("inky-left-1.png"), _loadImage("inky-left-2.png")});
+    		ghosts.put(GHOST.INKY,new EnumMap<MOVE,BufferedImage[]>(MOVE.class));
+    		ghosts.get(GHOST.INKY).put(MOVE.UP,new BufferedImage[]{_loadImage("inky-up-1.png"), _loadImage("inky-up-2.png")});
+    		ghosts.get(GHOST.INKY).put(MOVE.RIGHT,new BufferedImage[]{_loadImage("inky-right-1.png"), _loadImage("inky-right-2.png")});
+    		ghosts.get(GHOST.INKY).put(MOVE.DOWN,new BufferedImage[]{_loadImage("inky-down-1.png"), _loadImage("inky-down-2.png")});
+    		ghosts.get(GHOST.INKY).put(MOVE.LEFT,new BufferedImage[]{_loadImage("inky-left-1.png"), _loadImage("inky-left-2.png")});
 
     		ghosts.put(GHOST.SUE,new EnumMap<MOVE,BufferedImage[]>(MOVE.class));
     		ghosts.get(GHOST.SUE).put(MOVE.UP,new BufferedImage[]{_loadImage("sue-up-1.png"), _loadImage("sue-up-2.png")});

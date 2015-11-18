@@ -34,7 +34,7 @@ public final class Constants
 	{
 		BLINKY(40),
 		PINKY(60),
-//		INKY(80),
+		INKY(80),
 		SUE(100);
 		
 		public final int initialLairTime;
