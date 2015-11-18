@@ -167,8 +167,16 @@ public class IntelligentStudent extends RLPacMan {
 			return true;
 		if (this.askAttention.equals("avgCertainty"))
 			return isUncertainAvg();
+		if (this.askAttention.startsWith("importance"))
+		{
+			coef = Double.parseDouble(this.askAttention.substring(10));
+			return isImportantThreshold(coef);
+		}
 		if (this.askAttention.equals("uncertaintyThreshold"))
-			return isUncertainThreshold(uncertaintyThreshold);
+		{
+			coef = Double.parseDouble(this.askAttention.substring(20));
+			return isUncertainThreshold(coef);
+		}
 		if (this.askAttention.startsWith("importancePrediction"))
 			return predictedImportanceAsk(game, choice);
 		if (this.askAttention.startsWith("unfamiliarNN"))
@@ -189,13 +197,23 @@ public class IntelligentStudent extends RLPacMan {
 		double [] qvals = student.getQValues();
 		double avgDiff = student.getAvgQdiff();
 		double gap = Stats.max(qvals) - Stats.min(qvals);
-		if (gap>avgDiff)
+		if (gap<avgDiff)
 			return true;
 		else
 			return false;
 	}
 	
 	private boolean isUncertainThreshold(double threshold)
+	{
+		double [] qvals = student.getQValues();
+		double gap = Stats.max(qvals) - Stats.min(qvals);
+		if (gap<threshold)
+			return true;
+		else
+			return false;
+	}
+	
+	private boolean isImportantThreshold(double threshold)
 	{
 		double [] qvals = student.getQValues();
 		double gap = Stats.max(qvals) - Stats.min(qvals);
