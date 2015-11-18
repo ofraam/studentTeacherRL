@@ -23,7 +23,7 @@ public class Legacy2TheReckoning extends Controller<EnumMap<GHOST,MOVE>>
     public Legacy2TheReckoning()
     {
     	cornerAllocation.put(GHOST.BLINKY,0);
-    	cornerAllocation.put(GHOST.INKY,1);
+//    	cornerAllocation.put(GHOST.INKY,1);
     	cornerAllocation.put(GHOST.PINKY,2);
     	cornerAllocation.put(GHOST.SUE,3);
     }
