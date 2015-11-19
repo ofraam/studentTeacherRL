@@ -3,6 +3,7 @@ package pacman;
 import static pacman.game.Constants.DELAY;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Random;
@@ -43,16 +44,16 @@ import pacman.utils.Stats;
 
 public class Experiments {
 	
-	public static String TEACHER = "depthS"; // Teacher feature set and algorithm
-	public static String STUDENT = "depthS"; // Student feature set and algorithm
-	public static String DIR = "3ghosts300/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String TEACHER = "customS"; // Teacher feature set and algorithm
+	public static String STUDENT = "customS"; // Student feature set and algorithm
+	public static String DIR = "noPowerPills150/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 30; // Curves to average (30)
-	public static int LENGTH = 100; // Points per curve (100)
-	public static int TEST = 30; // Test episodes per point (30)
+	public static int LENGTH = 15; // Points per curve (100)
+	public static int TEST = 1; // Test episodes per point (30)
 	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
@@ -124,7 +125,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/3ghosts_300/policy");
+//			student.loadPolicy("myData/"+TEACHER+"/3ghosts_300/policy");
 			
 			
 			// Front-load the advice budget
@@ -267,7 +268,7 @@ public class Experiments {
 			
 			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode);
-			pacman.loadVisitedState("myData/"+TEACHER+"/3ghosts_300/visited");
+//			pacman.loadVisitedState("myData/"+TEACHER+"/3ghosts_300/visited");
 			// First point
 			double[] initialData = pacman.episodeData();
 			double initialScore = evaluate(pacman, TEST);
@@ -294,7 +295,7 @@ public class Experiments {
 			
 			// Save new curve and policy
 			pacman.savePolicy(DIR+"/"+learnerCombined+"/policy"+i);
-//			pacman.saveStates(DIR+"/"+learnerCombined+"/visited"+i,4000);
+			pacman.saveStates(DIR+"/"+learnerCombined+"/visited"+i,4000);
 			curves[i].save(DIR+"/"+learnerCombined+"/curve"+i);
 			
 			// Average all curves
@@ -333,7 +334,12 @@ public class Experiments {
 			pacman.processStep(game);
 			
 			gv.repaint();
-			
+			try {
+				System.in.read();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			length++;
 		}
 		return length;
