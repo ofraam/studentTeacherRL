@@ -20,6 +20,7 @@ import pacman.game.GameView;
 import pacman.game.Constants;
 import pacman.game.Constants.MOVE;
 import pacman.teaching.AdviseAtFirst;
+import pacman.teaching.AdviseAtFirstCorrect;
 import pacman.teaching.AdviseImportantStates;
 import pacman.teaching.AdviseRandom;
 import pacman.teaching.AskAttentionBasedOnCertainty;
