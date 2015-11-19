@@ -43,9 +43,9 @@ import pacman.utils.Stats;
 
 public class Experiments {
 	
-	public static String TEACHER = "depthS"; // Teacher feature set and algorithm
-	public static String STUDENT = "depthS"; // Student feature set and algorithm
-	public static String DIR = "3ghosts300/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String TEACHER = "customS"; // Teacher feature set and algorithm
+	public static String STUDENT = "customS"; // Student feature set and algorithm
+	public static String DIR = "okPolicy111615/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
@@ -124,7 +124,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/3ghosts_300/policy");
+			student.loadPolicy("myData/"+TEACHER+"/student150_3ghosts/policy");
 			
 			
 			// Front-load the advice budget
@@ -267,7 +267,7 @@ public class Experiments {
 			
 			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode);
-			pacman.loadVisitedState("myData/"+TEACHER+"/3ghosts_300/visited");
+			pacman.loadVisitedState("myData/"+TEACHER+"/student150_3ghosts/visited");
 			// First point
 			double[] initialData = pacman.episodeData();
 			double initialScore = evaluate(pacman, TEST);

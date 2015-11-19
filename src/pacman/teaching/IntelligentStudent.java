@@ -177,8 +177,8 @@ public class IntelligentStudent extends RLPacMan {
 			coef = Double.parseDouble(this.askAttention.substring(20));
 			return isUncertainThreshold(coef);
 		}
-		if (this.askAttention.startsWith("importancePrediction"))
-			return predictedImportanceAsk(game, choice);
+//		if (this.askAttention.startsWith("importancePrediction"))
+//			return predictedImportanceAsk(game, choice);
 		if (this.askAttention.startsWith("unfamiliarNN"))
 		{
 			coef = Double.parseDouble(this.askAttention.substring(12));
