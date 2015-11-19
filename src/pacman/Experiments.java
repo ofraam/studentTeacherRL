@@ -134,6 +134,12 @@ public class Experiments {
 				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
 			}
 			
+			if (learner.startsWith("cbaseline")) {
+				TeachingStrategy strategy = new AdviseAtFirstCorrect();
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode);
+			}
+			
 			// Advise in important states
 			if (learner.startsWith("advise")) {
 				int threshold = Integer.parseInt(learner.substring(6));
