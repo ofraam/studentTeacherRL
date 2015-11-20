@@ -29,6 +29,8 @@ public class IntelligentStudent extends RLPacMan {
 	private String initiator; //who is initiating advising opportunities 
 	private AttentionStrategy attention = null; //whether the student first needs to get teacher's attention
 	
+	private boolean attentionShiftTeacher = false;
+	
 	private boolean testMode; // When set, will not explore or learn or take advice
 	private int adviceCount; // During the last episode
 	private int totalAdvice;
@@ -87,6 +89,32 @@ public class IntelligentStudent extends RLPacMan {
 		
 		if (this.askAttention.startsWith("importancePrediction"))
 			startPredictions = Integer.parseInt(this.askAttention.substring(20));
+		
+		trainFile = Experiments.DIR+"/importanceClassifier/train";
+		modelFile = Experiments.DIR+"/importanceClassifier/model";
+		testFile = Experiments.DIR+"/importanceClassifier/test";
+		classifyFile = Experiments.DIR+"/importanceClassifier/classify";
+		
+		priorTrainDataSize = 0;
+		
+		visitedStates = new ArrayList<double[]>();
+		visitedKeys = new HashMap<FeatureSet, Double>();
+
+	}
+	
+	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator, String askForAttentionStrategy, boolean teacherRelease) {
+		this.teacher = teacher;
+		this.student = student;
+		this.strategy = strategy;
+		this.initiator = initiator;
+		this.prototype = student.getPrototype();
+		this.askAttention = askForAttentionStrategy;
+		this.attentionShiftTeacher=teacherRelease;
+		
+		
+		if (this.askAttention.startsWith("importancePrediction"))
+			startPredictions = Integer.parseInt(this.askAttention.substring(20));
+		
 		
 		trainFile = Experiments.DIR+"/importanceClassifier/train";
 		modelFile = Experiments.DIR+"/importanceClassifier/model";
@@ -289,13 +317,13 @@ public class IntelligentStudent extends RLPacMan {
 		
 		episodeLength++;
 		boolean ask = this.askForAttention(game, choice);
-//		if (this.attention!=null)
-//		{
-//			if (initiated)
-//				ask = true;
-//			else
-//				ask = this.attention.askForAdvice(this);
-//		}
+		if (!testMode & this.attentionShiftTeacher)
+		{
+			if (initiated)
+				ask = true;
+			else
+				ask = this.askForAttention(game, choice);
+		}
 		if (!testMode && strategy.inUse()) {
 			if (ask)
 			{
