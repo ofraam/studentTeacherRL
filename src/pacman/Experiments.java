@@ -46,7 +46,7 @@ public class Experiments {
 	
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
-	public static String DIR = "okPolicy111615/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "train150_111915/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
@@ -86,7 +86,7 @@ public class Experiments {
 //		plotGapsWatch();
 	}
 	
-	public static void writeConfig(String filename, String initiator)
+	public static void writeConfig(String filename, String initiator, boolean teacherRelease)
 	{
 		DataFile file = new DataFile(filename);
 		file.clear();
@@ -94,7 +94,8 @@ public class Experiments {
 		file.append("budget = "+BUDGET+"\n");
 		file.append("pacmanLives = "+ Constants.NUM_LIVES+"\n");
 		file.append("initiator = "+initiator+"\n");
-		
+		file.append("teacher release = "+Boolean.toString(teacherRelease)+"\n");
+		file.append(DIR);
 		file.close();
 	}
 
@@ -126,7 +127,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/student150_3ghosts/policy");
+			student.loadPolicy("myData/"+TEACHER+"/student150/policy");
 			
 			
 			// Front-load the advice budget
@@ -254,7 +255,7 @@ public class Experiments {
 	
 	/** Generate learning curves. */
 	public static void train(String learner, int start, String initiator, String attentionMode, boolean teacherRelease) {
-		String learnerCombined = learner+"_"+attentionMode;
+		String learnerCombined = learner+"_"+attentionMode+"_"+teacherRelease;
 		// Make sure directory exists
 		File file = new File(DIR+"/"+learnerCombined);
 		Boolean created = false;
@@ -262,7 +263,7 @@ public class Experiments {
 			created = file.mkdir();
 			System.out.println(created);
 		
-		writeConfig(DIR+"/"+learnerCombined+"/config.txt", initiator);	
+		writeConfig(DIR+"/"+learnerCombined+"/config.txt", initiator, teacherRelease);	
 			
 		// Load old curves
 		LearningCurve[] curves = new LearningCurve[REPEATS];
@@ -275,7 +276,7 @@ public class Experiments {
 			
 			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode,teacherRelease);
-			pacman.loadVisitedState("myData/"+TEACHER+"/student150_3ghosts/visited");
+			pacman.loadVisitedState("myData/"+TEACHER+"/student150/visited");
 			// First point
 			double[] initialData = pacman.episodeData();
 			double initialScore = evaluate(pacman, TEST);

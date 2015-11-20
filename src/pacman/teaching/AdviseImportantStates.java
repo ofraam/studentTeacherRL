@@ -26,11 +26,11 @@ public class AdviseImportantStates extends TeachingStrategy {
 		boolean important = (gap > threshold);
 		
 		if (important) {
-			System.out.println("teacher important = true");
+//			System.out.println("teacher important = true");
 			left--;
 			return true;
 		}
-		System.out.println("teacher important = false");
+//		System.out.println("teacher important = false");
 		return false;
 	}
 	

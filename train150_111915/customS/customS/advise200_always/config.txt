@@ -1,0 +1,4 @@
+budget = 1000
+pacmanLives = 1
+initiator = teacher
+teacher release = falsetrain150_111915/customS/customS
