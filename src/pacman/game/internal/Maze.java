@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 //import java.util.EnumMap;
 //import pacman.game.Constants.MOVE;
+import java.util.HashMap;
+
+import pacman.utils.DataFile;
 
 import static pacman.game.Constants.*;
 
@@ -42,16 +45,41 @@ public final class Maze
 	
 	public Maze(String filename)
 	{
+		
 		loadNodes(filename);
-		astar=new AStar();
-		astar.createGraph(graph);
+
+		int[] distances = new int[(graph.length*(graph.length+1))/2];
 		for (int i=0;i<graph.length;i++)
 		{
-			for (int j = i+1;j<graph.length;j++)
+			for (int j = i;j<graph.length;j++)
 			{
-				
+				astar=new AStar();
+				astar.createGraph(graph);
+				if (j==i)
+				{
+					distances[((j*(j+1))/2)+i]= 0;
+				}
+				else
+				{
+					int[] path = astar.computePathsAStarNoHeuristic(i, j);
+					int dist = path.length-1;
+					if (dist==0)
+						distances[((j*(j+1))/2)+i]=-1;
+					else
+						distances[((j*(j+1))/2)+i]= dist;
+				}
+//				System.out.println(i+","+j);
 			}
+			
 		}
+		DataFile file2 = new DataFile("data/mazes/testDist");
+		file2.clear();
+		for (int i = 0;i<distances.length;i++)
+		{
+			file2.append(distances[i]+"\n");
+		}
+		file2.close();
+		System.out.println("done");
 	}
 	
 	//Loads all the nodes from files and initialises all maze-specific information.

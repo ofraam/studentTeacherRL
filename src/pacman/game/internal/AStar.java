@@ -172,10 +172,19 @@ public class AStar
         N current = target;
         route.add(current.index);
 
+        int iter = 0;
         while (current.parent != null)
         {
+        	if (current.parent.index==current.index)
+        		break;
             route.add(current.parent.index);
             current = current.parent;
+//            System.out.println(iter);
+            iter++;
+            if (iter>1000)
+            {
+            	int i = 0;
+            }
         }
         
         Collections.reverse(route);
