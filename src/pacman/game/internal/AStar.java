@@ -99,6 +99,68 @@ public class AStar
         return extractPath(target);
     }
 	
+	
+	public synchronized int[] computePathsAStarNoHeuristic(int s, int t)
+    {	
+		N start=graph[s];
+		N target=graph[t];
+		
+        PriorityQueue<N> open = new PriorityQueue<N>();
+        ArrayList<N> closed = new ArrayList<N>();
+
+        start.g = 0;
+        start.h = 0;
+
+        start.reached=MOVE.NEUTRAL;
+        
+        open.add(start);
+
+        while(!open.isEmpty())
+        {
+            N currentNode = open.poll();
+            closed.add(currentNode);
+            
+            if (currentNode.isEqual(target))
+                break;
+
+            for(E next : currentNode.adj)
+            {
+            	if(next.move!=currentNode.reached.opposite())
+            	{
+	                double currentDistance = next.cost;
+	
+	                if (!open.contains(next.node) && !closed.contains(next.node))
+	                {
+	                    next.node.g = currentDistance + currentNode.g;
+	                    next.node.h = 0;
+	                    next.node.parent = currentNode;
+	                    
+	                    next.node.reached=next.move;
+	
+	                    open.add(next.node);
+	                }
+	                else if (currentDistance + currentNode.g < next.node.g)
+	                {
+	                    next.node.g = currentDistance + currentNode.g;
+	                    next.node.parent = currentNode;
+	                    
+	                    next.node.reached=next.move;
+	
+	                    if (open.contains(next.node))
+	                        open.remove(next.node);
+	
+	                    if (closed.contains(next.node))
+	                        closed.remove(next.node);
+	
+	                    open.add(next.node);
+	                }
+	            }
+            }
+        }
+
+        return extractPath(target);
+    }
+	
 	public synchronized int[] computePathsAStar(int s, int t, Game game)
     {	
 		return computePathsAStar(s, t, MOVE.NEUTRAL, game);

@@ -83,7 +83,7 @@ public final class Constants
 	//for Maze
 	public static final String pathMazes="data/mazes";
 	public static final String pathDistances="data/distances";
-//	public static final String[] nodeNames={"mazeAnoPowerPills","b","c","d"};
+//	public static final String[] nodeNames={"mazeOnePowerPill","b","c","d"};
 	public static final String[] nodeNames={"a","b","c","d"};
 	public static final String[] distNames={"da","db","dc","dd"};
 	

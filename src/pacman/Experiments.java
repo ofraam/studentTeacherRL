@@ -3,6 +3,7 @@ package pacman;
 import static pacman.game.Constants.DELAY;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Random;
@@ -15,12 +16,13 @@ import pacman.entries.pacman.FeatureSet;
 import pacman.entries.pacman.QPacMan;
 import pacman.entries.pacman.RLPacMan;
 import pacman.entries.pacman.SarsaPacMan;
-import pacman.game.Game;
-import pacman.game.GameView;
 import pacman.game.Constants;
 import pacman.game.Constants.MOVE;
+import pacman.game.Game;
+import pacman.game.GameView;
 import pacman.teaching.AdviseAtFirst;
-import pacman.teaching.AdviseAtFirstCorrect;
+//import pacman.teaching.AdviseAtFirstCorrect;
+//import pacman.teaching.AdviseAtFirstCorrect;
 import pacman.teaching.AdviseImportantStates;
 import pacman.teaching.AdviseRandom;
 import pacman.teaching.AskAttentionBasedOnCertainty;
@@ -31,7 +33,6 @@ import pacman.teaching.CorrectImportantMistakesDiffStudent;
 import pacman.teaching.CorrectMistakesRandomly;
 import pacman.teaching.IntelligentStudent;
 import pacman.teaching.PredictImportantMistakes;
-import pacman.teaching.Student;
 import pacman.teaching.StudentAvgUncertaintyAndMistakeAdvice;
 import pacman.teaching.StudentImportanceAndMistakeAdvice;
 import pacman.teaching.StudentUncertaintyAdvice;
@@ -46,14 +47,14 @@ public class Experiments {
 	
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
-	public static String DIR = "train150_111915/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 30; // Curves to average (30)
 	public static int LENGTH = 100; // Points per curve (100)
-	public static int TEST = 30; // Test episodes per point (30)
+	public static int TEST = 1; // Test episodes per point (30)
 	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
@@ -108,7 +109,8 @@ public class Experiments {
 		// Lone teacher
 		if (learner.startsWith("teacher")) {
 			BasicRLPacMan teacher = TEACHER.endsWith("S") ? new SarsaPacMan(teacherProto) : new QPacMan(teacherProto);
-			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
+//			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
+			teacher.loadPolicy("myData/"+TEACHER+"/studentNoPowerPills150/policy");
 			return teacher;
 		}
 			
@@ -127,7 +129,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/student150/policy");
+			student.loadPolicy("myData/"+TEACHER+"/studentNoPowerPills150/policy");
 			
 			
 			// Front-load the advice budget
@@ -137,11 +139,11 @@ public class Experiments {
 				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode,teacherRelease);
 			}
 			
-			if (learner.startsWith("cbaseline")) {
-				TeachingStrategy strategy = new AdviseAtFirstCorrect();
-//				return new Student(teacher, student, strategy, initiator);
-				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode,teacherRelease);
-			}
+//			if (learner.startsWith("cbaseline")) {
+//				TeachingStrategy strategy = new AdviseAtFirstCorrect();
+////				return new Student(teacher, student, strategy, initiator);
+//				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode,teacherRelease);
+//			}
 			
 			// Advise in important states
 			if (learner.startsWith("advise")) {
@@ -276,7 +278,7 @@ public class Experiments {
 			
 			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode,teacherRelease);
-			pacman.loadVisitedState("myData/"+TEACHER+"/student150/visited");
+			pacman.loadVisitedState("myData/"+TEACHER+"/studentNoPowerPills150/visited");
 			// First point
 			double[] initialData = pacman.episodeData();
 			double initialScore = evaluate(pacman, TEST);
@@ -288,8 +290,13 @@ public class Experiments {
 				
 				for (int y=0; y<TRAIN; y++) {
 					//int epLength = episode(pacman);
-					int epLength = episode(pacman);
-					
+					int epLength = episodeWatch(pacman);
+					try {
+						System.in.read();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					double[] episodeData = pacman.episodeData();
 					for (int d=0; d<data.length; d++)
 						data[d] += episodeData[d];

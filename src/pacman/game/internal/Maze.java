@@ -40,6 +40,20 @@ public final class Maze
 		astar.createGraph(graph);
 	}
 	
+	public Maze(String filename)
+	{
+		loadNodes(filename);
+		astar=new AStar();
+		astar.createGraph(graph);
+		for (int i=0;i<graph.length;i++)
+		{
+			for (int j = i+1;j<graph.length;j++)
+			{
+				
+			}
+		}
+	}
+	
 	//Loads all the nodes from files and initialises all maze-specific information.
 	private void loadNodes(String fileName)
 	{

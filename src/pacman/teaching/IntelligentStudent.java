@@ -1,5 +1,6 @@
 package pacman.teaching;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -251,6 +252,42 @@ public class IntelligentStudent extends RLPacMan {
 			return false;
 	}
 	
+	private boolean isUnfamiliarNNandUncertain(Game game, MOVE choice, double coef)
+	{
+		FeatureSet stateFeatures = prototype.extract(game, choice);
+		double[] state = stateFeatures.getVAlues();
+//		FeatureVectorComparator fvc = new FeatureVectorComparator(state);
+		if (visitedStates.size()==0)
+			return true;
+		double dist;
+		if (visitedKeys.containsKey(stateFeatures))
+		{
+			dist = visitedKeys.get(stateFeatures);
+//			System.out.println("key there");
+		}
+		else
+		{
+			dist = Stats.nearestNeighborDist(this.visitedStates, state);
+			visitedKeys.put(stateFeatures, dist);
+		}
+		
+		double [] qvals = student.getQValues();
+		double avgDiff = student.getAvgQdiff();
+		double gap = Stats.max(qvals) - Stats.min(qvals);
+		if (gap<avgDiff)
+			{
+			if (dist>avgNearestNeighbor*coef)
+			{
+//				System.out.println("asked");
+				return true;
+			}
+			}
+		else
+			return false;
+		return false;
+	}
+	
+	
 	private boolean isUnfamiliarNN(Game game, MOVE choice, double coef)
 	{
 		FeatureSet stateFeatures = prototype.extract(game, choice);
@@ -270,6 +307,7 @@ public class IntelligentStudent extends RLPacMan {
 			visitedKeys.put(stateFeatures, dist);
 		}
 		
+		
 		if (dist>avgNearestNeighbor*coef)
 		{
 //			System.out.println("asked");
@@ -277,6 +315,8 @@ public class IntelligentStudent extends RLPacMan {
 		}
 		return false;
 	}
+	
+	
 	
 	private boolean isUnfamiliarPW(Game game, MOVE choice, double coef)
 	{
@@ -327,6 +367,12 @@ public class IntelligentStudent extends RLPacMan {
 		if (!testMode && strategy.inUse()) {
 			if (ask)
 			{
+				try {
+					System.in.read();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				this.attentionCount++;
 				MOVE advice = teacher.getMove(game, timeDue);
 			
