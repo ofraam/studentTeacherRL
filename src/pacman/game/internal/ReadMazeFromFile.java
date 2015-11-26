@@ -11,7 +11,7 @@ public class ReadMazeFromFile {
 	
 	public static void main(String[] args) {
 		
-		String filename = "data/mazes/test.csv";
+		String filename = "data/mazes/openSmall1.csv";
 		DataFile file = new DataFile(filename);
 		ArrayList<int[]> maze = new ArrayList<int[]>();
 		HashMap<Integer,Integer> nodeIndicesMap = new HashMap<Integer,Integer>();
@@ -156,9 +156,13 @@ public class ReadMazeFromFile {
 				
 //			System.out.println(vec);
 		}
+		
+		header[4] = Integer.toString(nodeIndex);
+		header[5] = Integer.toString(pillIndex);
+		header[6] = Integer.toString(powerPillIndex);
 		header[7] = Integer.toString(junctionCounter);
 		
-		DataFile file2 = new DataFile("data/mazes/test.txt");
+		DataFile file2 = new DataFile("data/mazes/openSmall1.txt");
 		file2.clear();
 		for (int i = 0;i<header.length;i++)
 		{
@@ -178,10 +182,7 @@ public class ReadMazeFromFile {
 	}
 	
 	
-	public static String getNodeIndex(int x, int y)
-	{
-		return "1";
-	}
+
 	
 	
 	
