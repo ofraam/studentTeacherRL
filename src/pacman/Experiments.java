@@ -47,14 +47,14 @@ public class Experiments {
 	
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
-	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "noPowerPills150/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
 	public static int REPEATS = 30; // Curves to average (30)
 	public static int LENGTH = 100; // Points per curve (100)
-	public static int TEST = 1; // Test episodes per point (30)
+	public static int TEST = 30; // Test episodes per point (30)
 	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
@@ -290,13 +290,13 @@ public class Experiments {
 				
 				for (int y=0; y<TRAIN; y++) {
 					//int epLength = episode(pacman);
-					int epLength = episodeWatch(pacman);
-					try {
-						System.in.read();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					int epLength = episode(pacman);
+//					try {
+//						System.in.read();
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 					double[] episodeData = pacman.episodeData();
 					for (int d=0; d<data.length; d++)
 						data[d] += episodeData[d];

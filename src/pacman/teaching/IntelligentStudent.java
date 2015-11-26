@@ -213,6 +213,12 @@ public class IntelligentStudent extends RLPacMan {
 			coef = Double.parseDouble(this.askAttention.substring(12));
 			return isUnfamiliarNN(game,choice, coef);
 		}
+		
+		if (this.askAttention.startsWith("cunfamiliarNN"))
+		{
+			coef = Double.parseDouble(this.askAttention.substring(13));
+			return isUnfamiliarNNandUncertain(game,choice, coef);
+		}
 		if (this.askAttention.startsWith("unfamiliarPW"))
 		{
 			coef = Double.parseDouble(this.askAttention.substring(12));
@@ -367,12 +373,12 @@ public class IntelligentStudent extends RLPacMan {
 		if (!testMode && strategy.inUse()) {
 			if (ask)
 			{
-				try {
-					System.in.read();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try {
+//					System.in.read();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 				this.attentionCount++;
 				MOVE advice = teacher.getMove(game, timeDue);
 			
