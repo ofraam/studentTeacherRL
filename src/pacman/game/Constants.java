@@ -66,7 +66,7 @@ public final class Constants
 	public static final int MAX_LEVELS=1;//16;					//maximum number of levels played before the end of the game
 	public static final int EXTRA_LIFE_SCORE=Integer.MAX_VALUE;//10000;			//extra life is awarded when this many points have been collected
 	public static final int EAT_DISTANCE=2;					//distance in the connected graph considered close enough for an eating event to take place
-	public static final int NUM_GHOSTS=3;					//number of ghosts in the game
+	public static final int NUM_GHOSTS=4;					//number of ghosts in the game
 	public static final int NUM_MAZES=4;					//number of different mazes in the game
 	public static final int DELAY=40;						//delay (in milliseconds) between game advancements						
 	public static final int NUM_LIVES=1;//1;	//TODO:changeback				//total number of lives Ms Pac-Man has (current + NUM_LIVES-1 spares)
