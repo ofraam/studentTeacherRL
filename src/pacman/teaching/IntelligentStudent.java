@@ -194,8 +194,13 @@ public class IntelligentStudent extends RLPacMan {
 			return false;
 		if (this.askAttention.equals("always"))
 			return true;
-		if (this.askAttention.equals("avgCertainty"))
-			return isUncertainAvg();
+		if (this.askAttention.startsWith("avgCertainty"))
+		{
+			coef = Double.parseDouble(this.askAttention.substring(12));
+			return isUncertainAvg(coef);
+		}
+			
+		
 		if (this.askAttention.startsWith("importance"))
 		{
 			coef = Double.parseDouble(this.askAttention.substring(10));
@@ -227,12 +232,12 @@ public class IntelligentStudent extends RLPacMan {
 		return false;
 	}
 	
-	private boolean isUncertainAvg()
+	private boolean isUncertainAvg(double threshold)
 	{
 		double [] qvals = student.getQValues();
 		double avgDiff = student.getAvgQdiff();
 		double gap = Stats.max(qvals) - Stats.min(qvals);
-		if (gap<avgDiff)
+		if (gap*threshold<avgDiff)
 			return true;
 		else
 			return false;

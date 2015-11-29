@@ -1,0 +1,11 @@
+baseline	teacher	never	false
+advise100	always	false
+advise200	always	false
+correct100	always	false
+correct200	always	false
+attcorrect80100	always	false
+attcorrect80200	always	false	
+attcorrect50100	always	false
+attcorrect50200	always	false
+attcorrect30100	always	false
+attcorrect30200	always	false

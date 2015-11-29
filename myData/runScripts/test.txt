@@ -1,0 +1,2 @@
+baseline	teacher	avgCertainty3	false
+baseline	teacher	never	true

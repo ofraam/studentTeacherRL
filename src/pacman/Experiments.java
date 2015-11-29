@@ -21,6 +21,7 @@ import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 import pacman.game.GameView;
 import pacman.teaching.AdviseAtFirst;
+import pacman.teaching.AdviseAtFirstCorrect;
 //import pacman.teaching.AdviseAtFirstCorrect;
 //import pacman.teaching.AdviseAtFirstCorrect;
 import pacman.teaching.AdviseImportantStates;
@@ -52,10 +53,10 @@ public class Experiments {
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
-	public static int REPEATS = 15; // Curves to average (30)
-	public static int LENGTH = 40; // Points per curve (100)
-	public static int TEST = 15; // Test episodes per point (30)
-	public static int TRAIN = 10; // Train episodes per point (10)
+	public static int REPEATS = 1; // Curves to average (30)
+	public static int LENGTH = 2; // Points per curve (100)
+	public static int TEST = 1; // Test episodes per point (30)
+	public static int TRAIN = 5; // Train episodes per point (10)
 
 	public static Random rng = new Random();
 	public static StandardGhosts ghosts = new StandardGhosts();
@@ -65,18 +66,32 @@ public class Experiments {
 	 */
 	public static void main(String[] args) {
 
+		String filename = args[0];
+		DataFile file = new DataFile(filename);
+		
+		while(file.hasNextLine())
+		{
+			String line = file.nextLine();
+			String[] params = line.split("\t");
+			String teachingStrategy = params[0];
+			String mode = params[1];
+			String attentionMode = params[2];
+			boolean teacherRelease = Boolean.parseBoolean(params[3]);
+//			DIR= params[4];
+			System.out.println("starting");
+	 		train(teachingStrategy,0,mode, attentionMode, teacherRelease);
+		}
 //		watch(create("independent", "teacher","something"));
 //		
-		String teachingStrategy = args[0];
-		String mode = args[1];
-		String attentionMode = args[2];
-		boolean teacherRelease = Boolean.parseBoolean(args[3]);
-//		
-//		
-		System.out.println("starting");
- 		train(teachingStrategy,0,mode, attentionMode, teacherRelease);
- 		
- 		
+//		String teachingStrategy = args[0];
+//		String mode = args[1];
+//		String attentionMode = args[2];
+//		boolean teacherRelease = Boolean.parseBoolean(args[3]);
+////		
+////		
+//		System.out.println("starting");
+// 		train(teachingStrategy,0,mode, attentionMode, teacherRelease);
+// 		
 //		watch(create("advise100"));
 //		rng = new Random(111);
 //		train("cstuimp150", 0, "student");
@@ -139,11 +154,11 @@ public class Experiments {
 				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode,teacherRelease);
 			}
 			
-//			if (learner.startsWith("cbaseline")) {
-//				TeachingStrategy strategy = new AdviseAtFirstCorrect();
-////				return new Student(teacher, student, strategy, initiator);
-//				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode,teacherRelease);
-//			}
+			if (learner.startsWith("cbaseline")) {
+				TeachingStrategy strategy = new AdviseAtFirstCorrect();
+//				return new Student(teacher, student, strategy, initiator);
+				return new IntelligentStudent(teacher, student, strategy, initiator, attentionMode,teacherRelease);
+			}
 			
 			// Advise in important states
 			if (learner.startsWith("advise")) {
@@ -310,7 +325,7 @@ public class Experiments {
 			
 			// Save new curve and policy
 			pacman.savePolicy(DIR+"/"+learnerCombined+"/policy"+i);
-			pacman.saveStates(DIR+"/"+learnerCombined+"/visited"+i,4000);
+//			pacman.saveStates(DIR+"/"+learnerCombined+"/visited"+i,4000);
 			curves[i].save(DIR+"/"+learnerCombined+"/curve"+i);
 			
 			// Average all curves
