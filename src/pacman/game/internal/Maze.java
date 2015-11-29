@@ -68,11 +68,11 @@ public final class Maze
 					else
 						distances[((j*(j+1))/2)+i]= dist;
 				}
-//				System.out.println(i+","+j);
+				System.out.println(i+","+j);
 			}
 			
 		}
-		DataFile file2 = new DataFile("data/mazes/testDist");
+		DataFile file2 = new DataFile("data/mazes/openSmallDist1");
 		file2.clear();
 		for (int i = 0;i<distances.length;i++)
 		{
