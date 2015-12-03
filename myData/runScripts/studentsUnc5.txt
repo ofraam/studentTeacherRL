@@ -1,0 +1,6 @@
+baseline	teacher	avgCertainty5	true
+cbaseline	teacher	avgCertainty5	true
+advise100	teacher	avgCertainty5	true
+advise200	teacher	avgCertainty5	true
+correct100	teacher	avgCertainty5	true
+correct200	teacher	avgCertainty5	true
