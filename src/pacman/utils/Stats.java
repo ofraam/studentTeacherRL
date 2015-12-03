@@ -60,6 +60,17 @@ public class Stats {
 		return sum / (array.length - 1);
 	}
 	
+	/** Estimate variance in an array of doubles. */
+	public static double variance(double[] array) {
+		double mean = Stats.average(array);
+		double sum = 0;
+		for (double x : array) {
+			double v = x - mean;
+			sum += v*v;
+		}
+		return sum / (array.length - 1);
+	}
+	
 	/** Find the minimum in an array of doubles. */
 	public static double min(double[] array) {
 		double min = array[0];
@@ -80,7 +91,7 @@ public class Stats {
 		return max;
 	}
 	
-	/** Find the maximum in an array of doubles. */
+	/** Find the second highest in an array of doubles. */
 	public static double second(double[] array) {
 		double maxQ = -Integer.MAX_VALUE;
 		double secQ = -Integer.MAX_VALUE;
@@ -119,6 +130,11 @@ public class Stats {
 		dist = Math.sqrt(sumSquares);
 		return dist;
 			
+	}
+	
+	public static double range(double[] x)
+	{
+		return Stats.max(x)-Stats.min(x);
 	}
 	
 	

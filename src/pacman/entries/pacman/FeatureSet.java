@@ -8,6 +8,7 @@ import pacman.game.Game;
  */
 public abstract class FeatureSet {
 
+
 	public abstract int size();
 	public abstract double get(int i);
 	public abstract FeatureSet extract(Game game, MOVE move);
@@ -23,6 +24,8 @@ public abstract class FeatureSet {
 		
 		return true;
 	}
+	
+	
 	
 	public  boolean equals(Object other) {
 		FeatureSet otherFeatures = (FeatureSet)other;
@@ -45,5 +48,19 @@ public abstract class FeatureSet {
 		}
 //		System.out.println(result);
 		return result;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i=0;i<this.size();i++)
+		{
+			sb.append(this.get(i));
+			if (i<this.size()-1)
+			{
+				sb.append(";");
+			}
+		}
+		return ""+sb+"";
 	}
 }

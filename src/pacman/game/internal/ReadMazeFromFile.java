@@ -83,7 +83,15 @@ public class ReadMazeFromFile {
 						}
 					}
 					else
-						currNode[3]="-1";
+					{
+						if (maze.get(maze.size()-1)[j]==-1)
+							currNode[3]="-1";
+						else
+						{
+							currNode[3]=Integer.toString(nodeIndicesMap.get((maze.size()-1)*numColumns+j));
+							neighborCount++;
+						}
+					}
 					if (j+1<maze.get(i).length)//potentially right neighbor
 					{
 						if (maze.get(i)[j+1]==-1)
@@ -97,7 +105,15 @@ public class ReadMazeFromFile {
 						}
 					}
 					else
-						currNode[4]="-1";
+					{
+						if (maze.get(i)[0]==-1)
+							currNode[4]="-1";
+						else
+						{
+							currNode[4]=Integer.toString(nodeIndicesMap.get(i*numColumns+0));
+							neighborCount++;
+						}
+					}
 					if (i+1<maze.size()) //there is potentially down neighbor
 					{
 						if (maze.get(i+1)[j]==-1)
@@ -111,7 +127,15 @@ public class ReadMazeFromFile {
 						}
 					}
 					else
-						currNode[5]="-1";
+					{
+						if (maze.get(0)[j]==-1)
+							currNode[5]="-1";
+						else
+						{
+							currNode[5]=Integer.toString(nodeIndicesMap.get((0)*numColumns+j));;
+							neighborCount++;
+						}
+					}
 					if (j-1>=0)//potentially left neighbor
 					{
 						if (maze.get(i)[j-1]==-1)
@@ -125,7 +149,15 @@ public class ReadMazeFromFile {
 						}
 					}
 					else
-						currNode[6]="-1";
+					{
+						if (maze.get(i)[maze.get(i).length-1]==-1)
+							currNode[6]="-1";
+						else
+						{
+							currNode[6]=Integer.toString(nodeIndicesMap.get(i*numColumns+maze.get(i).length-1));;
+							neighborCount++;
+						}
+					}
 					if (maze.get(i)[j]==1)
 					{//regular pill
 						currNode[7]=Integer.toString(pillIndex);
@@ -162,7 +194,7 @@ public class ReadMazeFromFile {
 		header[6] = Integer.toString(powerPillIndex);
 		header[7] = Integer.toString(junctionCounter);
 		
-		DataFile file2 = new DataFile("data/mazes/openSmall1.txt");
+		DataFile file2 = new DataFile("data/mazes/openSmall1_fixed.txt");
 		file2.clear();
 		for (int i = 0;i<header.length;i++)
 		{

@@ -1,12 +1,15 @@
 package pacman.utils;
 
-import pacman.game.internal.Maze;
-
-public class TestStuff {
+public class AnalyzeTrajectories {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Maze m = new Maze("openSmall1_fixed");
+		
+	}
+	
+	public void readGamePlay(String filename)
+	{
+		
 	}
 
 }

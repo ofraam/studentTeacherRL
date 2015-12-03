@@ -1,5 +1,11 @@
 package pacman.entries.pacman;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,6 +17,10 @@ import java.util.Random;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 
 import pacman.game.Game;
+import pacman.utils.DataFile;
+import pacman.utils.StateActionInfo;
+import pacman.utils.StateInfo;
+import pacman.utils.Stats;
 import pacman.game.Constants.MOVE;
 
 /**
@@ -43,6 +53,11 @@ public class SarsaPacMan extends BasicRLPacMan {
 	private double[] qdiffs; 
 	private int qdiffsIndex = 0;
 	
+	private int time;
+	private boolean printStates = true;
+	private StateInfo currStateInfo;
+	private String filename = "myData/stateInfoStudent.txt";
+	private BufferedWriter  file;
 	private HashMap<FeatureSet,ArrayList<FeatureSet>> advisedStates;
 	
 	private String maxUpdateTiming = "never"; //epidsodeEnd = at end of episode, batch = end of episode, but batch update,never = never, atState = when state is encountered
@@ -53,6 +68,22 @@ public class SarsaPacMan extends BasicRLPacMan {
 		Qfunction = new QFunction(prototype);
 		qdiffs= new double[100];
 		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
+		if (printStates)
+		{
+			try {
+				File f = new File(filename);
+				file = new BufferedWriter(new FileWriter(f));
+				if (!f.exists()) {
+					f.createNewFile();
+				}
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+		}
 	}
 	
 	public FeatureSet getPrototype()
@@ -62,8 +93,18 @@ public class SarsaPacMan extends BasicRLPacMan {
 
 	/** Prepare for the first move. */
 	public void startEpisode(Game game, boolean testMode) {
+		if (printStates)
+		{
+			try {
+				file.write("-------------new episode----------------\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		this.testMode = testMode;
 		lastScore = 0;
+		time = 0;
 		Qfunction.clearTraces();
 //		if (testMode)
 //		{
@@ -76,6 +117,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 		delta1 = 0;
 		delta2 = 0;
 		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
+		currStateInfo = new StateInfo(time);
 		evaluateMoves(game);
 	}
 
@@ -124,6 +166,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	
 	/** Learn if appropriate, and prepare for the next move. */
 	public void processStep(Game game) {
+		currStateInfo = new StateInfo(time);
 		
 		// Do a delayed gradient-descent update
 		if (doUpdate) {
@@ -153,6 +196,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 			}
 		}
 		
+		
 
 		
 		// Gradient descent update
@@ -161,6 +205,13 @@ public class SarsaPacMan extends BasicRLPacMan {
 			// Right away if game is over
 			if (game.gameOver())
 			{
+				try {
+					file.flush();
+					file.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				Qfunction.updateWeights(ALPHA*delta1);
 //				if (this.maxUpdateTiming=="atState")
 //				{
@@ -177,6 +228,19 @@ public class SarsaPacMan extends BasicRLPacMan {
 				doUpdate = true;
 
 		}
+		if (printStates)
+		{
+			try {
+				file.write(currStateInfo.toString());
+				file.write("\n");
+				file.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		time++;
 		
 	}
 
@@ -184,7 +248,10 @@ public class SarsaPacMan extends BasicRLPacMan {
 	private void evaluateMoves(Game game) {
 
 		actions = game.getPossibleMoves(game.getPacmanCurrentNodeIndex());
-
+//		if (actions.length<4)
+//		{
+//			System.out.println("prob");
+//		}
 		features = new FeatureSet[actions.length];
 		for (int i=0; i<actions.length; i++)
 			features[i] = prototype.extract(game, actions[i]);
@@ -198,7 +265,11 @@ public class SarsaPacMan extends BasicRLPacMan {
 			double value = Qfunction.evaluate(features[i]);
 			qvalues[i] = value;
 			qvaluesMap.put(actions[i],value);
+			StateActionInfo sai = new StateActionInfo(actions[i],features[i],value);
+			currStateInfo.addStateActionPair(sai);
 		}
+		currStateInfo.setRangeQ(Stats.range(qvalues));
+		currStateInfo.setVarQ(Stats.variance(qvalues));
 
 		int worstActionIndex = 0;
 		bestActionIndex = 0;
