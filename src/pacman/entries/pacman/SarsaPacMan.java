@@ -54,7 +54,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	private int qdiffsIndex = 0;
 	
 	private int time;
-	private boolean printStates = true;
+	private boolean printStates = false;
 	private StateInfo currStateInfo;
 	private String filename = "myData/stateInfoStudent.txt";
 	private BufferedWriter  file;
@@ -205,12 +205,15 @@ public class SarsaPacMan extends BasicRLPacMan {
 			// Right away if game is over
 			if (game.gameOver())
 			{
-				try {
-					file.flush();
-					file.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (printStates)
+				{
+					try {
+						file.flush();
+						file.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				Qfunction.updateWeights(ALPHA*delta1);
 //				if (this.maxUpdateTiming=="atState")
