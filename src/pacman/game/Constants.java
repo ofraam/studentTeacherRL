@@ -66,9 +66,9 @@ public final class Constants
 	public static final int MAX_LEVELS=1;//16;					//maximum number of levels played before the end of the game
 	public static final int EXTRA_LIFE_SCORE=Integer.MAX_VALUE;//10000;			//extra life is awarded when this many points have been collected
 	public static final int EAT_DISTANCE=2;					//distance in the connected graph considered close enough for an eating event to take place
-	public static final int NUM_GHOSTS=4;					//number of ghosts in the game
+	public static final int NUM_GHOSTS=4;					//number of ghosts in the game (4)
 	public static final int NUM_MAZES=4;					//number of different mazes in the game
-	public static final int DELAY=40;						//delay (in milliseconds) between game advancements						
+	public static final int DELAY=100;						//delay (in milliseconds) between game advancements						
 	public static final int NUM_LIVES=1;//1;	//TODO:changeback				//total number of lives Ms Pac-Man has (current + NUM_LIVES-1 spares)
 	public static final int GHOST_SPEED_REDUCTION=2;		//difference in speed when ghosts are edible (every GHOST_SPEED_REDUCTION, a ghost remains stationary)
 	public static final int EDIBLE_ALERT=30;				//for display only (ghosts turning blue)
@@ -83,7 +83,7 @@ public final class Constants
 	//for Maze
 	public static final String pathMazes="data/mazes";
 	public static final String pathDistances="data/distances";
-//	public static final String[] nodeNames={"openSmall1","b","c","d"};
+//	public static final String[] nodeNames={"openSmall_lessPP","b","c","d"};
 //	public static final String[] distNames={"openSmallDist1","db","dc","dd"};
 	public static final String[] nodeNames={"a","b","c","d"};
 	public static final String[] distNames={"da","db","dc","dd"};

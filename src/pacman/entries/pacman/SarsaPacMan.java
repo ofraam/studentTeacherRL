@@ -45,7 +45,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	private double delta1; // First part of delayed update: r-Q(s,a)
 	private double delta2; // Second part of delayed update: yQ(s',a')
 
-	private double EPSILON = 0.05; // Exploration rate
+	private double EPSILON = 0.05; // Exploration rate 0.05
 	private double ALPHA = 0.001; // Learning rate
 	private double GAMMA = 0.999; // Discount rate
 	private double LAMBDA = 0.9; // Backup weighting
@@ -56,7 +56,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	private int time;
 	private boolean printStates = false;
 	private StateInfo currStateInfo;
-	private String filename = "myData/stateInfoStudent.txt";
+	private String filename = "myData/stateInfoTeacherMultiple.txt";
 	private BufferedWriter  file;
 	private HashMap<FeatureSet,ArrayList<FeatureSet>> advisedStates;
 	
@@ -183,7 +183,8 @@ public class SarsaPacMan extends BasicRLPacMan {
 
 		
 		// Q-value correction
-		double reward = game.getScore() - lastScore;	
+		double reward = game.getScore() - lastScore;
+		currStateInfo.setReward(reward);
 		lastScore = game.getScore();
 		delta1 = reward - qvalues[lastActionIndex];
 		
@@ -205,6 +206,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 			// Right away if game is over
 			if (game.gameOver())
 			{
+
 				if (printStates)
 				{
 					try {
@@ -263,6 +265,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 		
 		qvaluesMap = new HashMap<MOVE, Double>() ;
 		
+		double highestQ=-Double.MAX_VALUE;
 		for (int i=0; i<actions.length; i++)
 		{
 			double value = Qfunction.evaluate(features[i]);
@@ -270,6 +273,11 @@ public class SarsaPacMan extends BasicRLPacMan {
 			qvaluesMap.put(actions[i],value);
 			StateActionInfo sai = new StateActionInfo(actions[i],features[i],value);
 			currStateInfo.addStateActionPair(sai);
+			if (value>highestQ)
+			{
+				highestQ=value;
+				currStateInfo.setBestAction(sai);
+			}
 		}
 		currStateInfo.setRangeQ(Stats.range(qvalues));
 		currStateInfo.setVarQ(Stats.variance(qvalues));
