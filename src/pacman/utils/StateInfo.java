@@ -7,6 +7,8 @@ public class StateInfo {
 	private int time;
 	private double varQ;
 	private double rangeQ;
+	private double reward;
+	private StateActionInfo bestAction;
 	
 	
 
@@ -30,6 +32,21 @@ public class StateInfo {
 //		}
 //				
 //	}
+	public double getReward() {
+		return reward;
+	}
+
+	public void setReward(double reward) {
+		this.reward = reward;
+	}
+
+	public StateActionInfo getBestAction() {
+		return bestAction;
+	}
+
+	public void setBestAction(StateActionInfo bestAction) {
+		this.bestAction = bestAction;
+	}
 	
 	public int getTime() {
 		return time;
@@ -54,7 +71,7 @@ public class StateInfo {
 
 	@Override
 	public String toString() {
-		return time+"|"+stateActionPairs + "|" + rangeQ+"|"+varQ;
+		return time+"|" + rangeQ+"|"+varQ+ "|" + reward +"|"+bestAction +"|"+stateActionPairs;
 	}
 	
 	public double getVarQ() {

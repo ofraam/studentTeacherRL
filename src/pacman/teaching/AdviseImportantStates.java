@@ -1,5 +1,7 @@
 package pacman.teaching;
 
+import java.io.IOException;
+
 import pacman.Experiments;
 import pacman.entries.pacman.BasicRLPacMan;
 import pacman.game.Constants.MOVE;
@@ -27,6 +29,12 @@ public class AdviseImportantStates extends TeachingStrategy {
 		
 		if (important) {
 //			System.out.println("teacher important = true");
+			try {
+				System.in.read();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			left--;
 			return true;
 		}

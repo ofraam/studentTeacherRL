@@ -6,6 +6,7 @@ import pacman.game.Constants.GHOST;
 import pacman.game.Constants.MOVE;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
@@ -149,6 +150,14 @@ public final class GameView extends JComponent
         	drawGameOver();
         
         g.drawImage(offscreen,0,0,this);
+        
+        File outputfile = new File("image3.jpg");
+        try {
+			ImageIO.write((RenderedImage) offscreen, "jpg", outputfile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     /**
@@ -416,6 +425,8 @@ public final class GameView extends JComponent
     		mazes=new BufferedImage[4];
             for(int i=0;i<mazes.length;i++)
             	mazes[i]=_loadImage(mazeNames[i]); 
+            
+
     	}
     	
 	    public BufferedImage getPacMan(MOVE move, int time)

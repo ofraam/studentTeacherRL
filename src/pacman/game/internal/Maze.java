@@ -72,7 +72,7 @@ public final class Maze
 			}
 			
 		}
-		DataFile file2 = new DataFile("data/mazes/openSmallDist1");
+		DataFile file2 = new DataFile("data/mazes/openSmallDist1_fixed");
 		file2.clear();
 		for (int i = 0;i<distances.length;i++)
 		{

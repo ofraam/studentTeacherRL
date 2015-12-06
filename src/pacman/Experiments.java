@@ -5,6 +5,7 @@ import static pacman.game.Constants.DELAY;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -48,15 +49,15 @@ public class Experiments {
 	
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
-	public static String DIR = "train400/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
-	public static int REPEATS = 1; // Curves to average (30)
-	public static int LENGTH = 2; // Points per curve (100)
+	public static int REPEATS = 5; // Curves to average (30)
+	public static int LENGTH = 100; // Points per curve (100)
 	public static int TEST = 1; // Test episodes per point (30)
-	public static int TRAIN = 5; // Train episodes per point (10)
+	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
 	public static StandardGhosts ghosts = new StandardGhosts();
@@ -65,7 +66,17 @@ public class Experiments {
 	 * Run experiments.
 	 */
 	public static void main(String[] args) {
-
+		
+//		double[] test = new double[]{1,2};
+////		test.add(1);
+////		test.add(2);
+//		System.out.println(test);
+//		plotGaps();
+//		plotGapsWatch();
+		RLPacMan pacman = create("teacher", "teacher","something", true);
+		for (int i =0;i<20;i++)
+			watch(pacman);
+		int i = 1/0;
 		String filename = args[0];
 		DataFile file = new DataFile(filename);
 		
@@ -124,15 +135,16 @@ public class Experiments {
 		// Lone teacher
 		if (learner.startsWith("teacher")) {
 			BasicRLPacMan teacher = TEACHER.endsWith("S") ? new SarsaPacMan(teacherProto) : new QPacMan(teacherProto);
-//			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
-			teacher.loadPolicy("myData/"+TEACHER+"/studentNoPowerPills150/policy");
+			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
+//			teacher.loadPolicy("myData/"+TEACHER+"/teacherOpenMaze/policy");
 			return teacher;
 		}
 			
 		// Lone student
 		else if (learner.startsWith("independent")) {
 			BasicRLPacMan student = STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
-			student.loadPolicy("myData/"+TEACHER+"/teacher/policy");
+//			student.loadPolicy("myData/"+TEACHER+"/teacherOpenMaze/policy");
+			student.loadPolicy("myData/"+TEACHER+"/student200/policy");
 			return student;
 //			return STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
 		}
@@ -325,7 +337,7 @@ public class Experiments {
 			
 			// Save new curve and policy
 			pacman.savePolicy(DIR+"/"+learnerCombined+"/policy"+i);
-//			pacman.saveStates(DIR+"/"+learnerCombined+"/visited"+i,4000);
+			pacman.saveStates(DIR+"/"+learnerCombined+"/visited"+i,4000);
 			curves[i].save(DIR+"/"+learnerCombined+"/curve"+i);
 			
 			// Average all curves
@@ -346,7 +358,6 @@ public class Experiments {
 			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 			pacman.processStep(game);
 			length++;
-			
 		}
 		
 		return length;
@@ -378,10 +389,12 @@ public class Experiments {
 		for(int i=0; i<width; i++) {
 			Game game = new Game(rng.nextLong());
 			pacman.startEpisode(game, true);
-
-			while(!game.gameOver()) {
+			int length = 0;
+			while(!game.gameOver() & length<15000) {
 				game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 				pacman.processStep(game);
+				length++;
+//				System.out.println(length);
 			}
 			
 			sumScore += game.getScore();
@@ -396,7 +409,12 @@ public class Experiments {
 		Game game=new Game(0);
 		pacman.startEpisode(game, true);
 		GameView gv=new GameView(game).showGame();
-
+		try {
+			System.in.read();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		while(!game.gameOver()) {
 			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 			pacman.processStep(game);
@@ -429,7 +447,7 @@ public class Experiments {
 	/** Make a plottable file of Q-value gaps over a few episodes. */
 	public static void plotGapsWatch() {
 
-		DataFile file = new DataFile("myData/"+TEACHER+"/teacher/gaps");
+		DataFile file = new DataFile("myData/"+TEACHER+"/teacherOpenMaze/gaps");
 		file.clear();
 
 		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher","always",false);
@@ -474,7 +492,7 @@ public class Experiments {
 	/** Make a plottable file of Q-value gaps over a few episodes. */
 	public static void plotGaps() {
 
-		DataFile file = new DataFile("myData/"+TEACHER+"/teacher/gaps");
+		DataFile file = new DataFile("myData/"+TEACHER+"/teacherOpenMaze/gaps");
 		file.clear();
 
 		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher", "always",false);
@@ -483,8 +501,8 @@ public class Experiments {
 		for (int i=0; i<1; i++) {
 			Game game = new Game(rng.nextLong());
 			pacman.startEpisode(game, true);
-
-			while(!game.gameOver()) {
+			int length = 0;
+			while(!game.gameOver() & length<20000) {
 
 				double[] qvalues = pacman.getQValues();
 				Arrays.sort(qvalues);
@@ -495,6 +513,7 @@ public class Experiments {
 
 				game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 				pacman.processStep(game);
+				length++;
 			}
 		}
 
