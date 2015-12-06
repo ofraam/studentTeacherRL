@@ -206,7 +206,8 @@ public class SarsaPacMan extends BasicRLPacMan {
 			// Right away if game is over
 			if (game.gameOver())
 			{
-				if(printStates)
+
+				if (printStates)
 				{
 					try {
 						file.flush();

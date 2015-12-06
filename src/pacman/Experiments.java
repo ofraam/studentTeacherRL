@@ -49,14 +49,16 @@ public class Experiments {
 	
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
-	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
+
+	public static String DIR = "train0/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ASKBUDGET = 1000;
-	public static int REPEATS = 5; // Curves to average (30)
+
+	public static int REPEATS = 30; // Curves to average (30)
 	public static int LENGTH = 100; // Points per curve (100)
-	public static int TEST = 1; // Test episodes per point (30)
+	public static int TEST = 20; // Test episodes per point (30)
 	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
@@ -136,7 +138,9 @@ public class Experiments {
 		if (learner.startsWith("teacher")) {
 			BasicRLPacMan teacher = TEACHER.endsWith("S") ? new SarsaPacMan(teacherProto) : new QPacMan(teacherProto);
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
-//			teacher.loadPolicy("myData/"+TEACHER+"/teacherOpenMaze/policy");
+
+//			teacher.loadPolicy("myData/"+TEACHER+"/studentNoPowerPills150/policy");
+
 			return teacher;
 		}
 			
