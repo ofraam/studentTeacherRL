@@ -229,9 +229,24 @@ public class IntelligentStudent extends RLPacMan {
 			coef = Double.parseDouble(this.askAttention.substring(12));
 			return isUnfamiliarPW(game,choice,coef);
 		}
+		if (this.askAttention.startsWith("random"))
+		{
+			coef = Double.parseDouble(this.askAttention.substring(6));
+			return randomAtt(coef);
+		}
 		return false;
 	}
 	
+	private boolean randomAtt(double threshold)
+	{
+		
+		double rand = Math.random();
+		if (rand<(threshold/100))
+		{
+			return true;
+		}
+		return false;
+	}
 	private boolean isUncertainAvg(double threshold)
 	{
 		double [] qvals = student.getQValues();

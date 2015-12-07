@@ -50,7 +50,7 @@ public class Experiments {
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 
-	public static String DIR = "train200/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
