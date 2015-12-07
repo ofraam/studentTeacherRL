@@ -29,12 +29,12 @@ public class AdviseImportantStates extends TeachingStrategy {
 		
 		if (important) {
 //			System.out.println("teacher important = true");
-			try {
-				System.in.read();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				System.in.read();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			left--;
 			return true;
 		}
