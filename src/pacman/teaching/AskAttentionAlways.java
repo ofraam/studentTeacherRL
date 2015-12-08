@@ -11,7 +11,7 @@ public class AskAttentionAlways extends AttentionStrategy{
 	private int threshold; // Of action uncertainty
 	
 	public AskAttentionAlways(int threshold) {
-		this.left = Experiments.ASKBUDGET;
+		this.left = Experiments.ATTBUDGET;
 		this.threshold = threshold;
 	}
 	

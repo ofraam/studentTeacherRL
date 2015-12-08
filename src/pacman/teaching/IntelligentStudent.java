@@ -64,6 +64,8 @@ public class IntelligentStudent extends RLPacMan {
 	private double coef; //for methods with coefficient
 	
 	
+	
+	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
 		this.teacher = teacher;
 		this.student = student;
@@ -390,7 +392,7 @@ public class IntelligentStudent extends RLPacMan {
 			else
 				ask = this.askForAttention(game, choice);
 		}
-		if (!testMode && strategy.inUse()) {
+		if (!testMode && strategy.inUse() &&this.attentionCount<Experiments.ATTBUDGET) {
 			if (ask)
 			{
 //				try {
