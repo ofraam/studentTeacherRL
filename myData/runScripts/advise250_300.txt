@@ -1,0 +1,2 @@
+advise250	teacher	always	false
+advise300	teacher	always	false

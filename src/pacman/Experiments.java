@@ -50,11 +50,11 @@ public class Experiments {
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 
-	public static String DIR = "testing/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "train200/"+TEACHER+"/"+STUDENT; // Where to store data
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
-	public static int ATTBUDGET = Integer.MAX_VALUE;
+	public static int ATTBUDGET = Integer.MAX_VALUE; //train100= 72382, train 200=163589
 
 	public static int REPEATS = 30; // Curves to average (30)
 	public static int LENGTH = 80; // Points per curve (100)
@@ -75,10 +75,10 @@ public class Experiments {
 //		System.out.println(test);
 //		plotGaps();
 //		plotGapsWatch();
-		RLPacMan pacman = create("teacher", "teacher","something", true);
-		for (int i =0;i<20;i++)
-			watch(pacman);
-		int i = 1/0;
+//		RLPacMan pacman = create("teacher", "teacher","something", true);
+//		for (int i =0;i<20;i++)
+//			watch(pacman);
+//		int i = 1/0;
 		String filename = args[0];
 		DataFile file = new DataFile(filename);
 		

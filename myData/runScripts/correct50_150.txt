@@ -1,0 +1,2 @@
+correct50	teacher	always	false
+correct150	teacher	always	false
