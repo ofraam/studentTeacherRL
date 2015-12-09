@@ -478,7 +478,9 @@ public final class Game
 				else if(ghost.edibleTime==0 || ghost.edibleTime%GHOST_SPEED_REDUCTION!=0)
 				{
 					ghost.lastMoveMade=_checkGhostDir(ghost,entry.getValue());
+//					System.out.println(ghost.lastMoveMade.toString());
 					ghost.currentNodeIndex=currentMaze.graph[ghost.currentNodeIndex].neighbourhood.get(ghost.lastMoveMade);
+//					System.out.println(ghost.currentNodeIndex);
 				}
 			}
 		}
@@ -506,7 +508,8 @@ public final class Game
 			else
 			{
 				MOVE[] moves=node.allPossibleMoves.get(ghost.lastMoveMade);
-				return moves[rnd.nextInt(moves.length)];				
+//				
+				return moves[rnd.nextInt(moves.length)]; 			
 			}
 		}
 	}
@@ -517,9 +520,10 @@ public final class Game
 	private void _eatPill()
 	{
 		int pillIndex=currentMaze.graph[pacman.currentNodeIndex].pillIndex;
-
+		
 		if(pillIndex>=0 && pills.get(pillIndex))
 		{
+
 			score+=PILL;
 			pills.clear(pillIndex);
 		}

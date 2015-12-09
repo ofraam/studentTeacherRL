@@ -32,6 +32,11 @@ public final class Constants
 	 */
 	public enum GHOST
 	{
+//		BLINKY(40),
+//		PINKY(60),
+//		INKY(80),
+//		SUE(100);
+		
 		BLINKY(40),
 		PINKY(60),
 		INKY(80),
@@ -68,13 +73,12 @@ public final class Constants
 	public static final int EAT_DISTANCE=2;					//distance in the connected graph considered close enough for an eating event to take place
 	public static final int NUM_GHOSTS=4;					//number of ghosts in the game (4)
 	public static final int NUM_MAZES=4;					//number of different mazes in the game
-	public static final int DELAY=40;					//delay (in milliseconds) between game advancements						
+	public static final int DELAY=80;					//delay (in milliseconds) between game advancements						
 	public static final int NUM_LIVES=1;//1;	//TODO:changeback				//total number of lives Ms Pac-Man has (current + NUM_LIVES-1 spares)
 	public static final int GHOST_SPEED_REDUCTION=2;		//difference in speed when ghosts are edible (every GHOST_SPEED_REDUCTION, a ghost remains stationary)
 	public static final int EDIBLE_ALERT=30;				//for display only (ghosts turning blue)
 	public static final int INTERVAL_WAIT=1;				//for quicker execution: check every INTERVAL_WAIT ms to see if controllers have returned
-	public static final float PILL_REWARD_REDUCTION=0.5f;	//the reduction in the points awarded for remaining pills when the level time runs out	
-		
+	public static final float PILL_REWARD_REDUCTION=0.5f;	//the reduction in the points awarded for remaining pills when the level time runs out	(0.5f
 	//for Competition
 	public static final int WAIT_LIMIT=5000;				//time limit in milliseconds for the controller to initialise;
 	public static final int MEMORY_LIMIT=512;				//memory limit in MB for controllers (including the game)
