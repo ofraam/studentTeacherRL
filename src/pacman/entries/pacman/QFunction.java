@@ -50,6 +50,13 @@ public class QFunction {
 			sum += (features.get(i) * weights[i]); 
 		return sum;
 	}
+	
+	public double evaluate(double[] features) {
+		double sum = bias;
+		for (int i=0; i<weights.length; i++)
+			sum += (features[i] * weights[i]); 
+		return sum;
+	}
 
 	/** Gradient-descent weight update - without eligibility traces. */
 	public void updateWeights(double update, FeatureSet features) {

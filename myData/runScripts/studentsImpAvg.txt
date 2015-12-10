@@ -1,0 +1,2 @@
+correct200	teacher	avgImportance1	true
+correct200	teacher	avgImportance5	true

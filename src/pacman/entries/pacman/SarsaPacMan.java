@@ -30,7 +30,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 
 	private Random rng = new Random();
 	private FeatureSet prototype; // Class to use
-	private QFunction Qfunction; // Learned policy
+	public QFunction Qfunction; // Learned policy
 
 	private MOVE[] actions; // Actions possible in the current state
 	private double[] qvalues; // Q-values for actions in the current state
@@ -66,7 +66,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	public SarsaPacMan(FeatureSet proto) {
 		prototype = proto;
 		Qfunction = new QFunction(prototype);
-		qdiffs= new double[100];
+		qdiffs= new double[2000];
 		advisedStates = new HashMap<FeatureSet, ArrayList<FeatureSet>>();
 		if (printStates)
 		{
@@ -300,13 +300,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 			lastActionIndex = bestActionIndex;
 	}
 	
-	private void updateQdiffs(double diff)
-	{
-		qdiffs[qdiffsIndex]=diff;
-		qdiffsIndex++;
-		if (qdiffsIndex>qdiffs.length-1)
-			qdiffsIndex = 0;
-	}
+
 	
 	private void maxUpdate()
 	{
@@ -419,12 +413,26 @@ public class SarsaPacMan extends BasicRLPacMan {
 	public double getAvgQdiff()
 	{
 		double sum = 0;
-		for (int i =0;i<qdiffs.length;i++)
+		int runUntil = Math.min(qdiffsIndex, qdiffs.length);
+		for (int i =0;i<runUntil;i++)
 		{
 			sum = sum+qdiffs[i];
 		}
-		return sum/qdiffs.length;
+		return sum/qdiffsIndex;
 	}	
+	
+	private void updateQdiffs(double diff)
+	{
+		if (qdiffsIndex==qdiffs.length)
+		{
+			int i = 0;
+			i++;
+		}
+		qdiffs[qdiffsIndex % qdiffs.length]=diff;
+		qdiffsIndex++;
+//		if (qdiffsIndex>qdiffs.length-1)
+//			qdiffsIndex = 0;
+	}
 	
 	public double getNthQvalue(int n)
 	{
@@ -477,5 +485,11 @@ public class SarsaPacMan extends BasicRLPacMan {
 	public void loadVisitedState(String filename) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public QFunction getQfunc() {
+		// TODO Auto-generated method stub
+		return Qfunction;
 	}
 }

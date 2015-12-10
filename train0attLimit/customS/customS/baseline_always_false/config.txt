@@ -1,0 +1,5 @@
+budget = 2147483647
+pacmanLives = 1
+initiator = teacher
+teacher release = false
+train0attLimit/customS/customS

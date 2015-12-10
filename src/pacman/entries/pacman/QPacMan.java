@@ -227,4 +227,9 @@ public class QPacMan extends BasicRLPacMan {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public QFunction getQfunc() {
+		return Qfunction;
+	}
 }

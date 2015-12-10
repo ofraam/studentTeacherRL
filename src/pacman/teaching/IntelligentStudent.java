@@ -11,6 +11,7 @@ import pacman.entries.pacman.BasicRLPacMan;
 import pacman.entries.pacman.FeatureSet;
 import pacman.entries.pacman.QFunction;
 import pacman.entries.pacman.RLPacMan;
+import pacman.entries.pacman.SarsaPacMan;
 import pacman.game.Game;
 import pacman.game.Constants.MOVE;
 import pacman.utils.DataFile;
@@ -63,7 +64,9 @@ public class IntelligentStudent extends RLPacMan {
 	private double avgAllDists;
 	private double coef; //for methods with coefficient
 	
+	private double avgQdiffFromPast = 0;
 	
+	private int totalAttention = 0;
 	
 	
 	public IntelligentStudent(BasicRLPacMan teacher, BasicRLPacMan student, TeachingStrategy strategy, String initiator) {
@@ -201,6 +204,12 @@ public class IntelligentStudent extends RLPacMan {
 			coef = Double.parseDouble(this.askAttention.substring(12));
 			return isUncertainAvg(coef);
 		}
+		
+		if (this.askAttention.startsWith("avgImportance"))
+		{
+			coef = Double.parseDouble(this.askAttention.substring(13));
+			return isImportantAvg(coef);
+		}
 			
 		
 		if (this.askAttention.startsWith("importance"))
@@ -208,7 +217,7 @@ public class IntelligentStudent extends RLPacMan {
 			coef = Double.parseDouble(this.askAttention.substring(10));
 			return isImportantThreshold(coef);
 		}
-		if (this.askAttention.equals("uncertaintyThreshold"))
+		if (this.askAttention.startsWith("uncertaintyThreshold"))
 		{
 			coef = Double.parseDouble(this.askAttention.substring(20));
 			return isUncertainThreshold(coef);
@@ -255,6 +264,18 @@ public class IntelligentStudent extends RLPacMan {
 		double avgDiff = student.getAvgQdiff();
 		double gap = Stats.max(qvals) - Stats.min(qvals);
 		if (gap*threshold<avgDiff)
+			return true;
+		else
+			return false;
+	}
+	
+
+	private boolean isImportantAvg(double threshold)
+	{
+		double [] qvals = student.getQValues();
+		double avgDiff = student.getAvgQdiff();
+		double gap = Stats.max(qvals) - Stats.min(qvals);
+		if (gap>avgDiff*threshold)
 			return true;
 		else
 			return false;
@@ -392,7 +413,8 @@ public class IntelligentStudent extends RLPacMan {
 			else
 				ask = this.askForAttention(game, choice);
 		}
-		if (!testMode && strategy.inUse() &&this.attentionCount<Experiments.ATTBUDGET) {
+
+		if (!testMode && strategy.inUse() &&this.totalAttention<Experiments.ATTBUDGET) {
 			if (ask)
 			{
 //				try {
@@ -402,6 +424,7 @@ public class IntelligentStudent extends RLPacMan {
 //					e.printStackTrace();
 //				}
 				this.attentionCount++;
+				totalAttention++;
 				MOVE advice = teacher.getMove(game, timeDue);
 			
 				if (initiator.equals("teacher"))
@@ -566,27 +589,34 @@ public class IntelligentStudent extends RLPacMan {
 		DataFile file = new DataFile(filename+"Avg");
 		avgNearestNeighbor=Double.parseDouble(file.nextLine());
 		avgAllDists=Double.parseDouble(file.nextLine());
-
+		QFunction Qfunction = student.getQfunc();
 
 		file.close();
 		
 		DataFile file2 = new DataFile(filename);
-		
+//		int count = 0;
+//		double sumQdiffs = 0;
 		while (file2.hasNextLine())
 		{
 			String line = file2.nextLine();
 			String[] values = line.split(",");
 			double[]vec = new double[values.length];
+			
 			for (int i=0;i<values.length;i++)
 			{
 				vec[i]=Double.parseDouble(values[i]);
 				
 			}
 			this.visitedStates.add(vec);
-
+//			System.out.println(Double.toString(Qfunction.evaluate(vec)));
+//			sumQdiffs+=Qfunction.evaluate(vec);
+//			
+//			count++;
+			
 				
 //			System.out.println(vec);
 		}
+//		this.avgQdiffFromPast=sumQdiffs/count;
 		file2.close();
 //		System.out.println("start update");
 //		this.updateAvgNearestNeighbor();
@@ -645,6 +675,15 @@ public class IntelligentStudent extends RLPacMan {
 		file2.append(Double.toString(avgAllDists)+"\n");
 		file2.close();
 		
+	}
+	
+	public void saveQdiffsAvg(String filename)
+	{
+		DataFile file = new DataFile(filename);
+		file.clear();
+		System.out.println("avg q diff = "+Double.toString(student.getAvgQdiff()));
+		file.append(Double.toString(student.getAvgQdiff()));
+		file.close();
 	}
 	
 	

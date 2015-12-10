@@ -1,2 +1,1 @@
-advise200	teacher	never	false
 baseline	teacher	never	true
