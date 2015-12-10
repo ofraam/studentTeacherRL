@@ -1,19 +1,21 @@
 package pacman.teaching;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-
+import java.sql.Timestamp;
 import pacman.Experiments;
+import pacman.controllers.KeyBoardInput;
 import pacman.entries.pacman.BasicRLPacMan;
 import pacman.entries.pacman.FeatureSet;
 import pacman.entries.pacman.QFunction;
 import pacman.entries.pacman.RLPacMan;
 import pacman.entries.pacman.SarsaPacMan;
 import pacman.game.Game;
+
 import pacman.game.Constants.MOVE;
+import pacman.game.Game;
 import pacman.utils.DataFile;
 import pacman.utils.FeatureVectorComparator;
 import pacman.utils.SVM;
@@ -404,6 +406,23 @@ public class IntelligentStudent extends RLPacMan {
 //			System.out.println("student important = "+imp);
 //		}
 		
+		Timestamp start = new Timestamp(System.currentTimeMillis());
+		Timestamp currTimestamp;
+		if(!testMode)
+		{
+		while(true)
+		{
+			currTimestamp = new Timestamp(System.currentTimeMillis());
+			if (Experiments.ki.getKey()!=0)
+				System.out.println(Experiments.ki.getKey());
+			if (currTimestamp.getTime()-start.getTime()>3000)
+			{
+				
+//				System.out.println("Breaking");
+				break;
+			}
+		}
+		}
 		episodeLength++;
 		boolean ask = this.askForAttention(game, choice);
 		if (!testMode & this.attentionShiftTeacher)
@@ -589,7 +608,6 @@ public class IntelligentStudent extends RLPacMan {
 		DataFile file = new DataFile(filename+"Avg");
 		avgNearestNeighbor=Double.parseDouble(file.nextLine());
 		avgAllDists=Double.parseDouble(file.nextLine());
-		QFunction Qfunction = student.getQfunc();
 
 		file.close();
 		

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import pacman.controllers.KeyBoardInput;
 import pacman.entries.ghosts.StandardGhosts;
 import pacman.entries.pacman.BasicRLPacMan;
 import pacman.entries.pacman.CustomFeatureSet;
@@ -21,6 +22,7 @@ import pacman.game.Constants;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 import pacman.game.GameView;
+import pacman.game.NoMoveGhosts;
 import pacman.teaching.AdviseAtFirst;
 import pacman.teaching.AdviseAtFirstCorrect;
 //import pacman.teaching.AdviseAtFirstCorrect;
@@ -51,6 +53,7 @@ public class Experiments {
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 
 	public static String DIR = "train100/"+TEACHER+"/"+STUDENT; // Where to store data
+
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
@@ -59,11 +62,14 @@ public class Experiments {
 	public static int REPEATS = 30; // Curves to average (30)
 	public static int LENGTH = 80; // Points per curve (100)
 	public static int TEST = 30; // Test episodes per point (30)
+
 	public static int TRAIN = 10; // Train episodes per point (10)
 
 	public static Random rng = new Random();
+//	public static StandardGhosts ghosts = new StandardGhosts();
 	public static StandardGhosts ghosts = new StandardGhosts();
-
+	public static KeyBoardInput ki = new KeyBoardInput();
+	
 	/**
 	 * Run experiments.
 	 */
@@ -139,7 +145,7 @@ public class Experiments {
 			BasicRLPacMan teacher = TEACHER.endsWith("S") ? new SarsaPacMan(teacherProto) : new QPacMan(teacherProto);
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 
-//			teacher.loadPolicy("myData/"+TEACHER+"/studentNoPowerPills150/policy");
+//			teacher.loadPolicy("myData/"+TEACHER+"/student400/policy");
 
 			return teacher;
 		}
@@ -149,6 +155,7 @@ public class Experiments {
 			BasicRLPacMan student = STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
 //			student.loadPolicy("myData/"+TEACHER+"/teacherOpenMaze/policy");
 			student.loadPolicy("myData/"+TEACHER+"/student100/policy");
+
 			return student;
 //			return STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
 		}
@@ -161,6 +168,7 @@ public class Experiments {
 			
 			//TODO: what if student is not stupid
 			student.loadPolicy("myData/"+TEACHER+"/student100/policy");
+
 			
 			
 			// Front-load the advice budget
@@ -310,6 +318,7 @@ public class Experiments {
 			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode,teacherRelease);
 			pacman.loadVisitedState("myData/"+TEACHER+"/student100/visited");
+
 			// First point
 			double[] initialData = pacman.episodeData();
 			double initialScore = evaluate(pacman, TEST);
@@ -321,7 +330,7 @@ public class Experiments {
 				
 				for (int y=0; y<TRAIN; y++) {
 					//int epLength = episode(pacman);
-					int epLength = episode(pacman);
+					int epLength = episodeWatch(pacman);
 //					try {
 //						System.in.read();
 //					} catch (IOException e) {
@@ -374,7 +383,7 @@ public class Experiments {
 		Game game = new Game(rng.nextLong());
 		pacman.startEpisode(game, false);
 		GameView gv=new GameView(game).showGame();
-
+		gv.addKeyListener(ki);
 		while(!game.gameOver()) {
 			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 			pacman.processStep(game);

@@ -45,7 +45,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	private double delta1; // First part of delayed update: r-Q(s,a)
 	private double delta2; // Second part of delayed update: yQ(s',a')
 
-	private double EPSILON = 0.05; // Exploration rate 0.05
+	private double EPSILON = 0.05; // Exploration rate 0.05superUn2!
 	private double ALPHA = 0.001; // Learning rate
 	private double GAMMA = 0.999; // Discount rate
 	private double LAMBDA = 0.9; // Backup weighting

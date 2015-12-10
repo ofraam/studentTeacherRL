@@ -413,7 +413,7 @@ public final class GameView extends JComponent
     		ghosts.get(GHOST.SUE).put(MOVE.RIGHT,new BufferedImage[]{_loadImage("sue-right-1.png"), _loadImage("sue-right-2.png")});
     		ghosts.get(GHOST.SUE).put(MOVE.DOWN,new BufferedImage[]{_loadImage("sue-down-1.png"), _loadImage("sue-down-2.png")});
     		ghosts.get(GHOST.SUE).put(MOVE.LEFT,new BufferedImage[]{_loadImage("sue-left-1.png"), _loadImage("sue-left-2.png")});
-            
+//            
     		edibleGhosts=new BufferedImage[2];
     		edibleGhosts[0]=_loadImage("edible-ghost-1.png");
     		edibleGhosts[1]=_loadImage("edible-ghost-2.png");
