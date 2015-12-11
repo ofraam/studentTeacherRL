@@ -52,15 +52,15 @@ public class Experiments {
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 
-	public static String DIR = "train100/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "train0attLimit/"+TEACHER+"/"+STUDENT; // Where to store data
 
 	
 	
-	public static int BUDGET = 1000; // Advice budget (1000)
-	public static int ATTBUDGET = Integer.MAX_VALUE; //train100= 72382, train 200=163589, train0=69846
+	public static int BUDGET = Integer.MAX_VALUE; // Advice budget (1000)
+	public static int ATTBUDGET = 69846; //train100= 72382, train 200=163589, train0=69846
 
 	public static int REPEATS = 30; // Curves to average (30)
-	public static int LENGTH = 80; // Points per curve (100)
+	public static int LENGTH = 100; // Points per curve (100)
 	public static int TEST = 30; // Test episodes per point (30)
 
 	public static int TRAIN = 10; // Train episodes per point (10)
@@ -154,7 +154,7 @@ public class Experiments {
 		else if (learner.startsWith("independent")) {
 			BasicRLPacMan student = STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
 //			student.loadPolicy("myData/"+TEACHER+"/teacherOpenMaze/policy");
-			student.loadPolicy("myData/"+TEACHER+"/student100/policy");
+			student.loadPolicy("myData/"+TEACHER+"/student200/policy");
 
 			return student;
 //			return STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
@@ -167,7 +167,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/student100/policy");
+//			student.loadPolicy("myData/"+TEACHER+"/student100/policy");
 
 			
 			
@@ -317,7 +317,7 @@ public class Experiments {
 			
 			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode,teacherRelease);
-			pacman.loadVisitedState("myData/"+TEACHER+"/student100/visited");
+//			pacman.loadVisitedState("myData/"+TEACHER+"/student200/visited");
 
 			// First point
 			double[] initialData = pacman.episodeData();
@@ -330,7 +330,7 @@ public class Experiments {
 				
 				for (int y=0; y<TRAIN; y++) {
 					//int epLength = episode(pacman);
-					int epLength = episodeWatch(pacman);
+					int epLength = episode(pacman);
 //					try {
 //						System.in.read();
 //					} catch (IOException e) {
