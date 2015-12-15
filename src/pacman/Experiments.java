@@ -52,15 +52,15 @@ public class Experiments {
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 
-	public static String DIR = "train100/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "train0attLimit/"+TEACHER+"/"+STUDENT; // Where to store data
 
 	
 	
-	public static int BUDGET = 1000; // Advice budget (1000)
-	public static int ATTBUDGET = Integer.MAX_VALUE; //train100= 72382, train 200=163589, train0=69846
+	public static int BUDGET = Integer.MAX_VALUE; // Advice budget (1000)
+	public static int ATTBUDGET = 69846; //train100= 72382, train 200=163589, train0=69846
 
 	public static int REPEATS = 30; // Curves to average (30)
-	public static int LENGTH = 80; // Points per curve (100)
+	public static int LENGTH = 100; // Points per curve (100)
 	public static int TEST = 30; // Test episodes per point (30)
 
 	public static int TRAIN = 10; // Train episodes per point (10)
@@ -167,7 +167,7 @@ public class Experiments {
 			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 			
 			//TODO: what if student is not stupid
-			student.loadPolicy("myData/"+TEACHER+"/student100/policy");
+//			student.loadPolicy("myData/"+TEACHER+"/student100/policy");
 
 			
 			
@@ -294,6 +294,21 @@ public class Experiments {
 		return null;
 	}
 	
+	public static int findStart(String learnerCombined)
+	{
+		int startIndex=0;
+		for (int i = 0;i<REPEATS;i++)
+		{
+			String filename = DIR+"/"+learnerCombined+"/curve"+i;
+			File f = new File(filename);
+			if (!f.exists())
+				break;
+			else
+				startIndex++;
+		}
+		return startIndex;
+	}
+	
 	/** Generate learning curves. */
 	public static void train(String learner, int start, String initiator, String attentionMode, boolean teacherRelease) {
 		String learnerCombined = learner+"_"+attentionMode+"_"+teacherRelease;
@@ -308,6 +323,8 @@ public class Experiments {
 			
 		// Load old curves
 		LearningCurve[] curves = new LearningCurve[REPEATS];
+		start = findStart(learnerCombined);
+		
 		for (int i=0; i<start; i++)
 			curves[i] = new LearningCurve(LENGTH+1, TRAIN, DIR+"/"+learnerCombined+"/curve"+i);
 		
@@ -317,7 +334,7 @@ public class Experiments {
 			
 			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode,teacherRelease);
-			pacman.loadVisitedState("myData/"+TEACHER+"/student100/visited");
+//			pacman.loadVisitedState("myData/"+TEACHER+"/student100/visited");
 
 			// First point
 			double[] initialData = pacman.episodeData();
