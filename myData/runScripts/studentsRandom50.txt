@@ -1,6 +1,2 @@
 correct200	teacher	random50	true
 advise200	teacher	random50	true	
-advise100	teacher	random50	true
-correct100	teacher	random50	true
-baseline	teacher	random50	true
-cbaseline	teacher	random50	true

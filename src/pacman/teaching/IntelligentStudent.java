@@ -264,8 +264,10 @@ public class IntelligentStudent extends RLPacMan {
 	{
 		double [] qvals = student.getQValues();
 		double avgDiff = student.getAvgQdiff();
+//		System.out.println("avg diff = "+Double.toString(avgDiff));
 		double gap = Stats.max(qvals) - Stats.min(qvals);
-		if (gap*threshold<avgDiff)
+//		System.out.println("gap = "+Double.toString(gap));
+		if (gap<=avgDiff*threshold)
 			return true;
 		else
 			return false;
@@ -359,7 +361,7 @@ public class IntelligentStudent extends RLPacMan {
 		}
 		
 		
-		if (dist>avgNearestNeighbor*coef)
+		if (dist*coef>avgNearestNeighbor) //TODO: other way around
 		{
 //			System.out.println("asked");
 			return true;
@@ -408,23 +410,11 @@ public class IntelligentStudent extends RLPacMan {
 		
 		Timestamp start = new Timestamp(System.currentTimeMillis());
 		Timestamp currTimestamp;
-		if(!testMode)
-		{
-		while(true)
-		{
-			currTimestamp = new Timestamp(System.currentTimeMillis());
-			if (Experiments.ki.getKey()!=0)
-				System.out.println(Experiments.ki.getKey());
-			if (currTimestamp.getTime()-start.getTime()>3000)
-			{
-				
-//				System.out.println("Breaking");
-				break;
-			}
-		}
-		}
+
 		episodeLength++;
-		boolean ask = this.askForAttention(game, choice);
+		boolean ask =false;
+		if (!testMode)
+			ask = this.askForAttention(game, choice);
 		if (!testMode & this.attentionShiftTeacher)
 		{
 			if (initiated)

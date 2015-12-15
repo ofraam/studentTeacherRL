@@ -291,7 +291,8 @@ public class SarsaPacMan extends BasicRLPacMan {
 			if (qvalues[i]<qvalues[worstActionIndex])
 				worstActionIndex=i;
 		}
-		this.updateQdiffs(qvalues[bestActionIndex]-qvalues[worstActionIndex]);
+		if (!testMode)
+			this.updateQdiffs(qvalues[bestActionIndex]-qvalues[worstActionIndex]);
 
 		// Explore or exploit
 		if (!testMode && rng.nextDouble() < EPSILON)
@@ -412,6 +413,7 @@ public class SarsaPacMan extends BasicRLPacMan {
 	
 	public double getAvgQdiff()
 	{
+
 		double sum = 0;
 		int runUntil = Math.min(qdiffsIndex, qdiffs.length);
 		for (int i =0;i<runUntil;i++)

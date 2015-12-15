@@ -1,3 +1,0 @@
-budget = 1000
-pacmanLives = 1
-initiator = teacher
