@@ -1,0 +1,1 @@
+correct50	teacher	importance50	true	

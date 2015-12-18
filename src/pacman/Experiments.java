@@ -57,7 +57,7 @@ public class Experiments {
 	
 	
 	public static int BUDGET = 1000; // Advice budget (1000)
-	public static int ATTBUDGET = Integer.MAX_VALUE; //train100= 72382, train 200=163589, train0=69846
+	public static int ATTBUDGET =  Integer.MAX_VALUE; //train100= 72382, train 200=163589, train0=69846
 
 	public static int REPEATS = 30; // Curves to average (30)
 	public static int LENGTH = 80; // Points per curve (100)
