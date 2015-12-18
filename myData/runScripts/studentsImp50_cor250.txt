@@ -1,1 +1,1 @@
-correct250	teacher	importance150	true	
+correct250	teacher	importance50	true	
