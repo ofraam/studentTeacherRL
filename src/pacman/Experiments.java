@@ -2,22 +2,21 @@ package pacman;
 
 import static pacman.game.Constants.DELAY;
 
-import java.io.File;
-import java.io.IOException;
+import javax.imageio.stream.*;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import pacman.controllers.KeyBoardInput;
 import pacman.entries.ghosts.StandardGhosts;
-import pacman.entries.pacman.BasicRLPacMan;
-import pacman.entries.pacman.CustomFeatureSet;
-import pacman.entries.pacman.DepthFeatureSet;
+import pacman.entries.pacman.*;
 import pacman.entries.pacman.FeatureSet;
-import pacman.entries.pacman.QPacMan;
-import pacman.entries.pacman.RLPacMan;
-import pacman.entries.pacman.SarsaPacMan;
+import pacman.entries.pacman.QFunction;
 import pacman.game.Constants;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
@@ -47,6 +46,10 @@ import pacman.utils.DataFile;
 import pacman.utils.LearningCurve;
 import pacman.utils.Stats;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+
 public class Experiments {
 	
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
@@ -55,7 +58,7 @@ public class Experiments {
 	public static String DIR = "train100_2/"+TEACHER+"/"+STUDENT; // Where to store data
 
 	
-	
+	public static int[] STUDENTS = {20,50,100,200,300,400,1000,2000};
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ATTBUDGET =  Integer.MAX_VALUE; //train100= 72382, train 200=163589, train0=69846
 
@@ -76,30 +79,33 @@ public class Experiments {
 	public static void main(String[] args) {
 //		System.out.println(0 % 5);
 //		double[] test = new double[]{1,2};
-////		test.add(1);
-////		test.add(2);
+//		test.add(1);
+//		test.add(2);
 //		System.out.println(test);
+		createHighlights();  ////////
 //		plotGaps();
 //		plotGapsWatch();
-//		RLPacMan pacman = create("teacher", "teacher","something", true);
+//		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher","something", true);
+//		pacman.loadPolicy("myData/customS/student20/policy");
+//
 //		for (int i =0;i<20;i++)
 //			watch(pacman);
 //		int i = 1/0;
-		String filename = args[0];
-		DataFile file = new DataFile(filename);
-		
-		while(file.hasNextLine())
-		{
-			String line = file.nextLine();
-			String[] params = line.split("\t");
-			String teachingStrategy = params[0];
-			String mode = params[1];
-			String attentionMode = params[2];
-			boolean teacherRelease = Boolean.parseBoolean(params[3]);
-//			DIR= params[4];
-			System.out.println("starting");
-	 		train(teachingStrategy,0,mode, attentionMode, teacherRelease);
-		}
+//		String filename = args[0];
+//		DataFile file = new DataFile(filename);
+//
+//		while(file.hasNextLine())
+//		{
+//			String line = file.nextLine();
+//			String[] params = line.split("\t");
+//			String teachingStrategy = params[0];
+//			String mode = params[1];
+//			String attentionMode = params[2];
+//			boolean teacherRelease = Boolean.parseBoolean(params[3]);
+////			DIR= params[4];
+//			System.out.println("starting");
+//	 		train(teachingStrategy,0,mode, attentionMode, teacherRelease);
+//		}
 //		watch(create("independent", "teacher","something"));
 //		
 //		String teachingStrategy = args[0];
@@ -120,7 +126,102 @@ public class Experiments {
 //		watch(create("independent", "teacher","something"));
 //		plotGapsWatch();
 	}
-	
+
+	private static void createHighlights() {
+		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+		pacman.loadPolicy("myData/customS/student2000/policy");
+		MaxGapStatesCollector msc = new MaxGapStatesCollector(100,20);
+		Collection<GameState> states = msc.collectStates(pacman);
+//		writeGapsOverLearning(states);
+//		writeFeatures(states, pacman);
+
+		saveScreens(states,"screenshots/max211116");
+		int idx = 0;
+		for (GameState state : states){
+			saveTrajectory(state.getTrajectory(),"screenshots/max211116",idx);
+			idx++;
+		}
+	}
+
+
+	private static void writeFeatures(Collection<GameState> states, BasicRLPacMan pacman) {
+		File file = new File("HLdata/max_features");
+		try {
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (IOException i) {
+			System.err.println(i.getMessage());
+			System.exit(0);
+		}
+		QFunction func = pacman.getQfunc();
+		double[] feat = {0,0,0,0,0,0,0};
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+			for (GameState state : states) {
+				double maxVal = func.evaluate(state.getFeatures()[0]);
+				feat = state.getFeatures()[0].getVAlues();
+				for (FeatureSet f : state.getFeatures()) {
+					if (func.evaluate(f) > maxVal) {
+						maxVal = func.evaluate(f);
+						feat = f.getVAlues();
+					}
+				}
+				for (double val:feat){
+					bw.write(Double.toString(val)+",");
+				}
+				bw.write("\n");
+			}
+		} catch (IOException io){
+			System.out.println(io.getMessage());
+			System.exit(0);
+		}
+	}
+
+
+	public static void writeGapsOverLearning(Collection<GameState> states){
+		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+		File file = new File("HLdata/states2.csv");
+		try {
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (IOException i) {
+			System.err.println(i.getMessage());
+			System.exit(0);
+		}
+		int idx = 0;
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+			bw.write("state,student20,student50,student100,student200,student300,student400,student1000,student2000,max2000,min2000\n");
+			for (GameState state : states) {
+				bw.write(idx+",");
+				idx++;
+				for (int i : STUDENTS) {
+					pacman.loadPolicy("myData/customS/student" + i + "/policy");
+					QFunction func = pacman.getQfunc();
+					double min = func.evaluate(state.getFeatures()[0]);
+					double max = func.evaluate(state.getFeatures()[0]);
+					for (FeatureSet feature : state.getFeatures()) {
+						if (func.evaluate(feature) > max) {
+							max = func.evaluate(feature);
+						} else if (func.evaluate(feature) < min) {
+							min = func.evaluate(feature);
+						}
+					}
+					bw.write(Double.toString(max - min)+",");
+					if (i == 2000){
+						bw.write(Double.toString(max)+",");
+						bw.write(Double.toString(min)+",");
+					}
+				}
+				bw.write("\n");
+			}
+		} catch (IOException i){
+			System.err.println(i.getMessage());
+			System.exit(0);
+		}
+	}
+
+
 	public static void writeConfig(String filename, String initiator, boolean teacherRelease)
 	{
 		DataFile file = new DataFile(filename);
@@ -143,9 +244,9 @@ public class Experiments {
 		// Lone teacher
 		if (learner.startsWith("teacher")) {
 			BasicRLPacMan teacher = TEACHER.endsWith("S") ? new SarsaPacMan(teacherProto) : new QPacMan(teacherProto);
-			teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
+			//teacher.loadPolicy("myData/"+TEACHER+"/teacher/policy");
 
-//			teacher.loadPolicy("myData/"+TEACHER+"/student400/policy");
+			//teacher.loadPolicy("myData/"+TEACHER+"/student400/policy");
 
 			return teacher;
 		}
@@ -436,8 +537,9 @@ public class Experiments {
 
 	/** Observe a learner play a game. */
 	public static void watch(RLPacMan pacman) {
-		
-		Game game=new Game(0);
+
+
+		Game game=new Game(rng.nextLong());
 		pacman.startEpisode(game, true);
 		GameView gv=new GameView(game).showGame();
 //		try {
@@ -449,7 +551,13 @@ public class Experiments {
 		while(!game.gameOver()) {
 			game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 			pacman.processStep(game);
-			
+			BasicRLPacMan pc = (BasicRLPacMan) pacman;
+			QFunction func = pc.getQfunc();
+			double[] qvalues = pc.getQValues();
+			Arrays.sort(qvalues);
+			double gap = qvalues[qvalues.length - 1] - qvalues[0];
+			System.out.println(Double.toString(gap));
+
 			try{Thread.sleep(DELAY);}catch(Exception e){}
 			gv.repaint();
 		}
@@ -523,34 +631,165 @@ public class Experiments {
 	/** Make a plottable file of Q-value gaps over a few episodes. */
 	public static void plotGaps() {
 
-		DataFile file = new DataFile("myData/"+TEACHER+"/teacherOpenMaze/gaps");
-		file.clear();
+		//DataFile file = new DataFile("myData/"+TEACHER+"/teacherOpenMaze/gaps");
+		//file.clear();
 
 		BasicRLPacMan pacman = (BasicRLPacMan)create("teacher", "teacher", "always",false);
-		int x = 0;
+		double maxGap = 0;
+		PriorityQueue<GameState> bestStates= new PriorityQueue<>(20, new GapComparator());
+		ArrayList<pacman.entries.pacman.QFunction> qFuncsList = new ArrayList<>();
+		//int[] scores = new int[20];
 
-		for (int i=0; i<1; i++) {
+
+		for (int i=0; i<2200; i++) {
 			Game game = new Game(rng.nextLong());
-			pacman.startEpisode(game, true);
+			pacman.startEpisode(game, false);
 			int length = 0;
+			//String state = "";
+			int c = 0;
+			Queue<String> trajectory = new ArrayBlockingQueue<String>(20);
+			GameState lastState = new GameState();
+
 			while(!game.gameOver() & length<20000) {
+				String state = game.getGameState();
 
-				double[] qvalues = pacman.getQValues();
-				Arrays.sort(qvalues);
-				double gap = qvalues[qvalues.length-1] - qvalues[0];
+				if (trajectory.size() == 20) {
+					trajectory.remove();
+				}
+				trajectory.offer(state);
 
-				file.append(x+"\t"+gap+"\n");
-				x++;
+
+
+
+				//	System.out.println(length +"gap: "+gap);
+
+				//file.append(x+"\t"+gap+"\n");
+				//System.out.println(gap);
 
 				game.advanceGame(pacman.getMove(game.copy(), -1), ghosts.getMove(game.copy(), -1));
 				pacman.processStep(game);
 				length++;
 			}
+			if (i == 20 || i == 50 || i == 1000 || i == 2000){
+				double[] qvalues = pacman.getQValues();
+				pacman.getQfunc().save("myData/customS/student"+Integer.toString(i)+"/policy");
+			}
+//			scores[i%20] = game.getScore();
+//			if (i > 20) {
+//				int sum = 0;
+//				for (int score : scores){
+//					sum += score;
+//				}
+//				double ave = (double)sum/scores.length;
+//				System.out.println("average score: " + ave);
+//			}
+//			System.out.println(Arrays.toString(pacman.getQfunc().getWeights()));
+//
 		}
+		printBestGaps(bestStates);
+		saveScreens(bestStates,"screenshots");
+	//	saveTrajectory(bestStates.peek().getTrajectory(),"screenshots/trajectories");
 
-		file.close();
-	}	
-	
+		System.out.println("max gap: "+maxGap);
+
+//		for (int j = 0;j < qFuncsList.size() ; j++ ){
+//			System.out.println(qFuncsList.get(j));
+//			System.out.println("turn: " + j +"\n");
+//			for (ArrayList<FeatureSet> featList : features) {
+//				System.out.println("--------");
+//				for (FeatureSet feature : featList) {
+//					System.out.println("*******");
+//					System.out.println(qFuncsList.get(j).evaluate(feature));
+//				}
+//			}
+//		}
+//		System.out.println("choose screen");
+//		Game game = new Game(rng.nextLong());
+//		for (int j = 0; j < gameStates.size(); j++){
+//			game.setGameState(gameStates.get(j));
+//			GameView gv = new GameView(game).showGame();
+//			gv.repaint();
+//			BufferedImage bi = new BufferedImage(gv.getWidth(), gv.getHeight(),BufferedImage.TYPE_INT_RGB);
+//			Graphics2D g2d = bi.createGraphics();
+//			gv.paint(g2d);
+//			try {
+//				File outputFile = new File("screenshots/pic"+j+".png");
+//				ImageIO.write(bi,"png",outputFile);
+//
+//			} catch (Exception e){
+//				System.err.println(e.getMessage());
+//			}
+//		}
+		//game.setGameState(state);
+		//GameView gv=new GameView(game).showGame();
+		//gv.repaint();
+		//file.close();
+	}
+	public static void printBestGaps(Queue<GameState> bestStates){
+		for (GameState gs: bestStates){
+			System.out.println(gs.getQgap());
+		}
+	}
+	public static void saveScreens(Collection<GameState> states, String dir){
+		int idx = 0;
+		for (GameState state: states){
+			Game game = new Game(rng.nextLong());
+			game.setGameState(state.getState());
+			GameView gv = new GameView(game).showGame();
+			BufferedImage bi = new BufferedImage(gv.getWidth(), gv.getHeight(),BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2d = bi.createGraphics();
+			gv.paint(g2d);
+			try {
+				File outputFile = new File(dir+"/screen"+idx+".png");
+				ImageIO.write(bi,"png",outputFile);
+
+			} catch (Exception e){
+				System.err.println(e.getMessage());
+			}
+			idx ++;
+		}
+	}
+	public static void saveTrajectory(Collection<String> frames, String dir, int stateNum){
+		int idx = 0;
+		try {
+			ImageOutputStream outGIF = new FileImageOutputStream( new File(dir+"/"+stateNum+".gif"));
+			GifSequenceWriter gsw = new GifSequenceWriter(outGIF,BufferedImage.TYPE_INT_RGB, 75, false);
+			for (String frame: frames) {
+				Game game = new Game(rng.nextLong());
+				game.setGameState(frame);
+				GameView gv = new GameView(game).showGame();
+				BufferedImage bi = new BufferedImage(gv.getWidth(), gv.getHeight(), BufferedImage.TYPE_INT_RGB);
+				Graphics2D g2d = bi.createGraphics();
+				gv.paint(g2d);
+				gsw.writeToSequence(bi);
+
+			}
+			gsw.close();
+
+		} catch (IOException io)
+		{
+			System.out.println(io.getMessage());
+			System.exit(-1);
+		}
+//		for (String frame: frames){
+//			Game game = new Game(rng.nextLong());
+//			game.setGameState(frame);
+//			GameView gv = new GameView(game).showGame();
+//			BufferedImage bi = new BufferedImage(gv.getWidth(), gv.getHeight(),BufferedImage.TYPE_INT_RGB);
+//			Graphics2D g2d = bi.createGraphics();
+//			gv.paint(g2d);
+//			try {
+//				File outputFile = new File(dir+"/"+stateNum+"frame"+idx+".png");
+//				ImageIO.write(bi,"png",outputFile);
+//
+//			} catch (Exception e){
+//				System.err.println(e.getMessage());
+//			}
+//			idx ++;
+//		}
+	}
+
+
 	/** Test SVM choice prediction. */
 	public static void testSVM() {
 			
