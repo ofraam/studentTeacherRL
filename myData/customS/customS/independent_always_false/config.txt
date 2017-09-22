@@ -1,0 +1,5 @@
+budget = 1000
+pacmanLives = 1
+initiator = teacher
+teacher release = false
+myData/customS/customS

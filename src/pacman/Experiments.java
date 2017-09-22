@@ -55,18 +55,18 @@ public class Experiments {
 	public static String TEACHER = "customS"; // Teacher feature set and algorithm
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 
-	public static String DIR = "train100_2/"+TEACHER+"/"+STUDENT; // Where to store data
+	public static String DIR = "myData/"+TEACHER+"/"+STUDENT; // Where to store data
 
 	
-	public static int[] STUDENTS = {20,50,100,200,300,400,1000,2000};
+	public static int[] STUDENTS = {200,1000,2000}; // {20,50,100,200,300,400,1000,2000}
 	public static int BUDGET = 1000; // Advice budget (1000)
 	public static int ATTBUDGET =  Integer.MAX_VALUE; //train100= 72382, train 200=163589, train0=69846
 
-	public static int REPEATS = 30; // Curves to average (30)
-	public static int LENGTH = 80; // Points per curve (100)
-	public static int TEST = 30; // Test episodes per point (30)
+	public static int REPEATS = 1; // Curves to average (30)
+	public static int LENGTH = 1; // Points per curve (100)
+	public static int TEST = 1; // Test episodes per point (30)
 
-	public static int TRAIN = 10; // Train episodes per point (10)
+	public static int TRAIN = 2000; // Train episodes per point (10)
 
 	public static Random rng = new Random();
 //	public static StandardGhosts ghosts = new StandardGhosts();
@@ -85,7 +85,7 @@ public class Experiments {
 		createHighlights();  ////////
 //		plotGaps();
 //		plotGapsWatch();
-//		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher","something", true);
+//		BasicRLPacMan pacman = (BasicRLPacMan) create("independent", "teacher"a,"something", true);
 //		pacman.loadPolicy("myData/customS/student20/policy");
 //
 //		for (int i =0;i<20;i++)
@@ -115,7 +115,8 @@ public class Experiments {
 ////		
 ////		
 //		System.out.println("starting");
-// 		train(teachingStrategy,0,mode, attentionMode, teacherRelease);
+//		advise250	teacher	always	false
+// 		train("independent",0,"teacher", "always", false);
 // 		
 //		watch(create("advise100"));
 //		rng = new Random(111);
@@ -129,16 +130,16 @@ public class Experiments {
 
 	private static void createHighlights() {
 		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
-		pacman.loadPolicy("myData/customS/student2000/policy");
+		pacman.loadPolicy("myData/customS/student400/policy");
 		MaxGapStatesCollector msc = new MaxGapStatesCollector(100,20);
 		Collection<GameState> states = msc.collectStates(pacman);
 //		writeGapsOverLearning(states);
 //		writeFeatures(states, pacman);
 
-		saveScreens(states,"screenshots/max211116");
+		saveScreens(states,"screenshots/gifsStudent400");
 		int idx = 0;
 		for (GameState state : states){
-			saveTrajectory(state.getTrajectory(),"screenshots/max211116",idx);
+			saveTrajectory(state.getTrajectory(),"screenshots/gifsStudent400",idx);
 			idx++;
 		}
 	}
@@ -255,7 +256,7 @@ public class Experiments {
 		else if (learner.startsWith("independent")) {
 			BasicRLPacMan student = STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
 //			student.loadPolicy("myData/"+TEACHER+"/teacherOpenMaze/policy");
-			student.loadPolicy("myData/"+TEACHER+"/student200/policy");
+//			student.loadPolicy("myData/"+TEACHER+"/student200/policy");
 
 			return student;
 //			return STUDENT.endsWith("S") ? new SarsaPacMan(studentProto) : new QPacMan(studentProto);
@@ -435,7 +436,7 @@ public class Experiments {
 			
 			System.out.println("Training "+DIR+"/"+learnerCombined+" "+i+"...");
 			RLPacMan pacman = create(learner,initiator,attentionMode,teacherRelease);
-			pacman.loadVisitedState("myData/"+TEACHER+"/student100/visited");
+//			pacman.loadVisitedState("myData/"+TEACHER+"/student100/visited");
 
 			// First point
 			double[] initialData = pacman.episodeData();
