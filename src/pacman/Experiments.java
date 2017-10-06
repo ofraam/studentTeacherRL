@@ -82,7 +82,8 @@ public class Experiments {
 //		test.add(1);
 //		test.add(2);
 //		System.out.println(test);
-		createHighlights();  ////////
+//		createHighlights();  ////////
+		createRandomHighlights();
 //		plotGaps();
 //		plotGapsWatch();
 //		BasicRLPacMan pacman = (BasicRLPacMan) create("independent", "teacher"a,"something", true);
@@ -143,6 +144,24 @@ public class Experiments {
 			idx++;
 		}
 	}
+	
+	private static void createRandomHighlights() {
+		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+		pacman.loadPolicy("myData/customS/student2000/policy");
+		RandomStatesCollector rsc = new RandomStatesCollector(100,20);
+		Collection<GameState> states = rsc.collectStates(pacman);
+//		writeGapsOverLearning(states);
+//		writeFeatures(states, pacman);
+
+		saveScreens(states,"screenshots/random/gifsStudent2000");
+		int idx = 0;
+		for (GameState state : states){
+			saveTrajectory(state.getTrajectory(),"screenshots/random/gifsStudent2000",idx);
+			idx++;
+		}
+	}
+	
+	
 
 
 	private static void writeFeatures(Collection<GameState> states, BasicRLPacMan pacman) {

@@ -25,7 +25,7 @@ public class MaxGapStatesCollector extends StatesCollector {
     public Collection<GameState> collectStates(BasicRLPacMan pacman) {
         PriorityQueue<GameState> bestStates = new PriorityQueue<>(numStates, new GapComparator());
 
-        for (int i = 1; i < numGames; i++) {
+        for (int i = 1; i < numGames; i++) { //play games
             Game game = new Game(Experiments.rng.nextLong());
             pacman.startEpisode(game, true);
             int length = 0;
@@ -33,7 +33,7 @@ public class MaxGapStatesCollector extends StatesCollector {
             Queue<String> trajectory = new ArrayBlockingQueue<>(TRAJ_LENGTH);
             GameState lastState = new GameState();
 
-            while (!game.gameOver() & length < 20000) {
+            while (!game.gameOver() & length < 20000) { //play a single game
                 String state = game.getGameState();
 
                 if (trajectory.size() == TRAJ_LENGTH) {
