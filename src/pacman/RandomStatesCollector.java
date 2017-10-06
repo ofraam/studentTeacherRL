@@ -11,6 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Created by danamir on 28/07/2016.
+ * uses reservoir sampling to get random trajectories
  */
 public class RandomStatesCollector extends StatesCollector {
 	private int numGames;
@@ -60,7 +61,7 @@ public class RandomStatesCollector extends StatesCollector {
                 int r = 0;
                 if (idx>0)
                 {
-                	r = random.nextInt(idx)+1;
+                	r = random.nextInt(idx)+1; //for reservoir sampling
 //                	System.out.println("r = "+r);
                 }
                 

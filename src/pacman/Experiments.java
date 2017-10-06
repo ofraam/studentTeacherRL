@@ -83,7 +83,8 @@ public class Experiments {
 //		test.add(2);
 //		System.out.println(test);
 //		createHighlights();  ////////
-		createRandomHighlights();
+//		createRandomHighlights();
+		createFirstHighlights(2, 2);
 //		plotGaps();
 //		plotGapsWatch();
 //		BasicRLPacMan pacman = (BasicRLPacMan) create("independent", "teacher"a,"something", true);
@@ -129,10 +130,10 @@ public class Experiments {
 //		plotGapsWatch();
 	}
 
-	private static void createHighlights() {
+	private static void createHighlights(int numGames, int numStates) {
 		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
 		pacman.loadPolicy("myData/customS/student400/policy");
-		MaxGapStatesCollector msc = new MaxGapStatesCollector(100,20);
+		MaxGapStatesCollector msc = new MaxGapStatesCollector(numGames,numStates);
 		Collection<GameState> states = msc.collectStates(pacman);
 //		writeGapsOverLearning(states);
 //		writeFeatures(states, pacman);
@@ -145,10 +146,27 @@ public class Experiments {
 		}
 	}
 	
-	private static void createRandomHighlights() {
+	
+	private static void createFirstHighlights(int numGames, int numStates) {
 		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
 		pacman.loadPolicy("myData/customS/student2000/policy");
-		RandomStatesCollector rsc = new RandomStatesCollector(100,20);
+		FirstStatesCollector fsc = new FirstStatesCollector(numGames,numStates);
+		Collection<GameState> states = fsc.collectStates(pacman);
+//		writeGapsOverLearning(states);
+//		writeFeatures(states, pacman);
+
+		saveScreens(states,"screenshots/first/gifsStudent2000");
+		int idx = 0;
+		for (GameState state : states){
+			saveTrajectory(state.getTrajectory(),"screenshots/first/gifsStudent2000",idx);
+			idx++;
+		}
+	}
+	
+	private static void createRandomHighlights(int numGames, int numStates) {
+		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+		pacman.loadPolicy("myData/customS/student2000/policy");
+		RandomStatesCollector rsc = new RandomStatesCollector(numGames,numStates);
 		Collection<GameState> states = rsc.collectStates(pacman);
 //		writeGapsOverLearning(states);
 //		writeFeatures(states, pacman);
