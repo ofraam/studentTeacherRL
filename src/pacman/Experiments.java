@@ -56,7 +56,7 @@ public class Experiments {
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 
 	public static String DIR = "myData/"+TEACHER+"/"+STUDENT; // Where to store data
-
+	public static String SCREENS_DIR = "screenshots";
 	
 	public static int[] STUDENTS = {200,1000,2000}; // {20,50,100,200,300,400,1000,2000}
 	public static int BUDGET = 1000; // Advice budget (1000)
@@ -84,7 +84,32 @@ public class Experiments {
 //		System.out.println(test);
 //		createHighlights();  ////////
 //		createRandomHighlights();
-		createFirstHighlights(2, 2);
+		String[] policies = {"student2000","student400","studentNoPowerPills1000","student200"}; 
+		String[] collectors = {"min","rand","max"};
+		//"first",
+		for (String student:policies) {
+			String policyFile = "myData/customS/" + student + "/policy";
+			BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+			pacman.loadPolicy(policyFile);
+			for (String col:collectors) {
+				createHighlightsGeneral(col, 50, 15, pacman, student);
+			}
+		}
+		
+		String[] policies1 = {"student400","studentNoPowerPills1000"}; 
+		String[] collectors1 = {"first"};
+		//"first",
+		for (String student1:policies1) {
+			String policyFile1 = "myData/customS/" + student1 + "/policy";
+			BasicRLPacMan pacman1 = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+			pacman1.loadPolicy(policyFile1);
+			for (String col:collectors1) {
+				createHighlightsGeneral(col, 50, 15, pacman1, student1);
+			}
+		}
+		
+		
+//		createFirstHighlights(2, 2);
 //		plotGaps();
 //		plotGapsWatch();
 //		BasicRLPacMan pacman = (BasicRLPacMan) create("independent", "teacher"a,"something", true);
@@ -129,6 +154,46 @@ public class Experiments {
 //		watch(create("independent", "teacher","something"));
 //		plotGapsWatch();
 	}
+	
+	private static void createHighlightsGeneral(String collector, int numGames, int numStates, BasicRLPacMan pacman, String dir) {
+		StatesCollector sc = null;
+		Collection<GameState> states = null;
+		String saveDir = SCREENS_DIR + "/" + collector + "/" + dir;
+		switch(collector) {
+			case "max":
+				sc = new MaxGapStatesCollector(numGames,numStates);
+				states = sc.collectStates(pacman);
+				break;
+			case "min":
+				sc = new MinGapMaxValCollector(numGames,numStates);
+				states = sc.collectStates(pacman);
+				break;
+			case "rand":
+				sc = new RandomStatesCollector(numGames,numStates);
+				states = sc.collectStates(pacman);
+				break;
+			case "first":
+				sc = new FirstStatesCollector(numGames,numStates);
+				states = sc.collectStates(pacman);
+				break;
+		}
+		
+		File file = new File(saveDir);
+		Boolean created = false;
+		if (!file.exists()) {
+			created = file.mkdirs();
+//			System.out.println(created);
+		}
+		
+		
+		saveScreens(states,saveDir);
+		int idx = 0;
+		for (GameState state : states){
+			saveTrajectory(state.getTrajectory(),saveDir,idx);
+			idx++;
+		}
+	}
+		
 
 	private static void createHighlights(int numGames, int numStates) {
 		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
@@ -146,6 +211,21 @@ public class Experiments {
 		}
 	}
 	
+	private static void createMinGapHighlights(int numGames, int numStates) {
+		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+		pacman.loadPolicy("myData/customS/student400/policy");
+		MaxGapStatesCollector msc = new MaxGapStatesCollector(numGames,numStates);
+		Collection<GameState> states = msc.collectStates(pacman);
+//		writeGapsOverLearning(states);
+//		writeFeatures(states, pacman);
+
+		saveScreens(states,"screenshots/gifsStudent400");
+		int idx = 0;
+		for (GameState state : states){
+			saveTrajectory(state.getTrajectory(),"screenshots/gifsStudent400",idx);
+			idx++;
+		}
+	}
 	
 	private static void createFirstHighlights(int numGames, int numStates) {
 		BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
@@ -780,9 +860,11 @@ public class Experiments {
 			try {
 				File outputFile = new File(dir+"/screen"+idx+".png");
 				ImageIO.write(bi,"png",outputFile);
+				gv.closeGame();
 
 			} catch (Exception e){
 				System.err.println(e.getMessage());
+				gv.closeGame();
 			}
 			idx ++;
 		}
@@ -800,9 +882,13 @@ public class Experiments {
 				Graphics2D g2d = bi.createGraphics();
 				gv.paint(g2d);
 				gsw.writeToSequence(bi);
+				gv.closeGame();
+				
 
 			}
 			gsw.close();
+			
+			
 
 		} catch (IOException io)
 		{

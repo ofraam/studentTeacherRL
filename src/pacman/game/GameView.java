@@ -5,6 +5,7 @@ import javax.swing.*;
 import pacman.game.Constants.GHOST;
 import pacman.game.Constants.MOVE;
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -300,6 +301,11 @@ public final class GameView extends JComponent
         return this;
     }
     
+    
+    public void closeGame()
+    {
+    	this.frame.dispatchEvent(new WindowEvent(this.frame, WindowEvent.WINDOW_CLOSING));
+    }
     /**
      * Gets the frame.
      *
@@ -329,7 +335,7 @@ public final class GameView extends JComponent
             this.setLocation((int)(screen.getWidth()*3/8),(int)(screen.getHeight()*3/8));            
             this.setVisible(true);
             this.setResizable(false);
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             repaint();            
         }
     }
