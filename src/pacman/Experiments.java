@@ -3,6 +3,7 @@ package pacman;
 import static pacman.game.Constants.DELAY;
 
 import javax.imageio.stream.*;
+import com.sun.imageio.plugins.gif.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -47,6 +48,7 @@ import pacman.utils.LearningCurve;
 import pacman.utils.Stats;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 
@@ -84,30 +86,47 @@ public class Experiments {
 //		System.out.println(test);
 //		createHighlights();  ////////
 //		createRandomHighlights();
+		
+		///------------------------
 		String[] policies = {"student2000","student400","studentNoPowerPills1000","student200"}; 
-		String[] collectors = {"min","rand","max"};
-		//"first",
-		for (String student:policies) {
-			String policyFile = "myData/customS/" + student + "/policy";
-			BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
-			pacman.loadPolicy(policyFile);
-			for (String col:collectors) {
-				createHighlightsGeneral(col, 50, 15, pacman, student);
+		String[] collectors = {"min","rand","max","first"};
+//		//"first",
+//		for (String student:policies) {
+//			String policyFile = "myData/customS/" + student + "/policy";
+//			BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+//			pacman.loadPolicy(policyFile);
+//			for (String col:collectors) {
+//				createHighlightsGeneral(col, 50, 15, pacman, student);
+//			}
+//		}
+//		
+//		String[] policies1 = {"student400","studentNoPowerPills1000"}; 
+//		String[] collectors1 = {"first"};
+//		//"first",
+//		for (String student1:policies1) {
+//			String policyFile1 = "myData/customS/" + student1 + "/policy";
+//			BasicRLPacMan pacman1 = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+//			pacman1.loadPolicy(policyFile1);
+//			for (String col:collectors1) {
+//				createHighlightsGeneral(col, 50, 15, pacman1, student1);
+//			}
+//		}
+		//-------------------
+//		try {
+		int[] sizes = {5,10,15};
+		for (String col:collectors) {
+			for (String policy:policies) {
+				for (int size:sizes) {
+					mergeTrajectories("screenshots/"+col+"/"+policy,size);
+				}
 			}
 		}
-		
-		String[] policies1 = {"student400","studentNoPowerPills1000"}; 
-		String[] collectors1 = {"first"};
-		//"first",
-		for (String student1:policies1) {
-			String policyFile1 = "myData/customS/" + student1 + "/policy";
-			BasicRLPacMan pacman1 = (BasicRLPacMan) create("teacher", "teacher", "always", false);
-			pacman1.loadPolicy(policyFile1);
-			for (String col:collectors1) {
-				createHighlightsGeneral(col, 50, 15, pacman1, student1);
-			}
-		}
-		
+//			mergeTrajectories("screenshots/min/student200",15);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		//---
 		
 //		createFirstHighlights(2, 2);
 //		plotGaps();
@@ -869,6 +888,8 @@ public class Experiments {
 			idx ++;
 		}
 	}
+	
+	
 	public static void saveTrajectory(Collection<String> frames, String dir, int stateNum){
 		int idx = 0;
 		try {
@@ -895,22 +916,38 @@ public class Experiments {
 			System.out.println(io.getMessage());
 			System.exit(-1);
 		}
-//		for (String frame: frames){
-//			Game game = new Game(rng.nextLong());
-//			game.setGameState(frame);
-//			GameView gv = new GameView(game).showGame();
-//			BufferedImage bi = new BufferedImage(gv.getWidth(), gv.getHeight(),BufferedImage.TYPE_INT_RGB);
-//			Graphics2D g2d = bi.createGraphics();
-//			gv.paint(g2d);
-//			try {
-//				File outputFile = new File(dir+"/"+stateNum+"frame"+idx+".png");
-//				ImageIO.write(bi,"png",outputFile);
-//
-//			} catch (Exception e){
-//				System.err.println(e.getMessage());
-//			}
-//			idx ++;
-//		}
+	}
+	
+	public static void mergeTrajectories(String dir, int numGifs){
+		int idx = 0;
+		try {
+			ImageOutputStream outGIF = new FileImageOutputStream( new File(dir+"/merged"+numGifs+".gif"));
+			GifSequenceWriter gsw = new GifSequenceWriter(outGIF,BufferedImage.TYPE_INT_RGB, 75, false);
+//			ArrayList<BufferedImage> allFrames = 
+			for (int i=0;i<numGifs;i++) {
+				ArrayList<BufferedImage> frames = getFrames(new File(dir + "/"+i+".gif"));
+				for (BufferedImage frame:frames) {
+					gsw.writeToSequence(frame);
+				}
+
+			}
+			gsw.close();
+			
+		} catch (IOException io)
+		{
+			System.out.println(io.getMessage());
+			System.exit(-1);
+		}
+	}
+	
+	public static ArrayList<BufferedImage> getFrames(File gif) throws IOException{
+	    ArrayList<BufferedImage> frames = new ArrayList<BufferedImage>();
+	    ImageReader ir = new GIFImageReader(new GIFImageReaderSpi());
+	    ir.setInput(ImageIO.createImageInputStream(gif));
+	    for(int i = 0; i < ir.getNumImages(true); i++)
+	    	frames.add(ir.read(i));
+
+	    return frames;
 	}
 
 
