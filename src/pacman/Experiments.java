@@ -58,7 +58,7 @@ public class Experiments {
 	public static String STUDENT = "customS"; // Student feature set and algorithm
 
 	public static String DIR = "myData/"+TEACHER+"/"+STUDENT; // Where to store data
-	public static String SCREENS_DIR = "screenshots";
+	public static String SCREENS_DIR = "screenshots_0";
 	
 	public static int[] STUDENTS = {200,1000,2000}; // {20,50,100,200,300,400,1000,2000}
 	public static int BUDGET = 1000; // Advice budget (1000)
@@ -88,15 +88,19 @@ public class Experiments {
 //		createRandomHighlights();
 		
 		///------------------------
-		String[] policies = {"student2000","student400","studentNoPowerPills1000","student200"}; 
-		String[] collectors = {"min","rand","max","first"};
-//		//"first",
-//		for (String student:policies) {
-//			String policyFile = "myData/customS/" + student + "/policy";
-//			BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
-//			pacman.loadPolicy(policyFile);
-//			for (String col:collectors) {
-//				createHighlightsGeneral(col, 50, 15, pacman, student);
+		String[] policies = {"student2000","student400","student200"}; 
+		String[] collectors = {"rand"};
+		
+//		for (int i=7;i<20;i++) {
+//			SCREENS_DIR = SCREENS_DIR.substring(0,SCREENS_DIR.length()-1) + i;
+////		//"first",
+//			for (String student:policies) {
+//				String policyFile = "myData/customS/" + student + "/policy";
+//				BasicRLPacMan pacman = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+//				pacman.loadPolicy(policyFile);
+//				for (String col:collectors) {
+//					createHighlightsGeneral(col, 50, 15, pacman, student);
+//				}
 //			}
 //		}
 //		
@@ -111,16 +115,30 @@ public class Experiments {
 //				createHighlightsGeneral(col, 50, 15, pacman1, student1);
 //			}
 //		}
+		//------------
+//		BasicRLPacMan pacman1 = (BasicRLPacMan) create("teacher", "teacher", "always", false);
+//		String policyFile1 = "myData/customS/student400/policy";
+//		pacman1.loadPolicy(policyFile1);
+//		createHighlightsGeneral("maxdiv", 50, 5, pacman1, "student400");
+		mergeTrajectories("screenshots_0/maxdiv/student200", 5);
+		mergeTrajectories("screenshots_0/maxdiv/student400", 5);
+		mergeTrajectories("screenshots_0/maxdiv/student2000", 5);
 		//-------------------
 //		try {
-		int[] sizes = {5,10,15};
-		for (String col:collectors) {
-			for (String policy:policies) {
-				for (int size:sizes) {
-					mergeTrajectories("screenshots/"+col+"/"+policy,size);
-				}
-			}
-		}
+//		File currentDir = new File(".");
+//		File[] files = currentDir.listFiles();
+//		int[] sizes = {5};
+////		for (String col:collectors) {
+//		for (File f:files) {
+//			if (f.isDirectory() & f.getName().startsWith("screenshots_")) {
+//				for (String policy:policies) {
+//					for (int size:sizes) {
+//						mergeTrajectories(f.getName()+"/rand/"+policy,size);
+//					}
+//				}
+//			}
+//		}
+//		}
 //			mergeTrajectories("screenshots/min/student200",15);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
@@ -181,6 +199,10 @@ public class Experiments {
 		switch(collector) {
 			case "max":
 				sc = new MaxGapStatesCollector(numGames,numStates);
+				states = sc.collectStates(pacman);
+				break;
+			case "maxdiv":
+				sc = new MaxGapStatesCollectorDiversity(numGames,numStates);
 				states = sc.collectStates(pacman);
 				break;
 			case "min":
