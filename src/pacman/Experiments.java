@@ -79,6 +79,23 @@ public class Experiments {
 	 * Run experiments.
 	 */
 	public static void main(String[] args) {
+//		create("independent","teacher","teacher",true);
+		BasicRLPacMan pacman = (BasicRLPacMan)create("independent", "teacher", "always", false);
+		pacman.loadPolicy("myData/customS/student200/policy");
+		System.out.println("student 200:");
+		System.out.println(evaluate(pacman, 30));
+		
+		BasicRLPacMan pacman400 = (BasicRLPacMan)create("independent", "teacher", "always", false);
+		pacman400.loadPolicy("myData/customS/student400/policy");
+		System.out.println("student 400:");
+		System.out.println(evaluate(pacman400, 30));
+		
+//		BasicRLPacMan pacman2000 = (BasicRLPacMan)create("independent", "teacher", "always", false);
+//		pacman2000.loadPolicy("myData/customS/student2000/policy");
+//		System.out.println("student 2000:");
+//		System.out.println(evaluate(pacman2000, 300));
+		
+
 //		System.out.println(0 % 5);
 //		double[] test = new double[]{1,2};
 //		test.add(1);
@@ -88,8 +105,8 @@ public class Experiments {
 //		createRandomHighlights();
 		
 		///------------------------
-		String[] policies = {"student2000","student400","student200"}; 
-		String[] collectors = {"rand"};
+//		String[] policies = {"student2000","student400","student200"}; 
+//		String[] collectors = {"rand"};
 		
 //		for (int i=7;i<20;i++) {
 //			SCREENS_DIR = SCREENS_DIR.substring(0,SCREENS_DIR.length()-1) + i;
@@ -120,9 +137,9 @@ public class Experiments {
 //		String policyFile1 = "myData/customS/student400/policy";
 //		pacman1.loadPolicy(policyFile1);
 //		createHighlightsGeneral("maxdiv", 50, 5, pacman1, "student400");
-		mergeTrajectories("screenshots_0/maxdiv/student200", 5);
-		mergeTrajectories("screenshots_0/maxdiv/student400", 5);
-		mergeTrajectories("screenshots_0/maxdiv/student2000", 5);
+//		mergeTrajectories("screenshots_0/maxdiv/student200", 5);
+//		mergeTrajectories("screenshots_0/maxdiv/student400", 5);
+//		mergeTrajectories("screenshots_0/maxdiv/student2000", 5);
 		//-------------------
 //		try {
 //		File currentDir = new File(".");
